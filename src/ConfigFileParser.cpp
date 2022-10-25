@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/25 11:56:34 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/25 17:56:19 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,13 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		this->_FileContent.append(TrimContent(line));
 		this->_FileContent.append("\n");
 	}
-	//cout << _FileContent << "\n";
-	// parse file here
+	// TODO : (for now)
+	// should be able to choose the port and host of each server
+	// setup the sever names or not
+	// the first server for a host:port is the default host:port
+	if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("[") == std::string::npos)
+		throw( std::invalid_argument("Error: No Server Config Found"));
+	
+
 
 }
