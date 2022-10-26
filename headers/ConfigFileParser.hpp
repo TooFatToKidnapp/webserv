@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/25 11:44:28 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/26 18:04:18 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class ConfigFileParser {
 
 		void ParseFile(int ac, char **av);
 		void CheckArgs(int ac, char **av);
-		bool CheckFile(std::string FileName);
+		bool CheckFile(char *FileName);
 		std::string TrimContent(std::string str);
 };
 

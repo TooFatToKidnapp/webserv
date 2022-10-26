@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/25 17:56:19 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/26 18:10:27 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,25 +43,21 @@ std::string ConfigFileParser::TrimContent(std::string str) {
 	return str;
 }
 
-bool ConfigFileParser::CheckFile(std::string FileName) {
-	if (FileName != "") {
-		std::string str = FileName.substr(FileName.rfind(".") + 1);
-		if (str == "conf")
-			return true;
-	}
-		return false;
+bool ConfigFileParser::CheckFile(char * FileName) {
+	std::string str = FileName;
+	str = str.substr(str.rfind(".") + 1);
+	if (str == "conf")
+		return true;
+	return false;
 }
 
 void ConfigFileParser::CheckArgs(int ac, char **av) {
-	if (ac == 2 && CheckFile(av[1]))
+	if (ac == 2 && CheckFile(av[1]) == true)
 		this->_FileName = av[1];
-	else {
-		if (ac != 2) {
-			throw std::invalid_argument("Error: Wrong Number Of Arguments");
-			return;
-		}
+	else if (ac == 1)
+		this->_FileName = "./ConfigFiles/default.conf";
+	else
 		throw std::invalid_argument("Error: File Extention Is Invalid");
-	}
 }
 
 void ConfigFileParser::ParseFile(int ac, char **av) {
@@ -77,12 +73,16 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		this->_FileContent.append("\n");
 	}
 	// TODO : (for now)
+	// config file must start with a server context, anything outside of a server cintext will be seen as an invalid config file
+
 	// should be able to choose the port and host of each server
 	// setup the sever names or not
-	// the first server for a host:port is the default host:port
-	if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("[") == std::string::npos)
+	// the first server for a host:port is the default host:port (it will answer all the requests that dont velong to an other server)
+	// set up default and custom error pages
+	// limit client body size ????
+	if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("{") == std::string::npos)
 		throw( std::invalid_argument("Error: No Server Config Found"));
-	
+
 
 
 }

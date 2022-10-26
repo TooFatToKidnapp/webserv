@@ -3,7 +3,7 @@ NAME = webserv
 SRC =	main.cpp\
 		./src/ConfigFileParser.cpp\
 
-FLAGS = -Wall -Werror -Wextra -Wshadow -std=c++98
+FLAGS = -Wall -Werror -Wextra -Wshadow -std=c++98 -fsanitize=address
 
 CC = c++
 
