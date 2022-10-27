@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/26 18:04:18 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/27 13:38:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <stdexcept>
 #include <cstddef> // size_t
+#include <stdlib.h> // exit()
 
 using std::cout;
 using std::cerr;
@@ -37,6 +38,7 @@ class ConfigFileParser {
 		void CheckArgs(int ac, char **av);
 		bool CheckFile(char *FileName);
 		std::string TrimContent(std::string str);
+		void CheckBrackets();
 };
 
 

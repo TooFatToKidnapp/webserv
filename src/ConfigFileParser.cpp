@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/26 18:10:27 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/27 13:42:20 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,32 @@ bool ConfigFileParser::CheckFile(char * FileName) {
 void ConfigFileParser::CheckArgs(int ac, char **av) {
 	if (ac == 2 && CheckFile(av[1]) == true)
 		this->_FileName = av[1];
-	else if (ac == 1)
+	else if (ac == 1){
 		this->_FileName = "./ConfigFiles/default.conf";
+		cout << "Warning: no config file given, the default configuration file is now used" << std::endl;
+	}
 	else
 		throw std::invalid_argument("Error: File Extention Is Invalid");
 }
+
+void ConfigFileParser::CheckBrackets() {
+	unsigned int i = 0;
+	int OpenBrackets = 0;
+	int CloseBrackets = 0;
+
+	while (this->_FileContent[i] != '\0'){
+		if (this->_FileContent[i] == '{')
+			OpenBrackets++;
+		else if (this->_FileContent[i] == '}')
+			CloseBrackets++;
+		i++;
+	}
+	if (OpenBrackets == CloseBrackets)
+		return;
+	else
+		throw std::invalid_argument("Error: Missing Brackets");
+}
+
 
 void ConfigFileParser::ParseFile(int ac, char **av) {
 	CheckArgs(ac, av);
@@ -68,10 +89,18 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		throw std::invalid_argument("Error: Can't Open File");
 
 	std::string line;
+	size_t pos;
 	while(std::getline(file, line)) {
-		this->_FileContent.append(TrimContent(line));
-		this->_FileContent.append("\n");
+		if (file.fail())
+			throw std::ios_base::failure("Error: faild to read from file");
+		pos = line.find("#");
+		if (pos != std::string::npos)
+			line.erase(pos);
+		if (line.empty() == false && line.find_first_not_of(" \n\t\v\f") != std::string::npos)
+		this->_FileContent.append(TrimContent(line) + "\n");
 	}
+	CheckBrackets();
+	cout << _FileContent;
 	// TODO : (for now)
 	// config file must start with a server context, anything outside of a server cintext will be seen as an invalid config file
 
@@ -80,9 +109,7 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 	// the first server for a host:port is the default host:port (it will answer all the requests that dont velong to an other server)
 	// set up default and custom error pages
 	// limit client body size ????
-	if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("{") == std::string::npos)
-		throw( std::invalid_argument("Error: No Server Config Found"));
-
-
-
+	//if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("{") == std::string::npos)
+	//	throw( std::invalid_argument("Error: No Server Config Found"));
 }
+
