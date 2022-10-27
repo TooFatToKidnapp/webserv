@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/27 13:38:10 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/27 18:01:32 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ class ConfigFileParser {
 		bool CheckFile(char *FileName);
 		std::string TrimContent(std::string str);
 		void CheckBrackets();
+		void CheckServerBlock();
+		bool CheckServerValidity(std::string file, size_t *pos);
+
 };
 
 
