@@ -6,14 +6,16 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/27 18:01:32 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/28 18:05:27 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
 #define PARSING_HPP
 
+#include "./../headers/ServerContext.hpp"
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <string>
 #include <stdexcept>
@@ -22,12 +24,16 @@
 
 using std::cout;
 using std::cerr;
+using std::endl;
+
 
 class ConfigFileParser {
 
 	private:
 		std::string _FileName;
 		std::string _FileContent;
+		std::vector<ServerContext> _servers;
+		int _NumberOfServerContexts;
 	public:
 		ConfigFileParser();
 		ConfigFileParser(const ConfigFileParser &obj);
@@ -37,14 +43,12 @@ class ConfigFileParser {
 		void ParseFile(int ac, char **av);
 		void CheckArgs(int ac, char **av);
 		bool CheckFile(char *FileName);
-		std::string TrimContent(std::string str);
 		void CheckBrackets();
 		void CheckServerBlock();
 		bool CheckServerValidity(std::string file, size_t *pos);
-
+		void MoveToServerContext(size_t *pos);
+		void SetServerContext(size_t *pos);
 };
-
-
 
 
 #endif

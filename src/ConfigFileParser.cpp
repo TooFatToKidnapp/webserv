@@ -6,16 +6,14 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/27 18:26:45 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/28 18:08:07 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../headers/ConfigFileParser.hpp"
 
-ConfigFileParser::ConfigFileParser() {
-	this->_FileName = "";
-	this->_FileContent = "";
-}
+ConfigFileParser::ConfigFileParser() : _FileName(""), _FileContent(""), _NumberOfServerContexts(0)
+{}
 
 ConfigFileParser::~ConfigFileParser() {}
 
@@ -27,20 +25,9 @@ ConfigFileParser &ConfigFileParser::operator=(const ConfigFileParser &obj) {
 	if (this != &obj) {
 		this->_FileName = obj._FileName;
 		this->_FileContent = obj._FileContent;
+		this->_NumberOfServerContexts = obj._NumberOfServerContexts;
 	}
 	return *this;
-}
-
-std::string ConfigFileParser::TrimContent(std::string str) {
-	std::size_t end;
-	std::size_t start = str.find_first_not_of("\r\t\f\n\v ");
-	if (start != std::string::npos) {
-		str = str.substr(start);
-		end = str.find_last_not_of("\r\t\f\n\v ");
-		if (end != std::string::npos)
-			str = str.substr(0, end + 1);
-	}
-	return str;
 }
 
 bool ConfigFileParser::CheckFile(char * FileName) {
@@ -80,37 +67,57 @@ void ConfigFileParser::CheckBrackets() {
 		throw std::invalid_argument("Error: Missing Brackets");
 }
 
-// bool ConfigFileParser::CheckServerValidity(std::string file, size_t *pos) {
-//
-//
-// }
+void ConfigFileParser::MoveToServerContext(size_t *pos) {
+	*pos += 6;
+	while (std::isspace(_FileContent[*pos]))
+		*pos += 1;
+	if (_FileContent[*pos] != '{')
+		throw std::invalid_argument("Error: Invalid Server Block");
+	*pos += 1;
+}
+
+
+bool ConfigFileParser::CheckServerValidity(std::string file, size_t *pos) {
+	if (file.compare("server") || file.compare("server{")) {
+		if (this->_FileContent[*pos + 6] == '{' || std::isspace(this->_FileContent[*pos + 6])) {
+			MoveToServerContext(pos);
+			return true;
+		}
+	}
+	throw std::invalid_argument("Error: Invalid Server Context");
+	return false;
+}
+
+
+void ConfigFileParser::SetServerContext(size_t *pos) {
+	this->_NumberOfServerContexts++;
+	ServerContext server(i, _FileContent, _NumberOfServerContexts);
+	this->_servers.push_back(server);
+}
 
 void ConfigFileParser::CheckServerBlock() {
 	if (_FileContent.find("server") == std::string::npos)
-			throw std::invalid_argument("Error: Missing Server Contex");
+			throw std::invalid_argument("Error: Missing Server Context");
 	size_t i		= 0;
 	size_t StartPos	= 0;
 	size_t EndPos	= 0;
-	std::string tmp  = _FileContent;
-	//cout << _FileContent << "\n";
-
-	while (tmp[i]) {
-		StartPos = tmp.find("server", i);
-		i = StartPos + 6;
-		EndPos = tmp.find("}", StartPos);
-		// if (EndPos == std::string::npos) {
-			// i = StartPos;
-			// if (CheckServerValidity(_FileContent.substr(StartPos, EndPos - StartPos), &i))
-				// cout << "";
-		// }
-		// if (i == std::string::npos)
-			// i++;
-		cout << tmp.substr(StartPos, EndPos+1 - StartPos)<< "\n";
-	//break;
+	while (_FileContent[i]) {
+		StartPos = _FileContent.find_first_not_of(" \t\v\r\n\f", i);
+		if (StartPos == std::string::npos)
+			break;
+		EndPos = _FileContent.find_first_of(" \t\n\f\r\v", StartPos);
+		if (EndPos != std::string::npos) {
+			i = StartPos;
+			if (CheckServerValidity(_FileContent.substr(StartPos, EndPos - StartPos), &i))
+				SetServerContext(&i);
+		}
+		if (i == std::string::npos)
+			i++;
 	}
-
+	if (_NumberOfServerContexts == 0)
+		throw std::invalid_argument("Error: No Server Blocks");
+	return ;
 }
-
 
 void ConfigFileParser::ParseFile(int ac, char **av) {
 	CheckArgs(ac, av);
@@ -128,14 +135,12 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		if (pos != std::string::npos)
 			line.erase(pos);
 		if (line.empty() == false && line.find_first_not_of(" \n\t\r\v\f") != std::string::npos)
-		this->_FileContent.append(TrimContent(line) + "\n");
+			this->_FileContent.append(line + "\n");
 	}
 	file.close();
 	if (_FileContent == "")
 		throw std::invalid_argument("Error: Empty Config File");
 	CheckBrackets();
-	//cout << _FileContent;
-	//cout << "\n\n\n";
 	CheckServerBlock();
 
 	// TODO : (for now)
