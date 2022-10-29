@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/28 18:08:07 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/29 09:29:19 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ bool ConfigFileParser::CheckServerValidity(std::string file, size_t *pos) {
 
 void ConfigFileParser::SetServerContext(size_t *pos) {
 	this->_NumberOfServerContexts++;
-	ServerContext server(i, _FileContent, _NumberOfServerContexts);
+	ServerContext server(pos, _FileContent, _NumberOfServerContexts);
 	this->_servers.push_back(server);
 }
 

@@ -2,12 +2,17 @@ NAME = webserv
 
 SRC =	main.cpp\
 		./src/ConfigFileParser.cpp\
+		./src/LocationContext.cpp\
+		./src/ServerContext.cpp\
 
-FLAGS = -Wall -Werror -Wextra -Wshadow -std=c++98 -fsanitize=address
+
+FLAGS = -Wall -Werror -Wextra -std=c++98
 
 CC = c++
 
 INC = ./headers/ConfigFileParser.hpp\
+		./headers/LocationContext.hpp\
+		./headers/ServerContext.hpp\
 
 OBJ = $(SRC:.cpp=.o)
 
