@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/29 10:27:49 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/10/30 17:07:28 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 #include <utility> // std::pair
 #include <vector>
 #include "./LocationContext.hpp"
+#include "./ConfigValues.hpp"
 
-class ServerContext {
+class ServerContext : public ConfigValues {
 	private:
 		size_t _LocationPos;
 		bool _IsListening;
@@ -36,8 +37,26 @@ class ServerContext {
 		void GetValuePairs(size_t *StartPos, std::string ConfigFile );
 		int GetDerective(std::string const directive);
 		int IsDerective(std::string const directive);
-		size_t FindVal(int const Directive, std::string ConfigFile, size_t End);
+		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
+		size_t	FindLocationContextEnd(std::string ConfigFile, size_t Pos);
+		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
 
+		void SetValue(int directive, std::string value); // override func
+
+
+		void SetServerListen(std::string val);
+		void SetServerLocation(std::string val);
+		void SetServerName(std::string val);
+		void SetServerRoot(std::string val);
+		void SetServerIndex(std::string val);
+		void SetServerCMBS(std::string val);
+		void SetServerErrorPage(std::string val);
+		void SetServerAutoIndexDir(std::string val);
+		void SetServerReturn(std::string val);
+
+
+
+		std::string Trim(std::string value);
 	public:
 		ServerContext(size_t *start, std::string file, size_t ServerId);
 		~ServerContext();
