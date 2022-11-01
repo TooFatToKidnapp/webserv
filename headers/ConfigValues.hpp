@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 12:02:07 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/31 15:15:36 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/01 14:02:27 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,13 @@
 #ifndef CONFIGVALUES
 #define CONFIGVALUES
 
-#include "./index.hpp"
+#include "./Index.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
 
+// cant creat this obj , can only inharit its atributes
 
 class ConfigValues {
 	protected:
@@ -41,14 +42,29 @@ class ConfigValues {
 		// add return direcory config !!
 
 
+		//setters
+		void SetRoot(std::string val);
+		void SetIndex(std::string val);
+		void SetCmbs(std::string val);
+		void SetErrorPage(std::string val);
+		void SetAutoIndexDir(std::string val);
+		// add set retuen func
+
+		ConfigValues();
+		virtual ~ConfigValues();
+		ConfigValues(const ConfigValues &obj);
+		ConfigValues &operator=(const ConfigValues& obj);
 
 	public:
-	ConfigValues();
-	~ConfigValues();
-	ConfigValues(const ConfigValues &obj);
-	ConfigValues &operator=(const ConfigValues& obj);
 
-
+		virtual std::string GetRoot() const;
+		virtual std::vector<std::string> GetIndex() const;
+		virtual size_t GetCmbs() const;
+		virtual std::map<int, std::string> GetErrorPage() const;
+		virtual bool GetAutoIndexDir() const;
+		// add get return func
+		virtual bool HasErrorPage() const ;
+		virtual bool IsSet(std::string directive);
 };
 
 
