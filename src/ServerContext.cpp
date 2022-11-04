@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 13:07:21 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 17:47:06 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,38 @@ _ServerID(ServerId),
 _Listen("80", "0") {
 		_LocationContext.push_back(LocationContext());
 		_ServerNames.push_back("localhost");
-		// get values from server block
+		GetDirectiveValuePair(start, file);
+		// if ()
 
+}
+
+// bool ServerContext::HasLocation(std::string target) {
+// 	for (size_t i = 0; i < _LocationContext.size() ; i++) {
+// 		if (target.compare(_LocationContext.at(i).))
+// 	}
+// }
+
+
+void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
+	size_t i = *pos;
+	size_t start = 0;
+	size_t end = 0;
+	size_t ValEnd = 0;
+	int directive;
+
+	while (file[i] != '}') {
+		start = file.find_first_not_of(" \n\t\f\v\r", i);
+		if (start == std::string::npos || file[start] == '}') {
+			i = start;
+			break;
+		}
+		end = file.find_first_of(" \n\t\v\f\r", start);
+		directive = IsDirective(file.substr(start, end - start));
+		i = FindVal(directive, file, end);
+		if (end != std::string::npos)
+			i++;
+	}
+	*pos = i;
 }
 
 ServerContext::ServerContext() :

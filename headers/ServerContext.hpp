@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 13:07:06 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 15:22:05 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class ServerContext : public ConfigValues {
 		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
 		size_t	FindLocationContextEnd(std::string ConfigFile, size_t Pos);
 		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
-
+		bool HasLocation(std::string target);
 		int IsDirective(std::string const directive);
 		void SetValue(int directive, std::string value); // override func
 
@@ -54,6 +54,7 @@ class ServerContext : public ConfigValues {
 		void SetServerAutoIndexDir(std::string val);
 		void SetServerReturn(std::string val);
 		std::string Trim(std::string value);
+		void GetDirectiveValuePair(size_t *pos, std::string file);
 
 	public:
 		ServerContext(size_t *start, std::string file, size_t ServerId);
