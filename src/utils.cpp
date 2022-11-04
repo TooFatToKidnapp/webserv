@@ -6,11 +6,13 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/01 16:02:52 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 10:53:33 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include<iostream>
+#include<vector>
+#include <stack>
 
 size_t StringToSize_T (std::string str) {
 	size_t number = 0;
@@ -55,4 +57,36 @@ bool IsNumber(std::string input) {
 		i++;
 	}
 	return true;
+}
+
+std::vector<std::string> ToVectorOfStrings(std::string const &str) {
+	size_t start = 0;
+	size_t end = 0;
+	std::string key;
+	std::vector<std::string> vec;
+	for (std::string::size_type i = 0; i < str.size(); i++) {
+		start = str.find_first_not_of(" \n\r\t\f\v", i);
+		if (start == std::string::npos)
+			break;
+		end = str.find_first_of(" \n\t\v\f\r", start);
+		key = str.substr(start, end - start);
+		vec.push_back(key);
+		if (end == std::string::npos)
+			break;
+		i = end;
+	}
+	return vec;
+}
+
+bool SetAutoIndex(std::string val) {
+	if (val.compare("") == 0)
+		throw std::invalid_argument("Error: Missing AutoIndex Argument");
+	if (CountArgs(val) != 1)
+		throw std::invalid_argument("Error: (AutoIndex) Invalid Number of Argument");
+	if (val.compare("on") != 0 && val.compare("off") != 0)
+		throw std::invalid_argument("Error: Invalid AutoIndex Argument");
+	if (val.compare("on") == 0)
+		return true;
+	else if (val.compare("off") == 0)
+		return false;
 }

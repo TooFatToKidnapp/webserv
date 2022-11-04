@@ -6,21 +6,25 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 12:02:07 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/01 14:02:27 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 12:03:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-// store all the vals in server block
+// this class stores all the vals in server block
 
 #ifndef CONFIGVALUES
 #define CONFIGVALUES
 
 #include "./Index.hpp"
+#include "./ReturnDir.hpp"
+#include "./Root.hpp"
+#include "./ClientMaxBodySize.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
+#include <cctype>
 
 // cant creat this obj , can only inharit its atributes
 
@@ -38,8 +42,8 @@ class ConfigValues {
 		size_t _ClientMaxSize;
 		std::map<int, std::string> _ErrorPages;
 		bool _AutoIndexStatus;
+		ReturnDir _ReturnDir;
 
-		// add return direcory config !!
 
 
 		//setters
@@ -48,7 +52,10 @@ class ConfigValues {
 		void SetCmbs(std::string val);
 		void SetErrorPage(std::string val);
 		void SetAutoIndexDir(std::string val);
-		// add set retuen func
+		void SetReturnDir(std::string val);
+
+		virtual void SetValue(int const directive, std::string val) = 0;
+		virtual int IsDirective(std::string const directive) = 0;
 
 		ConfigValues();
 		virtual ~ConfigValues();
@@ -62,9 +69,11 @@ class ConfigValues {
 		virtual size_t GetCmbs() const;
 		virtual std::map<int, std::string> GetErrorPage() const;
 		virtual bool GetAutoIndexDir() const;
-		// add get return func
+		virtual ReturnDir GetReturn() const;
 		virtual bool HasErrorPage() const ;
-		virtual bool IsSet(std::string directive);
+		void	AddToErrorPageMap(std::map<int, std::string> *map, std::string input);
+		virtual bool IsSet(std::string directive) = 0;
+
 };
 
 

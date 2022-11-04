@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 12:03:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/01 16:03:12 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 11:00:05 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class ReturnDir {
 			else if (*set > 1)
 				throw std::invalid_argument("Error: Too Many Return Values");
 			else {
-				_url = key;
+				_Url = key;
 				*set += 1;
 			}
 		}
