@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/30 17:07:28 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:07:06 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,12 @@ class ServerContext : public ConfigValues {
 		std::vector<LocationContext> _LocationContext;
 
 		void GetValuePairs(size_t *StartPos, std::string ConfigFile );
-		int GetDerective(std::string const directive);
-		int IsDerective(std::string const directive);
+		int GetDirective(std::string const directive);
 		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
 		size_t	FindLocationContextEnd(std::string ConfigFile, size_t Pos);
 		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
 
+		int IsDirective(std::string const directive);
 		void SetValue(int directive, std::string value); // override func
 
 
@@ -53,10 +53,8 @@ class ServerContext : public ConfigValues {
 		void SetServerErrorPage(std::string val);
 		void SetServerAutoIndexDir(std::string val);
 		void SetServerReturn(std::string val);
-
-
-
 		std::string Trim(std::string value);
+
 	public:
 		ServerContext(size_t *start, std::string file, size_t ServerId);
 		~ServerContext();
@@ -64,7 +62,7 @@ class ServerContext : public ConfigValues {
 		ServerContext(const ServerContext &obj);
 		ServerContext &operator=(const ServerContext& obj);
 
-
+		bool IsSet(std::string directive);
 
 
 

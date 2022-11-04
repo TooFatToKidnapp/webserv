@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 12:03:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 11:00:05 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:06:14 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define RETURNDIR_HPP
 
 #include <string>
-#include "./../src/utils.cpp"
+#include "./utils.hpp"
 
 class ReturnDir {
 

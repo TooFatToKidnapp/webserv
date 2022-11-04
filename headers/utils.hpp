@@ -1,17 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.cpp                                          :+:      :+:    :+:   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 10:53:33 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:03:38 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include<iostream>
-#include<vector>
+#ifndef UTILS_HPP
+#define UTILS_HPP
+
+#include <iostream>
+#include <vector>
 #include <stack>
 
 size_t StringToSize_T (std::string str) {
@@ -89,4 +92,9 @@ bool SetAutoIndex(std::string val) {
 		return true;
 	else if (val.compare("off") == 0)
 		return false;
+	throw std::invalid_argument("Error: Bad AutoIndex");
 }
+
+
+
+#endif

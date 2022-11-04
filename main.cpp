@@ -6,11 +6,12 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/26 15:11:37 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:04:13 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./headers/ConfigFileParser.hpp"
+#include "./headers/utils.hpp"
 
 int main(int ac, char *av[]) {
 	try {

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/30 17:07:04 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:07:21 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,14 @@ ServerContext &ServerContext::operator=(const ServerContext& obj) {
 }
 
 
-int ServerContext::GetDerective(std::string const directive) {
+int ServerContext::GetDirective(std::string const directive) {
 	const std::string locations[] = {"location", "listen", "server_name", "root", "index", "client_max_body_size", "error_page", "autoindex", "return"};
 	int index = std::find(locations , locations + 9, directive) - locations;
 	return index;
 }
 
-int ServerContext::IsDerective(std::string const directive) {
-	int IsDerective = GetDerective(directive);
+int ServerContext::IsDirective(std::string const directive) {
+	int IsDerective = GetDirective(directive);
 	if (IsDerective < 0 || IsDerective > 8)
 		throw std::invalid_argument("Error: Invalid Derective");
 	else
@@ -185,7 +185,7 @@ void ServerContext::GetValuePairs(size_t *StartPos, std::string ConfigFile ) {
 			break;
 		}
 		End = ConfigFile.find_first_of(" \t\n\v\f\r", Start);
-		Derective = IsDerective(ConfigFile.substr(Start, End - Start));
+		Derective = IsDirective(ConfigFile.substr(Start, End - Start));
 		i = FindVal(Derective, ConfigFile, End);
 		if (ValueEnd != std::string::npos)
 			i++;

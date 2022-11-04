@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:33:50 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/01 16:03:25 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/04 13:05:55 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <string>
 #include <stdexcept>
 #include <cctype> // std::isdigit
-#include "./../src/utils.cpp"
+#include "./utils.hpp"
 
 // https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
 // if client_max_body_size is smaller than the file size trying to be uploaded it gives a:
