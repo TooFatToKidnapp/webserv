@@ -1,35 +1,50 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   LocationUri.hpp                                    :+:      :+:    :+:   */
+/*   UriParser.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/04 17:56:00 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/08 15:29:00 by aabdou           ###   ########.fr       */
+/*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
+/*   Updated: 2022/11/08 13:42:04 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LOCATIONURI_HPP
-#define LOCATIONURI_HPP
+#ifndef URIPARSER
+#define URIPARSER
 
-#include "./LocationContext.hpp"
-#include "./Uri.hpp"
-
-class LocationUri {
-	private:
+#include "./headers/Uri.HPP"
 
 
+enum HostState{
+	h_start,
+	h_literal,
+	h_ipv6,
+	h_ipv4,
+	h_literalend,
+	h_regname,
+	h_regnamepct,
+	h_regnamepctdone,
+	h_port,
+	h_done,
+	g_invalid,
+};
 
-	public:
-		LocationUri();
-		~LocationUri();
-		LocationUri(const LocationUri &obj);
-		LocationUri &operator=(LocationUri const &obj);
+class Uri;
+
+/*
+	parsing the host uri string into uri host string
+	dose not eccept comma delimited list of multiple hosts "split the str first"
+	b4 passing to parser
+*/
+
+class UriParser {
+
 
 
 
 };
+
 
 
 
