@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 13:03:38 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/09 20:43:50 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,16 @@ bool SetAutoIndex(std::string val) {
 	throw std::invalid_argument("Error: Bad AutoIndex");
 }
 
+bool IsUri(std::string str) {
+	if (str[0] == '/')
+		return true;
+	return false;
+}
 
+bool IsDirectory(std::string str) {
+	if (str[str.size() - 1] == '/')
+		return true;
+	return false;
+}
 
 #endif

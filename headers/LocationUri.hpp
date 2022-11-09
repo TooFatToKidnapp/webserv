@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 17:56:00 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/08 15:29:00 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/09 20:47:04 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,34 @@
 
 #include "./LocationContext.hpp"
 #include "./Uri.hpp"
-
+#include "./utils.hpp"
+//https://www.f5.com/pdf/white-papers/http-fundamentals-wp.pdf
 class LocationUri {
 	private:
-
+		Uri _Uri;
+		bool _IsDir;
 
 
 	public:
-		LocationUri();
-		~LocationUri();
-		LocationUri(const LocationUri &obj);
-		LocationUri &operator=(LocationUri const &obj);
+		LocationUri(): _Uri("/"), _IsDir(true) {}
+		LocationUri(std::string str) : _Uri(str) {
+			if (str.compare("") == 0)
+				throw std::invalid_argument("Error: Empty Uri");
+			if (IsUri(str) == false)
+				throw std::invalid_argument("Error: invalid Uri");
+			_IsDir = IsDirectory(str);
+		}
 
+		~LocationUri() {}
+		LocationUri(const LocationUri &obj): _Uri(obj._Uri), _IsDir(obj._IsDir) {}
+		LocationUri &operator=(LocationUri const &obj) {
+			if (this != &obj) {
+				_Uri = obj._Uri;
+				_IsDir = obj._IsDir;
+			}
+			return *this;
+		}
+		// std::string GetUri() {}
 
 
 };
