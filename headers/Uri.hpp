@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 17:58:36 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/08 13:25:01 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/10 18:45:42 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,11 @@ class Uri {
 
 			// if no '/' found assume its a host string
 			if (val == Part::Host || pos == std::string::npos) {
-					
+
 			}
+		}
+		std::string const&	GetHost() const {
+			return _Host;
 		}
 
 };

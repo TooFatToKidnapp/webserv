@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/09 20:43:50 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/10 20:42:36 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,5 +106,45 @@ bool IsDirectory(std::string str) {
 		return true;
 	return false;
 }
+
+bool IsHexDig(int i) {
+	if (std::isdigit(i) || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z'))
+		return true;
+	return false;
+}
+
+// check if all elems of str satisfy execpt for the elems in allow
+bool IsValidString(int (*func) (int),std::string const &str, std::string const &allow) {
+	for(size_t i = 0; i < str.size(); i++) {
+		if (func(str[i]) == false && allow.find(str[i]) == std::string::npos)
+			return false;
+	}
+	return true;
+}
+
+bool IsIpv4Format(std::string const &s) {
+	if (IsValidString(std::isdigit, s, ".:-") && std::count(s.begin(), s.end(), '.') > 1)
+		return true;
+	return false;
+}
+
+bool	IsUnreserved(int c) {
+	return (c == '-' || c == '.' || c == '_' || c == '~'
+			|| std::isalpha(c) || std::isdigit(c));
+}
+
+
+bool	IsSubDelim(int c) {
+	return (c == '!' || c == '$' || c == '&' || c == '\''
+			|| c == '(' || c == ')' || c == '*' || c == '+' || c == ','
+			|| c == ';' || c == '=');
+}
+
+bool IsUnreservedSubDelim(char c) {
+	return (IsUnreserved(c) || IsSubDelim(c));
+}
+
+
+
 
 #endif

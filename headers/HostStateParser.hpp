@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:18:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/10 15:28:23 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/10 20:49:04 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class HostStatePrser {
 		std::string _Buf; // keep track of the parsed input
 		std::string _Input; // original input
 		size_t _Index; // number of chars read
-		bool _SkipChar; // for skipping EOF and/or whitespace 
+		bool _SkipChar; // for skipping EOF and/or whitespace
 
 		virtual void AfterParserCheck() {} // hook function
 
@@ -71,7 +71,7 @@ class HostStatePrser {
 		HostStatePrser(T StartState, T EndState) :
 		_StartState(StartState),
 		_EndState(EndState),
-		_CurrentRuneLocale(StartState),
+		_CurrentState(StartState),
 		_SkipChar(false) {}
 
 		size_t ParseString(std::string const &str) {
