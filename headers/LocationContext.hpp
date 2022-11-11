@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 09:46:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/08 13:31:26 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 19:22:41 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class LocationContext : virtual public ConfigValues {
 
 	public:
 		LocationContext();
+		LocationContext(std::string data);
 		~LocationContext();
 		LocationContext(const LocationContext &obj);
 		LocationContext &operator=(const LocationContext &obj);

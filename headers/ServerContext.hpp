@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 15:22:05 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 19:19:41 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <vector>
 #include "./LocationContext.hpp"
 #include "./ConfigValues.hpp"
+#include "./ServerName.hpp"
 
 class ServerContext : public ConfigValues {
 	private:
@@ -39,7 +40,6 @@ class ServerContext : public ConfigValues {
 		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
 		size_t	FindLocationContextEnd(std::string ConfigFile, size_t Pos);
 		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
-		bool HasLocation(std::string target);
 		int IsDirective(std::string const directive);
 		void SetValue(int directive, std::string value); // override func
 
@@ -55,16 +55,24 @@ class ServerContext : public ConfigValues {
 		void SetServerReturn(std::string val);
 		std::string Trim(std::string value);
 		void GetDirectiveValuePair(size_t *pos, std::string file);
+		void DoubleDirectiveCheck(int directive);
 
 	public:
-		ServerContext(size_t *start, std::string file, size_t ServerId);
-		~ServerContext();
 		ServerContext();
+		~ServerContext();
+		ServerContext(size_t *start, std::string file, size_t ServerId);
 		ServerContext(const ServerContext &obj);
 		ServerContext &operator=(const ServerContext& obj);
 
-		bool IsSet(std::string directive);
 
+		bool HasLocation(std::string target);
+		virtual bool IsSet(std::string directive);
+
+		std::vector<LocationContext> GetLocationContexts() const;
+		std::pair<std::string, std::string> GetListen() const;
+		std::string GetIpAddress() const;
+		std::string GetPortNumber() const;
+		std::vector<std::string> GetServerNames() const;
 
 
 };

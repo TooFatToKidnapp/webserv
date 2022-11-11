@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 17:14:05 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 19:24:19 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,20 @@ void ServerContext::SetServerReturn(std::string val) {
 
 
 void ServerContext::SetServerName(std::string val) {
-
+	_CustomServerName = true;
+	_ServerNames.clear();
+	ServerName obj(val);
+	_ServerNames = obj.GetServerNames();
 }
 void ServerContext::SetServerLocation(std::string val) {
+	if (_LocationPos == 0)
+		_LocationContext.clear();
+	_LocationPos++;
+	LocationContext loca(val);
+	// get location uri
+	// for (size_t i = 0; i < _LocationContext.size(); i++){
+		// if (_LocationContext[i].Get)
+	// }
 
 }
 void ServerContext::SetServerListen(std::string val) {
@@ -184,8 +195,47 @@ void ServerContext::SetValue(int directive, std::string value) {
 	if (value.compare("") == 0)
 		throw std::invalid_argument("Error: Invalid Server Values");
 	TrimedVal = Trim(value);
-	// check for repeted directives
+	DoubleDirectiveCheck(directive);
+	(this->*SetDirective[directive])(value);
 
+}
+
+void ServerContext::DoubleDirectiveCheck(int directive) {
+	switch (directive)
+	{
+	case 1:
+		if (_IsListening == true)
+			throw std::invalid_argument("Error: Multiple Listening Ports");
+		return;
+	case 2:
+		if (_CustomServerName == true)
+			throw std::invalid_argument("Error: Multipul Server Names");
+		return;
+	case 3:
+		if (_Root == true)
+			throw std::invalid_argument("Error: Multipul Root Paths");
+		return;
+	case 4:
+		if (_Index == true)
+			throw std::invalid_argument("Error: Multipul Server Indexes");
+		return;
+	case 5:
+		if (_ClientMaxBodySize == true)
+			throw std::invalid_argument("Error: Multipul ClientMaxBodySizes");
+		return;
+	case 6:
+		if (_ErrorPage == true)
+			throw std::invalid_argument("Error: Multipul Error Pages");
+		return;
+	case 7:
+		if (_AutoIndexStatus == true)
+			throw std::invalid_argument("Error: Multipul Auto Index expressions");
+		return;
+	case 8:
+		if (_ReturnValue == true)
+			throw std::invalid_argument("Error: Multipul Return expressions");
+		return;
+	}
 }
 
 
@@ -242,4 +292,19 @@ void ServerContext::GetValuePairs(size_t *StartPos, std::string ConfigFile ) {
 	*StartPos = i;
 }
 
+std::vector<LocationContext> ServerContext::GetLocationContexts() const {
+	return _LocationContext;
+}
 
+std::pair<std::string, std::string> ServerContext::GetListen() const {
+	return _Listen;
+}
+std::string ServerContext::GetIpAddress() const {
+	return _Listen.first;
+}
+std::string ServerContext::GetPortNumber() const {
+	return _Listen.second;
+}
+std::vector<std::string> ServerContext::GetServerNames() const {
+	return _ServerNames;
+}
