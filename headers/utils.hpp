@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/10 20:42:36 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 16:18:18 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,27 @@ bool IsUnreservedSubDelim(char c) {
 	return (IsUnreserved(c) || IsSubDelim(c));
 }
 
+// loop through str and convert any percent encoded val (starting with %)
+std::string DecodePercent(std::string const &str, size_t pos) {
+	std::string s;
+	// if pos if given copy copy all preceding charecters
+	if (pos > 0)
+		s = str.substr(0, pos);
+
+	for (std::string::const_iterator it = str.begin() + pos; it != str.end(); ++it) {
+		if (*it == '%') { // percent encoded vals are preceded by %
+			std::string hex = std::string(it + 1, it + 3);
+			if (hex == "0D" || hex == "0A")
+				throw std::invalid_argument("Error: Bad Uri Request");
+			char c = std::stoi(hex, NULL, 16);
+			s += c;
+			it += 2; // skip past percent incoded value
+		}
+		else
+			s += *it;
+	}
+	return s;
+}
 
 
 

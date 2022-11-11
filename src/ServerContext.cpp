@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 17:47:06 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 17:14:05 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,12 @@ _Listen("80", "0") {
 		_LocationContext.push_back(LocationContext());
 		_ServerNames.push_back("localhost");
 		GetDirectiveValuePair(start, file);
-		// if ()
-
+		if (HasLocation("/") == false) {
+			LocationContext loc;
+			_LocationContext.push_back(loc);
+			_LocationPos++;
+		}
 }
-
-// bool ServerContext::HasLocation(std::string target) {
-// 	for (size_t i = 0; i < _LocationContext.size() ; i++) {
-// 		if (target.compare(_LocationContext.at(i).))
-// 	}
-// }
-
 
 void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
 	size_t i = *pos;
@@ -71,6 +67,28 @@ ServerContext::ServerContext(const ServerContext &obj) {
 }
 
 ServerContext &ServerContext::operator=(const ServerContext& obj) {
+	if (this != &obj) {
+		_LocationContext = obj._LocationContext;
+		_IsListening = obj._IsListening;
+		_CustomServerName = obj._CustomServerName;
+		_ServerID = obj._ServerID;
+		_Listen = obj._Listen;
+		_ServerNames = obj._ServerNames;
+		_LocationContext = obj._LocationContext;
+		// config val data
+		_Root = obj._Root;
+		_Index = obj._Index;
+		_ClientMaxBodySize = obj._ClientMaxBodySize;
+		_ErrorPage = obj._ErrorPage;
+		_AutoIndex = obj._AutoIndex;
+		_ReturnValue = obj._ReturnValue;
+		_RootPath = obj._RootPath;
+		_IndexList = obj._IndexList;
+		_ClientMaxSize = obj._ClientMaxSize;
+		_ErrorPages = obj._ErrorPages;
+		_AutoIndexStatus = obj._AutoIndexStatus;
+		_ReturnDir = obj._ReturnDir;
+	}
 	return *this;
 }
 
@@ -107,23 +125,24 @@ size_t	ServerContext::FindLocationContextEnd(std::string ConfigFile, size_t Pos)
 
 
 void ServerContext::SetServerRoot(std::string val) {
-
+	ConfigValues::SetRoot(val);
 }
 void ServerContext::SetServerIndex(std::string val) {
-
+	ConfigValues::SetIndex(val);
 }
 void ServerContext::SetServerCMBS(std::string val) {
-
+	ConfigValues::SetCmbs(val);
 }
 void ServerContext::SetServerErrorPage(std::string val) {
-
+	ConfigValues::SetErrorPage(val);
 }
 void ServerContext::SetServerAutoIndexDir(std::string val) {
-
+	ConfigValues::SetAutoIndexDir(val);
 }
 void ServerContext::SetServerReturn(std::string val) {
-
+	ConfigValues::SetReturnDir(val);
 }
+
 
 void ServerContext::SetServerName(std::string val) {
 
@@ -222,3 +241,5 @@ void ServerContext::GetValuePairs(size_t *StartPos, std::string ConfigFile ) {
 	}
 	*StartPos = i;
 }
+
+

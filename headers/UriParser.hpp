@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/10 20:47:24 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/11 16:46:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,7 @@ class UriParser : public HostStatePrser<HostState> {
 			return next;
 		}
 
-
-		HostState LiteralHandler(size_t index);
-		HostState RegNameHndler(size_t index);
-		HostState IpvFHndler(size_t index);
-
-		// handels IP literals signald by '['
-		HostState LiteralEndHndler(size_t index) {
+		HostState LiteralHandler(size_t index) {
 			switch (_Input[index])
 			{
 			case 'v':
@@ -91,12 +85,131 @@ class UriParser : public HostStatePrser<HostState> {
 					return h_invalid;
 			}
 		}
-		HostState Ipv6Hndler(size_t index);
-		HostState PushBufferHndler(size_t index);
-		HostState PortHndler(size_t index);
-		HostState Ipv4Hndler(size_t index);
-		HostState RegNamePctDoneHndler(size_t index);
-		HostState RegNamePctHndler(size_t index);
+		HostState RegNameHndler(size_t index) {
+			switch (_Input[index])
+			{
+			case '\0':
+				return PushBuffer(_Uri->Host, h_done);
+			case ':':
+				return PushBuffer(_Uri->Host, h_port);
+			default:
+				return h_invalid;
+			}
+		}
+		HostState IpvFHndler(size_t index) {
+			_Groops++;
+			switch(_Input[index]) {
+				case ']':
+					if (_Groops >= 4)
+						return h_literalend;
+					break;
+				case '.':
+					if (IsHexDig(_Buf.back()))
+						return h_IpvF;
+					break;
+				default:
+					if (_Buf.back() == 'v' && IsHexDig(_Input[index]))
+						return h_IpvF;
+					else if (IsUnreservedSubDelim(_Input[index]) || _Input[index] == ':')
+						return h_IpvF;
+					else
+						return h_invalid;
+			}
+			return h_invalid;
+		}
+
+		// handels IP literals signald by '['
+		HostState LiteralEndHndler(size_t index) {
+			switch (_Input[index])
+			{
+			case '\0':
+				return PushBuffer(_Uri->_Host, h_done);
+			case ':':
+				return PushBuffer(_Uri->_Host, h_port);
+			default:
+				return h_invalid;
+			}
+		}
+		HostState Ipv6Hndler(size_t index) {
+			switch (_Input[index])
+			{
+			case ']':
+				if (_Groops >= 1)
+					return h_literalend;
+				break;
+			case ':':
+				return HandelIpv6Colone(_Colons, _Numbers, _Groops);
+			default:
+				if (ValidLastBitsIpv4(_Input, index)) {
+					_Groops = 0;
+					_Numbers = 0;
+					return h_Ipv4;
+				}
+				else if (IsHexDig(_Input[index])) {
+					NormalizeIPv6HexDig(_Buf, _Input[index], _SkipChar);
+					return HandelIpv6Digit(_Colons, _Numbers);
+				}
+				else
+					return h_invalid;
+			}
+			return h_invalid;
+		}
+		HostState PortHndler(size_t index) {
+			if (_Input[index] == '\0')
+				return PushBuffer(_Uri->_Port, h_done);
+			else if (std::isdigit(_Input[index]))
+				return h_port;
+			else
+				return h_invalid;
+		}
+		HostState RegNamePctDoneHndler(size_t index) {
+			std::transform(_Buf.begin() + _Buf.size() - 2, _Buf.end(), _Buf.begin() + _Buf.size() - 2,[](unsigned char c) { return std::toupper(c); });
+			_Buf = DecodePercent(_Buf, _Buf.size() - 3);
+			switch (_Input[index]) {
+				case '\0':
+					return PushBuffer(_Uri->Host, h_done);
+				case '%':
+					return h_regnamepct;
+				default:
+					if (IsUnreservedSubDelim(_Input[index]))
+						return h_regname;
+					else
+						return h_invalid;
+			}
+		}
+		HostState RegNamePctHndler(size_t index) {
+			if (_Buf.back() == '%' && IsHexDig(_Input[index]))
+				return h_regnamepct;
+			else if (IsHexDig(_Buf.back()) && IsHexDig(_Input[index]))
+				return h_regnamepctdone;
+			return h_invalid;
+		}
+		HostState Ipv4Hndler(size_t index) {
+			switch(_Input[index]) {
+				case '\0':
+					if (_Groops == 4 && ValidDecOctetGroop(_Buf));
+						return PushBuffer(_Uri->_Host, h_done);
+					break;
+				case ':' :
+					if (_Groops == 4)
+						return PushBuffer(_Uri->_Host, h_port);
+					break;
+				case ']' :
+					if (_Lit && _Groops == 4)
+						return h_literalend;
+					break;
+				case '.':
+					if (std::isdigit(_Buf.back()) && ValidDecOctetGroop(_Buf))
+						return h_Ipv4;
+					break;
+				default:
+					if (std::isdigit(_Input[index]))
+						return Handelipv4Digits(_Numbers, _Groops, _Buf);
+					else
+						return h_invalid;
+			}
+			return h_invalid;
+		}
 
 		// handels transition into IP literal, reg name or ipv4 parsing
 		HostState StartHandler(size_t index) {
@@ -111,11 +224,19 @@ class UriParser : public HostStatePrser<HostState> {
 				default:
 					if (IsIpv4Format(_Input)) // check if its ipv4 format
 						return h_Ipv4;
-					else if (IsUnreservedSubDelim(_Input[index]))
+					else if (IsUnreservedSubDelim(_Input[index])) // otherwise we assume its a reg-name format
 						return h_regname;
 					else
 						return h_invalid;
 			}
+		}
+		HostState PushBuffer(std::string &field, HostState next) {
+			if (_Buf.empty() == false) {
+				field = _Buf;
+				_Buf.clear();
+			}
+			_SkipChar = true;
+			return next;
 		}
 		Uri *_Uri;
 		size_t _Groops; // counting groups of IPV4 sequences
@@ -124,10 +245,75 @@ class UriParser : public HostStatePrser<HostState> {
 		bool _Lit;
 
 
-
 };
 
+void NormalizeIPv6HexDig(std::string &buff, char c, bool &skip_c) {
+	if (c >= 'A' && c <= 'Z') {
+		buff += std::tolower(c);
+		skip_c = true;
+	}
+}
 
+HostState HandelIpv6Colone(size_t & colons , size_t &numbers, size_t &groops) {
+	if (colons > 1) // only a maximum of 2 colons in allowed
+		return h_invalid;
+	colons++;
+	numbers = 0;
+	groops++;
+	return h_Ipv6;
+
+}
+
+HostState HandelIpv6Digit(size_t &colons, size_t &digit) {
+	if (digit > 3)
+		return h_invalid;
+	colons = 0;
+	digit++;
+	return h_Ipv6;
+}
+
+bool ValidLastBitsIpv4(std::string const &str, size_t pos) {
+	if (str[pos - 1] == ':' && std::isdigit(str[pos])) {
+		size_t end = str.find_first_not_of(']', pos);
+		std::string last_bits = str.substr(pos, end - pos);
+		return (IsIpv4Format(last_bits));
+	}
+	return false;
+}
+
+
+// check if dec-octet group range
+bool ValidDecOctetGroop(std::string const &str) {
+	size_t begin = str.find_last_of('.');
+	int octet;
+
+	if (begin == std::string::npos) { // if in first groop
+		if (str.find(":") != std::string::npos) { // if part of ipv6 address
+			size_t start = str.find_last_of(":") + 1;
+			octet = std::stoi(str.substr(start));
+		}
+		else
+			octet = std::stoi(str);
+	}
+	else // 2nd groop
+		octet = std::stoi(str.substr(begin + 1));
+	if (octet < 0 || octet > 255)
+		return false;
+	return true;
+}
+
+HostState Handelipv4Digits(size_t &nums, size_t groops, std::string const & buf) {
+	if (nums > 3)
+		return h_invalid;
+	char c = buf.back();
+	if (c == '.' || groops == 0) {
+		nums = 1;
+		groops++;
+	}
+	else
+		nums++;
+	return h_Ipv4;
+}
 
 
 
