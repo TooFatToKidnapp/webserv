@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 17:58:36 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 17:34:57 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 18:48:14 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define URI_HPP
 
 #include"./UriParser.hpp"
+#include "./TargetRequestParser.hpp"
 #include <string>
 
 class Uri {
@@ -27,7 +28,7 @@ class Uri {
 			Query = 2
 		};
 		Uri() {}
-		Uri(std::string const &str) :
+		explicit Uri(std::string const &str) :
 		_UriInput(str) {
 			ParseInput();
 		}
@@ -46,8 +47,55 @@ class Uri {
 			}
 			return *this;
 		}
+		Uri &operator=(std::string const & str){
+			_Host.clear();
+			_Port.clear();
+			_Path.clear();
+			_Query.clear();
+			_UriInput = str;
+			ParseInput();
+			return *this;
+		}
+
 		std::string const&	GetHost() const {
 			return _Host;
+		}
+		std::string const &GetPath() const {
+			return _Path;
+		}
+		std::string const &GetQuery() const {
+			return _Query;
+		}
+		std::string const & Get()const {
+			return _UriParsed;
+		}
+		std::string const & GetPort()const {
+			return _Port;
+		}
+		std::string const & GetParsedURI()const {
+			return _UriParsed;
+		}
+		std::string const & GetInputURI()const {
+			return _UriInput;
+		}
+		std::string GetHostWithPort()const {
+			if (_Port.empty())
+				return _Host;
+			else
+				return _Host + ":" + _Port;
+		}
+
+		void SetHost(std::string const &str) {
+			_UriInput = str;
+			ParseInput(Part::Host);
+		}
+		void SetPath(std::string const &str) {
+			_UriInput = str;
+			ParseInput(Part::Path);
+		}
+		void SetQuery(std::string const &str) {
+			_Query = str;
+			_UriParsed = ConstructParsedUri();
 		}
 
 	private:
@@ -61,13 +109,26 @@ class Uri {
 				UriParser parser;
 				parser.Parse(*this, _UriInput);
 			}
+			// if starts with '/' assumes its origin from uri
 			else if (val == Part::Path || pos == 0) {
-
+				TargetRequestParser parser;
+				parser.Parse(*this, _UriInput);
 			}
+			else
+				throw std::invalid_argument("Error: Bad Uri Format");
+			_UriParsed = ConstructParsedUri();
 		}
 
-		std::string ConstructParsedUri();
-
+		std::string ConstructParsedUri() {
+			std::string uri;
+			if (_Host.empty() == false)
+				uri += GetHostWithPort();
+			if (_Path.empty() == false)
+				uri += GetPath();
+			if (_Query.empty() == false)
+				uri += "?" + GetQuery();
+			return uri;
+		}
 
 		std::string _UriInput;
 		std::string _UriParsed;
