@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 19:56:02 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 20:30:10 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 13:46:43 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ class Listen {
 			}
 			else
 				domain = AF_INET;
+			// check if the ip address is a valid AF_INET || AF_INET6 (address family internet protocol Ipv4 address or Ipv6 address)
+			// if valid converts ip address from human-readable to numaric binary format
 			if (inet_pton(domain, ip.c_str(), buf) <= 0)
 				return false;
 			return true;
@@ -107,8 +109,6 @@ class Listen {
 
 
 };
-
-
 
 
 #endif

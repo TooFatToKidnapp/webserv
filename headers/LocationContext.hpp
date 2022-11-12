@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 09:46:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 19:22:41 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 13:55:57 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define LOCATIONCONTEXT_HPP
 
 #include "./ConfigValues.hpp"
+#include "./LocationUri.hpp"
 #include <iostream>
 
 class LocationContext : virtual public ConfigValues {
@@ -22,7 +23,7 @@ class LocationContext : virtual public ConfigValues {
 		bool _Cgi;
 		bool AllowedMethods;
 		bool Alias;
-
+		LocationUri _LocationUri;
 
 
 		// overlodes
@@ -38,7 +39,7 @@ class LocationContext : virtual public ConfigValues {
 		LocationContext(const LocationContext &obj);
 		LocationContext &operator=(const LocationContext &obj);
 
-
+		LocationUri GetLocationUri() const;
 };
 
 

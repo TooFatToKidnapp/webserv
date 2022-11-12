@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 17:56:00 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/09 20:47:04 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 13:55:19 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ class LocationUri {
 			}
 			return *this;
 		}
-		// std::string GetUri() {}
+		// std::string GetUri()const {
+		// 	return;
+		// }
+
 
 
 };

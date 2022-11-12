@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 16:46:10 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 17:35:28 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,9 @@ class UriParser : public HostStatePrser<HostState> {
 			switch (_Input[index])
 			{
 			case '\0':
-				return PushBuffer(_Uri->Host, h_done);
+				return PushBuffer(_Uri->_Host, h_done);
 			case ':':
-				return PushBuffer(_Uri->Host, h_port);
+				return PushBuffer(_Uri->_Host, h_port);
 			default:
 				return h_invalid;
 			}
@@ -167,7 +167,7 @@ class UriParser : public HostStatePrser<HostState> {
 			_Buf = DecodePercent(_Buf, _Buf.size() - 3);
 			switch (_Input[index]) {
 				case '\0':
-					return PushBuffer(_Uri->Host, h_done);
+					return PushBuffer(_Uri->_Host, h_done);
 				case '%':
 					return h_regnamepct;
 				default:
@@ -244,6 +244,32 @@ class UriParser : public HostStatePrser<HostState> {
 		size_t _Numbers; // counting nb id digits in a groop
 		bool _Lit;
 
+		protected:
+			HostState  GetNextState(size_t index){
+				HostState (UriParser::*tab[])(size_t i) = {
+					&UriParser::StartHandler,
+					&UriParser::LiteralHandler,
+					&UriParser::Ipv6Hndler,
+					&UriParser::IpvFHndler,
+					&UriParser::Ipv4Hndler,
+					&UriParser::LiteralEndHndler,
+					&UriParser::RegNameHndler,
+					&UriParser::RegNamePctHndler,
+					&UriParser::RegNamePctDoneHndler,
+					&UriParser::PortHndler,
+					NULL
+				};
+				_SkipChar = false;
+				return (this->*tab[_CurrentState])(index);
+			}
+			void CheckInvalidState() const {
+				if (_CurrentState == h_invalid)
+					throw std::invalid_argument("Error: invalid token in HOST Uri");
+			}
+			void AfterParserCheck() {
+				if (_CurrentState == h_done && _Index < _Input.size() -1)
+					throw std::invalid_argument("Error: Charecters After Terminating Token In Host Uri");
+			}
 
 };
 

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 16:18:18 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 16:46:56 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include <vector>
-#include <stack>
+#include <cctype>
 
 size_t StringToSize_T (std::string str) {
 	size_t number = 0;
@@ -164,6 +164,14 @@ std::string DecodePercent(std::string const &str, size_t pos) {
 			s += *it;
 	}
 	return s;
+}
+
+
+// absolute path are at least one '/' followed bt pchars
+bool IsPChar(char c) {
+	if (c == ':' || c == '@' || IsUnreserved(c) || IsSubDelim(c))
+		return true;
+	return false;
 }
 
 

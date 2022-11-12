@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:18:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/10 20:49:04 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 15:47:58 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ class HostStatePrser {
 		size_t _Index; // number of chars read
 		bool _SkipChar; // for skipping EOF and/or whitespace
 
-		virtual void AfterParserCheck() {} // hook function
 
 		virtual bool NotDone(size_t pos) const {
 			if (pos <= _Input.size() && _CurrentState != _EndState)
@@ -62,9 +61,10 @@ class HostStatePrser {
 		}
 
 		virtual void CheckInvalidState() const = 0;
-
 		virtual T GetNextState(size_t index) = 0;
-
+		// hook functions
+		virtual void PreParseCheck() {}
+		virtual void AfterParserCheck() {}
 
 	public:
 
@@ -76,6 +76,7 @@ class HostStatePrser {
 
 		size_t ParseString(std::string const &str) {
 			InitParser(str);
+			PreParseCheck(str);
 			while (NotDone(_Index)) {
 				_CurrentState = GetNextState(_Index);
 				UpdateBuffer(_Index);

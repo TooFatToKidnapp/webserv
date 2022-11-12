@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/11 19:24:19 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/12 13:53:09 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,14 +155,16 @@ void ServerContext::SetServerLocation(std::string val) {
 		_LocationContext.clear();
 	_LocationPos++;
 	LocationContext loca(val);
-	// get location uri
-	// for (size_t i = 0; i < _LocationContext.size(); i++){
-		// if (_LocationContext[i].Get)
-	// }
+	for (size_t i = 0; i < _LocationContext.size(); i++){
+		if (_LocationContext[i].GetLocationUri().)
+	}
 
 }
 void ServerContext::SetServerListen(std::string val) {
-
+	_IsListening = true;
+	Listen obj(val);
+	_Listen.first = obj.GetIpNb();
+	_Listen.second = obj.GetPortNb();
 }
 
 
@@ -237,7 +239,6 @@ void ServerContext::DoubleDirectiveCheck(int directive) {
 		return;
 	}
 }
-
 
 
 bool ServerContext::HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile) {
