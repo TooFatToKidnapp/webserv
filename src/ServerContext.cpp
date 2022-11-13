@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 13:53:09 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/13 19:33:09 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,14 +150,19 @@ void ServerContext::SetServerName(std::string val) {
 	ServerName obj(val);
 	_ServerNames = obj.GetServerNames();
 }
+
+
 void ServerContext::SetServerLocation(std::string val) {
 	if (_LocationPos == 0)
 		_LocationContext.clear();
 	_LocationPos++;
 	LocationContext loca(val);
+
 	for (size_t i = 0; i < _LocationContext.size(); i++){
-		if (_LocationContext[i].GetLocationUri().)
+		if (_LocationContext[i].GetLocationUri().GetUri().compare(loca.GetLocationUri().GetUri()) == 0)
+			throw std::invalid_argument("Error: Duplicate URI");
 	}
+	_LocationContext.push_back(loca);
 
 }
 void ServerContext::SetServerListen(std::string val) {

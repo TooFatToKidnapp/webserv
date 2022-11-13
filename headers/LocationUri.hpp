@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/04 17:56:00 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 13:55:19 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/13 19:30:57 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ class LocationUri {
 	private:
 		Uri _Uri;
 		bool _IsDir;
-
 
 	public:
 		LocationUri(): _Uri("/"), _IsDir(true) {}
@@ -42,11 +41,19 @@ class LocationUri {
 			}
 			return *this;
 		}
-		// std::string GetUri()const {
-		// 	return;
-		// }
+		std::string GetUri()const {
+			return _Uri.GetParsedURI();
+		}
+		Uri GetUriOBJ() const {
+			return _Uri;
+		}
 
-
+		std::string GetInputURI() const {
+			return _Uri.GetInputURI();
+		}
+		bool IsDir() const {
+			return IsDir;
+		}
 
 };
 

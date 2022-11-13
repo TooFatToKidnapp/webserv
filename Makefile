@@ -2,7 +2,6 @@ NAME = webserv
 
 SRC =	./main.cpp\
 		./src/ConfigFileParser.cpp\
-		./src/LocationContext.cpp\
 		./src/ServerContext.cpp\
 		./src/ConfigValues.cpp\
 		./src/Index.cpp

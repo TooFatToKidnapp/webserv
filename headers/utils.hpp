@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/13 17:06:23 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/13 21:05:09 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,15 @@ bool IsPath(std::string path) {
 	return false;
 }
 
+bool HasContent(char end_char, size_t key_end, size_t value_end, std::string config) {
+	size_t i = 0;
+	while(std::isspace(config[key_end + i]) && key_end + i < value_end) {
+		i++;
+	}
+	if (config[key_end + i] == end_char)
+		return false;
+	return true;
+}
 
 
 #endif
