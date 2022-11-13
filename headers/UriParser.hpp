@@ -6,14 +6,14 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 17:35:28 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/13 15:49:11 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef URIPARSER
 #define URIPARSER
 
-#include "./Uri.HPP"
+#include "./Uri.hpp"
 #include "./utils.hpp"
 #include "./HostStateParser.hpp"
 
@@ -122,12 +122,12 @@ class UriParser : public HostStatePrser<HostState> {
 		HostState LiteralEndHndler(size_t index) {
 			switch (_Input[index])
 			{
-			case '\0':
-				return PushBuffer(_Uri->_Host, h_done);
-			case ':':
-				return PushBuffer(_Uri->_Host, h_port);
-			default:
-				return h_invalid;
+				case '\0':
+					return PushBuffer(_Uri->_Host, h_done);
+				case ':':
+					return PushBuffer(_Uri->_Host, h_port);
+				default:
+					return h_invalid;
 			}
 		}
 		HostState Ipv6Hndler(size_t index) {

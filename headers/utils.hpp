@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 11:54:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 16:46:56 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/13 17:06:23 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <cctype>
+#include <algorithm>
 
 size_t StringToSize_T (std::string str) {
 	size_t number = 0;
@@ -171,6 +172,22 @@ std::string DecodePercent(std::string const &str, size_t pos) {
 bool IsPChar(char c) {
 	if (c == ':' || c == '@' || IsUnreserved(c) || IsSubDelim(c))
 		return true;
+	return false;
+}
+
+int IsValidHttpMethod(std::string str) {
+	std::string methods[] = {"GET", "POST", "DELETE"};
+	int is_method = std::find(methods, methods + 3, str) - methods;
+	if (is_method < 0 || is_method > 2)
+		throw std::invalid_argument("Error: Wrong Method Found");
+	return is_method;
+}
+
+bool IsPath(std::string path) {
+	for(size_t i = 0; i < path.size(); i++) {
+		if (path[i] == '/')
+			return true;
+	}
 	return false;
 }
 
