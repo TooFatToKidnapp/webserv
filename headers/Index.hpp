@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   index.hpp                                          :+:      :+:    :+:   */
+/*   Index.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 14:48:53 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/31 15:25:15 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/14 18:54:54 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <vector>
 #include <string>
-
+#include "utils.hpp"
 
 class Index {
 	private:
@@ -24,7 +24,6 @@ class Index {
 	public:
 		Index(std::string value);
 		~Index();
-		std::vector<std::string> &storIndex(std::string str);
 		std::vector<std::string> GetIndex() const;;
 };
 

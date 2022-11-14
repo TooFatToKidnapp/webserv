@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Index.cpp                                          :+:      :+:    :+:   */
+/*   Root.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/31 14:48:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 18:55:19 by aabdou           ###   ########.fr       */
+/*   Created: 2022/11/14 18:01:12 by aabdou            #+#    #+#             */
+/*   Updated: 2022/11/14 18:02:38 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/Index.hpp"
+#include "./../headers/Root.hpp"
 
-Index::Index(std::string val) {
-	if (val.compare("") == 0)
-		throw std::invalid_argument("Error: Bad Index");
-	_Index = ToVectorOfStrings(val);
+
+Root::Root(std::string input) {
+	if (input.compare("") == 0)
+		throw std::invalid_argument("Error: Missing Root Argument");
+	size_t arg = CountArgs(input);
+	if (arg == 1)
+		throw std::invalid_argument("Error: Too Many Root Arguments");
 }
 
-Index::~Index() {}
 
-std::vector<std::string> Index::GetIndex() const {
-	return _Index;
-}
+Root::~Root() {}

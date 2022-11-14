@@ -6,19 +6,18 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:18:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 15:47:58 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/14 20:07:36 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HOSTSTATEPARSER_HPP
 #define HOSTSTATEPARSER_HPP
 
-#include "./UriParser.hpp"
 #include "./utils.hpp"
 
 
 template<class T>
-class HostStatePrser {
+class HostStateParser {
 	/*
 		abstract class that defines the state parsing as a template method
 		T refers to the type of states
@@ -68,7 +67,7 @@ class HostStatePrser {
 
 	public:
 
-		HostStatePrser(T StartState, T EndState) :
+		HostStateParser(T StartState, T EndState) :
 		_StartState(StartState),
 		_EndState(EndState),
 		_CurrentState(StartState),
@@ -76,7 +75,7 @@ class HostStatePrser {
 
 		size_t ParseString(std::string const &str) {
 			InitParser(str);
-			PreParseCheck(str);
+			PreParseCheck();
 			while (NotDone(_Index)) {
 				_CurrentState = GetNextState(_Index);
 				UpdateBuffer(_Index);
@@ -96,7 +95,5 @@ class HostStatePrser {
 
 
 };
-
-
 
 #endif

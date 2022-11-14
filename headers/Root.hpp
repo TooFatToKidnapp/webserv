@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 12:03:25 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 12:53:39 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/14 18:02:47 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,14 @@
 
 #include <string>
 #include <stdexcept>
+#include "./utils.hpp"
 
 class Root {
 	private:
 		Root(){}
 	public:
-		Root(std::string input) {
-			if (input.compare("") == 0)
-				throw std::invalid_argument("Error: Missing Root Argument");
-			size_t arg = CountArgs(input);
-			if (arg == 1)
-				throw std::invalid_argument("Error: Too Many Root Arguments");
-		}
-		~Root() {}
+		Root(std::string input);
+		~Root();
 
 };
 

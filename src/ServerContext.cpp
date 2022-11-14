@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/13 19:33:09 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/14 20:23:08 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ _Listen("80", "0") {
 		}
 }
 
+
+// check later
 void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
 	size_t i = *pos;
 	size_t start = 0;
@@ -44,7 +46,7 @@ void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
 		end = file.find_first_of(" \n\t\v\f\r", start);
 		directive = IsDirective(file.substr(start, end - start));
 		i = FindVal(directive, file, end);
-		if (end != std::string::npos)
+		if (ValEnd != std::string::npos)
 			i++;
 	}
 	*pos = i;
@@ -313,4 +315,40 @@ std::string ServerContext::GetPortNumber() const {
 }
 std::vector<std::string> ServerContext::GetServerNames() const {
 	return _ServerNames;
+}
+
+bool ServerContext::HasLocation(std::string target) {
+	for(size_t i = 0; i < _LocationContext.size(); i++) {
+		if (target.compare(_LocationContext.at(i).GetLocationUri().GetUri()) == 0)
+			return true;
+	}
+	return false;
+}
+
+bool ServerContext::IsSet(std::string str) {
+	int d = GetDirective(str);
+	if (d < 0 || d > 8)
+		throw std::invalid_argument("Error: Invalid Server Directive");
+	switch(d) {
+		case 0:
+			return _LocationPos;
+		case 1:
+			return _IsListening;
+		case 2:
+			return _CustomServerName;
+		case 3:
+			return _Root;
+		case 4:
+			return _Index;
+		case 5:
+			return _ClientMaxBodySize;
+		case 6:
+			return _ErrorPage;
+		case 7:
+			return _AutoIndex;
+		case 8:
+			return _ReturnValue;
+	}
+	throw std::invalid_argument("Error: Invalid Server Directive");
+
 }
