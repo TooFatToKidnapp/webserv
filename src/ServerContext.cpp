@@ -64,7 +64,7 @@ _Listen("80", "0") {
 
 ServerContext::~ServerContext() {}
 
-ServerContext::ServerContext(const ServerContext &obj) {
+ServerContext::ServerContext(const ServerContext &obj): ConfigValues(obj) {
 	*this = obj;
 }
 

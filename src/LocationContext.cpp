@@ -62,7 +62,7 @@ LocationContext &LocationContext::operator=(const LocationContext &obj) {
 
 LocationContext::~LocationContext() {}
 
-LocationContext::LocationContext(const LocationContext &obj) {
+LocationContext::LocationContext(const LocationContext &obj): ConfigValues(obj) {
 	*this = obj;
 }
 

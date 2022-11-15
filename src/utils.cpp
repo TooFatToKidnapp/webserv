@@ -151,7 +151,7 @@ std::string DecodePercent(std::string const &str, size_t pos) {
 			std::string hex = std::string(it + 1, it + 3);
 			if (hex == "0D" || hex == "0A")
 				throw std::invalid_argument("Error: Bad Uri Request");
-			char c = std::stoi(hex, NULL, 16);
+			char c = std::stoi(hex.c_str(), NULL, 16);
 			s += c;
 			it += 2; // skip past percent incoded value
 		}

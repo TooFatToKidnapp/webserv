@@ -14,7 +14,7 @@
 
 
 bool ReturnDir::ValidReturnCode(size_t code){
-		if (code < 0 || code > 999)
+		if (code > 999)
 			return false;
 		return true;
 	}

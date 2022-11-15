@@ -121,7 +121,7 @@ void ConfigFileParser::CheckServerBlock() {
 
 void ConfigFileParser::ParseFile(int ac, char **av) {
 	CheckArgs(ac, av);
-	std::ifstream file(this->_FileName);
+	std::ifstream file(this->_FileName.c_str());
 
 	if (file.is_open() == false)
 		throw std::invalid_argument("Error: Can't Open File");

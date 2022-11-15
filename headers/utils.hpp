@@ -14,6 +14,7 @@
 #define UTILS_HPP
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <cctype>
 #include <algorithm>
