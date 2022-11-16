@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 18:05:52 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:10:07 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 19:53:54 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ State TargetRequestParser::PathHandler(char c) {
 		break;
 	default:
 		if(IsPChar(c))
-			return u_query;
+			return u_path;
 		else
 			return u_invalid;
 	}
@@ -132,7 +132,6 @@ size_t TargetRequestParser::Parse(Uri &uri, std::string const &input) {
 	_Part = static_cast<Part>(1);
 	return ParseString(input);
 }
-
 
 State TargetRequestParser::GetNextState(size_t index) {
 	State(TargetRequestParser::*tab[])(char c) = {

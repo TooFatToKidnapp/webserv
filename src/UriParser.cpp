@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 15:18:05 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 19:47:29 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 18:41:06 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ HostState UriParser::LiteralHandler(size_t index) {
 	case 'v':
 		return h_IpvF;
 	case ':':
-		return h_Ipv4;
+		return h_Ipv6;
 	default:
 		if (IsHexDig(_Input[index]))
 			return h_Ipv6;
@@ -61,7 +61,11 @@ HostState UriParser::RegNameHndler(size_t index) {
 		return PushBuffer(_Uri->_Host, h_done);
 	case ':':
 		return PushBuffer(_Uri->_Host, h_port);
+	case '%':
+		return h_regnamepct;
 	default:
+		if (IsUnreservedSubDelim(_Input[index]))
+			return h_regname;
 		return h_invalid;
 	}
 }
@@ -207,7 +211,7 @@ HostState UriParser::StartHandler(size_t index) {
 }
 
 HostState  UriParser::GetNextState(size_t index){
-	HostState (UriParser::*tab[])(size_t i) = {
+	static HostState (UriParser::*tab[])(size_t i) = {
 		&UriParser::StartHandler,
 		&UriParser::LiteralHandler,
 		&UriParser::Ipv6Hndler,
@@ -230,7 +234,7 @@ void UriParser::CheckInvalidState() const {
 }
 
 void UriParser::AfterParserCheck() {
-	if (_CurrentState == h_done && _Index < _Input.size() -1)
+	if (_CurrentState == h_done && _Index < _Input.size() - 1)
 		throw std::invalid_argument("Error: Charecters After Terminating Token In Host Uri");
 }
 
@@ -268,7 +272,7 @@ bool ValidLastBitsIpv4(std::string const &str, size_t pos) {
 	return false;
 }
 
-HostState Handelipv4Digits(size_t &nums, size_t groops, std::string const & buf) {
+HostState Handelipv4Digits(size_t &nums, size_t &groops, std::string const & buf) {
 	if (nums > 3)
 		return h_invalid;
 	char c = buf.back();

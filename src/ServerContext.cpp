@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:23:08 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 15:49:27 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ _Listen("80", "0") {
 		GetDirectiveValuePair(start, file);
 		if (HasLocation("/") == false) {
 			LocationContext loc;
-			_LocationContext.push_back(loc);
 			_LocationPos++;
+			_LocationContext.push_back(loc);
 		}
 }
 
@@ -39,7 +39,7 @@ void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
 
 	while (file[i] != '}') {
 		start = file.find_first_not_of(" \n\t\f\v\r", i);
-		if (start == std::string::npos || file[start] == '}') {
+		if (file[start] == '}' || start == std::string::npos) {
 			i = start;
 			break;
 		}
@@ -181,14 +181,13 @@ std::string ServerContext::Trim(std::string value) {
 
 	start = value.find_first_not_of(" \n\r\v\f\t");
 	if (start == std::string::npos)
-		return "";
+		return NULL;
 	end = value.find_last_not_of(" \n\t\f\r\v");
 	return (value.substr(start, end - start + 1));
 }
 
 void ServerContext::SetValue(int directive, std::string value) {
 	std::string TrimedVal;
-
 	void (ServerContext::*SetDirective[])(std::string) = {
 		&ServerContext::SetServerLocation,
 		&ServerContext::SetServerListen,
@@ -205,7 +204,7 @@ void ServerContext::SetValue(int directive, std::string value) {
 		throw std::invalid_argument("Error: Invalid Server Values");
 	TrimedVal = Trim(value);
 	DoubleDirectiveCheck(directive);
-	(this->*SetDirective[directive])(value);
+	(this->*SetDirective[directive])(TrimedVal);
 
 }
 
@@ -250,7 +249,7 @@ void ServerContext::DoubleDirectiveCheck(int directive) {
 
 bool ServerContext::HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile) {
 	size_t i = 0;
-	while (std::isspace(ConfigFile[EndPos +1]) && EndPos - i < EndValue)
+	while (std::isspace(ConfigFile[EndPos + i]) && EndPos + i < EndValue)
 		i++;
 	if (ConfigFile[EndPos+i] == EndChar)
 		return false;
@@ -260,6 +259,7 @@ bool ServerContext::HasContent(char EndChar, size_t EndPos, size_t EndValue, std
 size_t ServerContext::FindVal(int Directive, std::string ConfigFile, size_t End) {
 	std::string input;
 	size_t value_end;
+
 	if (Directive == 0) {
 		value_end = FindLocationContextEnd(ConfigFile, End);
 		if (!HasContent('{', End, value_end, ConfigFile) || !HasContent('}', End, value_end, ConfigFile) || !HasContent('\n', End, value_end, ConfigFile))
@@ -277,28 +277,6 @@ size_t ServerContext::FindVal(int Directive, std::string ConfigFile, size_t End)
 
 }
 
-
-void ServerContext::GetValuePairs(size_t *StartPos, std::string ConfigFile ) {
-	size_t i = *StartPos;
-	size_t Start = 0;
-	size_t End = 0;
-	size_t ValueEnd = 0;
-	int Derective;
-
-	while (ConfigFile[i] != '}') {
-		Start = ConfigFile.find_first_not_of(" \t\n\v\r\f", i);
-		if (ConfigFile[Start] == '{' || Start == std::string::npos) {
-			i = Start;
-			break;
-		}
-		End = ConfigFile.find_first_of(" \t\n\v\f\r", Start);
-		Derective = IsDirective(ConfigFile.substr(Start, End - Start));
-		i = FindVal(Derective, ConfigFile, End);
-		if (ValueEnd != std::string::npos)
-			i++;
-	}
-	*StartPos = i;
-}
 
 std::vector<LocationContext> ServerContext::GetLocationContexts() const {
 	return _LocationContext;

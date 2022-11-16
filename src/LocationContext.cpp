@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:48:55 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 18:48:26 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 16:31:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,7 @@ void LocationContext::SetValue(int const directive, std::string input) {
 		&LocationContext::SetErrorPageLocation,
 		&LocationContext::SetCGI,
 		&LocationContext::SetAllowedMethods,
+		&LocationContext::SetReturnLocation,
 		&LocationContext::SetAlias,
 		&LocationContext::SetURI,
 		NULL
@@ -228,7 +229,6 @@ std::string LocationContext::Trim(std::string value) {
 	return (value.substr(start, end - start + 1));
 }
 
-		// setters
 size_t LocationContext::FindVal(int d, std::string str, size_t start, size_t end) {
 	std::string input;
 	size_t val_end;

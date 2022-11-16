@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/12 13:47:34 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 15:35:33 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,30 @@ class ServerContext : public ConfigValues {
 		std::vector<std::string> _ServerNames;
 		std::vector<LocationContext> _LocationContext;
 
-		void GetValuePairs(size_t *StartPos, std::string ConfigFile );
-		int GetDirective(std::string const directive);
-		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
 		size_t	FindLocationContextEnd(std::string ConfigFile, size_t Pos);
-		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
-		int IsDirective(std::string const directive);
-		void SetValue(int directive, std::string value); // override func
+		void GetDirectiveValuePair(size_t *pos, std::string file);
 
-
-		void SetServerListen(std::string val);
-		void SetServerLocation(std::string val);
-		void SetServerName(std::string val);
 		void SetServerRoot(std::string val);
 		void SetServerIndex(std::string val);
 		void SetServerCMBS(std::string val);
 		void SetServerErrorPage(std::string val);
 		void SetServerAutoIndexDir(std::string val);
 		void SetServerReturn(std::string val);
-		std::string Trim(std::string value);
-		void GetDirectiveValuePair(size_t *pos, std::string file);
+
+		int IsDirective(std::string const directive);
+		int GetDirective(std::string const directive);
 		void DoubleDirectiveCheck(int directive);
+
+		size_t FindVal(int Directive, std::string ConfigFile, size_t End);
+		void SetValue(int directive, std::string value); // override func
+
+
+		void SetServerLocation(std::string val);
+		void SetServerListen(std::string val);
+		void SetServerName(std::string val);
+
+		bool HasContent(char EndChar, size_t EndPos, size_t EndValue, std::string ConfigFile);
+		std::string Trim(std::string value);
 
 	public:
 		ServerContext();

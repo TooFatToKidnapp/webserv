@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:06:58 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 18:37:15 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ class UriParser : public HostStateParser<HostState> {
 
 };
 
-HostState Handelipv4Digits(size_t &nums, size_t groops, std::string const & buf);
+HostState Handelipv4Digits(size_t &nums, size_t &groops, std::string const & buf);
 bool ValidLastBitsIpv4(std::string const &str, size_t pos);
 HostState HandelIpv6Digit(size_t &colons, size_t &digit);
 HostState HandelIpv6Colone(size_t & colons , size_t &numbers, size_t &groops);

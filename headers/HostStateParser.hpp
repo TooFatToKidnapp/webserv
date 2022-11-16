@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 22:18:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:07:36 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/16 18:50:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ class HostStateParser {
 
 		virtual void CheckInvalidState() const = 0;
 		virtual T GetNextState(size_t index) = 0;
+		
 		// hook functions
 		virtual void PreParseCheck() {}
 		virtual void AfterParserCheck() {}
