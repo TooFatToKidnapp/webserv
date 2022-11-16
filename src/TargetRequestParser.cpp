@@ -70,7 +70,7 @@ State TargetRequestParser::PercentHandler(char c) {
 	if (_Buf.back() == '%' && IsHexDig(c))
 		return u_percent;
 	else if (IsHexDig(_Buf.back()) && IsHexDig(c))
-		return u_percent;
+		return u_percent_done;
 	return u_invalid;
 }
 
@@ -134,7 +134,7 @@ size_t TargetRequestParser::Parse(Uri &uri, std::string const &input) {
 }
 
 State TargetRequestParser::GetNextState(size_t index) {
-	State(TargetRequestParser::*tab[])(char c) = {
+	static State(TargetRequestParser::*tab[])(char c) = {
 		&TargetRequestParser::StartHandler,
 		&TargetRequestParser::PathHandler,
 		&TargetRequestParser::QueryHandler,

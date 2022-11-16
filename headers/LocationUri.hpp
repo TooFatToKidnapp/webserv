@@ -29,6 +29,8 @@ class LocationUri {
 		~LocationUri() ;
 		LocationUri(const LocationUri &obj);
 		LocationUri &operator=(LocationUri const &obj) ;
+		
+		
 		std::string GetUri()const ;
 		Uri GetUriOBJ() const ;
 
@@ -36,7 +38,6 @@ class LocationUri {
 		bool IsDir() const ;
 
 };
-
 
 
 
