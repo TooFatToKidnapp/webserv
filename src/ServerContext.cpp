@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/16 15:49:27 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/17 17:47:54 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ size_t	ServerContext::FindLocationContextEnd(std::string ConfigFile, size_t Pos)
 			OpenBrackets++;
 		else if (ConfigFile[i] == '}' && OpenBrackets > 0)
 			OpenBrackets--;
-		if (ConfigFile[i] == '{' && OpenBrackets == 0)
+		if (ConfigFile[i] == '}' && OpenBrackets == 0)
 			break;
 		i++;
 	}
