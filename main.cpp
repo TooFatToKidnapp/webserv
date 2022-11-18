@@ -17,6 +17,8 @@ int main(int ac, char *av[]) {
 	try {
 		ConfigFileParser obj;
 		obj.ParseFile(ac, av);
+		std::cout << "Valid Config File" << std::endl;
+		
 	}
 	catch(const std::exception &e) {
 		cerr << e.what() << std::endl;

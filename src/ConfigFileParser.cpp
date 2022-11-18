@@ -76,7 +76,6 @@ void ConfigFileParser::MoveToServerContext(size_t *pos) {
 	*pos += 1;
 }
 
-
 bool ConfigFileParser::CheckServerValidity(std::string file, size_t *pos) {
 	if (file.compare("server") || file.compare("server{")) {
 		if (this->_FileContent[*pos + 6] == '{' || std::isspace(this->_FileContent[*pos + 6])) {
@@ -96,8 +95,6 @@ void ConfigFileParser::SetServerContext(size_t *pos) {
 }
 
 void ConfigFileParser::CheckServerBlock() {
-	if (_FileContent.find("server") == std::string::npos)
-			throw std::invalid_argument("Error: Missing Server Context");
 	size_t i		= 0;
 	size_t StartPos	= 0;
 	size_t EndPos	= 0;
@@ -111,7 +108,7 @@ void ConfigFileParser::CheckServerBlock() {
 			if (CheckServerValidity(_FileContent.substr(StartPos, EndPos - StartPos), &i))
 				SetServerContext(&i);
 		}
-		if (i == std::string::npos)
+		if (i != std::string::npos)
 			i++;
 	}
 	if (_NumberOfServerContexts == 0)

@@ -82,7 +82,7 @@ CheckMethods LocationContext::GetMethods() const {
 	return _Methods;
 }
 
-bool LocationContext::IsSet(std::string str) {
+bool LocationContext::IsSet(std::string const str) {
 	int i = GetDirective(str);
 	if (i < 0 || i > 8)
 		throw std::invalid_argument("Error: Invalid Location Directive");
@@ -110,7 +110,7 @@ bool LocationContext::IsSet(std::string str) {
 	throw std::invalid_argument("Error: Invalid Location Directive");
 }
 
-void LocationContext::CheckDoubleDirective(int diractive) {
+void LocationContext::CheckDoubleDirective(int const diractive) {
 	switch (diractive) {
 		case 0:{
 			if (_AutoIndex)
@@ -183,10 +183,10 @@ void LocationContext::GetValueDirectivePaires(std::string data) {
 	}
 }
 
-int LocationContext::IsDirective(std::string const directive) {
+int LocationContext::IsDirective(std::string directive) {
 	if (_Uri == false)
 		return 9;
-	int d = GetDirective(directive);
+	const int d = GetDirective(directive);
 	if (d < 0 || d > 8)
 		throw std::invalid_argument("Error: Invalid Directive expressions");
 	else
@@ -214,7 +214,7 @@ void LocationContext::SetValue(int const directive, std::string input) {
 }
 
 int LocationContext::GetDirective(std::string d) const {
-	std::string	directives[] = {"autoindex", "root", "index", "client_max_body_size", "error_page", "cgi_pass", "allowed_methods", "return", "alias"};
+	const std::string	directives[] = {"autoindex", "root", "index", "client_max_body_size", "error_page", "cgi_pass", "allowed_methods", "return", "alias"};
 	int dir = std::find(directives, directives + 9, d) - directives;
 	return dir;
 }
@@ -243,7 +243,7 @@ size_t LocationContext::FindVal(int d, std::string str, size_t start, size_t end
 			throw std::invalid_argument("Error: Missing ';' charecter");
 		input = str.substr(end, val_end - end);
 	}
-	SetValue(d, str);
+	SetValue(d, input);
 	return val_end;
 }
 

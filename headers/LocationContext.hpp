@@ -40,7 +40,7 @@ class LocationContext : virtual public ConfigValues {
 		ParseCGI GetCGI() const ;
 		CheckMethods GetMethods() const;
 
-		virtual bool IsSet(std::string str) ;
+		virtual bool IsSet(std::string const str) ;
 
 
 	protected:
@@ -53,11 +53,11 @@ class LocationContext : virtual public ConfigValues {
 		CheckMethods _Methods;
 		std::string _AliasString;
 
-		void CheckDoubleDirective(int diractive) ;
+		void CheckDoubleDirective(int const diractive) ;
 		void GetValueDirectivePaires(std::string data);
 
 		// overlodes
-		virtual int IsDirective(std::string const directive) ;
+		virtual int IsDirective(std::string directive) ;
 		virtual void SetValue(int const directive, std::string input) ;
 
 		int GetDirective(std::string d) const ;
