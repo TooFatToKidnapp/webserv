@@ -139,16 +139,18 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		throw std::invalid_argument("Error: Empty Config File");
 	CheckBrackets();
 	CheckServerBlock();
-
-	// TODO : (for now)
-	// config file must start with a server context, anything outside of a server cintext will be seen as an invalid config file
-
-	// should be able to choose the port and host of each server
-	// setup the sever names or not
-	// the first server for a host:port is the default host:port (it will answer all the requests that dont velong to an other server)
-	// set up default and custom error pages
-	// limit client body size ????
-	// if (this->_FileContent.find("server") == std::string::npos || this->_FileContent.find("{") == std::string::npos)
-	//	throw( std::invalid_argument("Error: No Server Config Found"));
 }
 
+
+
+std::string ConfigFileParser::GetConfigFile() const {
+	return this->_FileContent;
+}
+
+std::vector<ServerContext> ConfigFileParser::GetServers() const {
+	return this->_servers;
+}
+
+size_t ConfigFileParser::GetNumberOfServers() const {
+	return this->_NumberOfServerContexts;
+}

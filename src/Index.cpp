@@ -23,3 +23,9 @@ Index::~Index() {}
 std::vector<std::string> Index::GetIndex() const {
 	return _Index;
 }
+
+void Index::PrintIndex(){
+	for (size_t i = 0; i < this->_Index.size(); i++) {
+		std::cout << _Index.at(i) << std::endl;
+	}
+}

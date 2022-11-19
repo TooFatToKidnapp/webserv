@@ -48,6 +48,11 @@ class ConfigFileParser {
 		bool CheckServerValidity(std::string file, size_t *pos);
 		void MoveToServerContext(size_t *pos);
 		void SetServerContext(size_t *pos);
+		
+		std::string GetConfigFile() const;
+		std::vector<ServerContext> GetServers() const;
+		size_t GetNumberOfServers() const;
+
 };
 
 
