@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/16 15:35:33 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/20 20:22:05 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <stdlib.h> // exit()
 #include <utility> // std::pair
 #include <vector>
+#include <map>
 #include "./LocationContext.hpp"
 #include "./ConfigValues.hpp"
 #include "./ServerName.hpp"
@@ -32,7 +33,7 @@ class ServerContext : public ConfigValues {
 		bool _IsListening;
 		bool _CustomServerName;
 		size_t _ServerID;
-		std::pair<std::string, std::string> _Listen;
+		std::multimap<std::string, std::string> _Listen;
 		std::vector<std::string> _ServerNames;
 		std::vector<LocationContext> _LocationContext;
 
@@ -73,15 +74,14 @@ class ServerContext : public ConfigValues {
 		virtual bool IsSet(std::string directive);
 
 		std::vector<LocationContext> GetLocationContexts() const;
-		std::pair<std::string, std::string> GetListen() const;
-		std::string GetIpAddress() const;
-		std::string GetPortNumber() const;
+		std::multimap<std::string, std::string> GetListen()const;
+		// std::string GetIpAddress() const;
+		// std::string GetPortNumber() const;
 		std::vector<std::string> GetServerNames() const;
 
+		void DeletePort(std::multimap<std::string,std::string>::iterator it);
 
 };
-
-
 
 
 #endif

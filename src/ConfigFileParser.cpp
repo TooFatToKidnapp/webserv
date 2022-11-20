@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/16 15:22:08 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/20 20:41:42 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,26 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		throw std::invalid_argument("Error: Empty Config File");
 	CheckBrackets();
 	CheckServerBlock();
+	std::multimap<std::string, std::string> var;
+	std::multimap<std::string, std::string> tmp;
+	for (size_t j = 0; j < (size_t)this->_NumberOfServerContexts - 1; j++) {
+		var = this->_servers[j].GetListen();
+		for (std::multimap<std::string, std::string>::iterator it = var.begin() ; it != var.end(); ++it) {
+			tmp = this->_servers[j + 1].GetListen();
+			std::multimap<std::string, std::string>::iterator tmp_it = tmp.find(it->first);
+			if (tmp_it != tmp.end() && it->second == tmp_it->second) {
+				std::cerr << "Warning: conflicting server name " << tmp_it->second << " on Port " << tmp_it->first << "\n";
+				this->_servers[j + 1].DeletePort(tmp_it);
+			}
+			if (tmp.empty() == true) {
+				this->_NumberOfServerContexts--;
+				std::vector<ServerContext>::iterator it = this->_servers.begin() + j;
+				this->_servers.erase(it);
+			}
+			tmp.clear();
+		}
+		var.clear();
+	}
 }
 
 

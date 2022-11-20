@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/17 17:47:54 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/20 20:26:03 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@ ServerContext::ServerContext(size_t *start, std::string file, size_t ServerId) :
 _LocationPos(0),
 _IsListening(false),
 _CustomServerName(false),
-_ServerID(ServerId),
-_Listen("80", "0") {
+_ServerID(ServerId) {
 		_LocationContext.push_back(LocationContext());
 		_ServerNames.push_back("localhost");
 		GetDirectiveValuePair(start, file);
@@ -56,8 +55,7 @@ ServerContext::ServerContext() :
 _LocationPos(0),
 _IsListening(false),
 _CustomServerName(false),
-_ServerID(0),
-_Listen("80", "0") {
+_ServerID(0) {
 		_LocationContext.push_back(LocationContext());
 		_ServerNames.push_back("localhost");
 }
@@ -168,10 +166,14 @@ void ServerContext::SetServerLocation(std::string val) {
 
 }
 void ServerContext::SetServerListen(std::string val) {
-	_IsListening = true;
 	Listen obj(val);
-	_Listen.first = obj.GetIpNb();
-	_Listen.second = obj.GetPortNb();
+	if (this->_Listen.find(obj.GetPortNb()) != this->_Listen.end()) {
+		throw std::invalid_argument ("Error: Duplicate Listen Port");
+	}
+	std::pair<std::string, std::string> var;
+	var.first = obj.GetPortNb();
+	var.second = obj.GetIpNb();
+	this->_Listen.insert(var);
 }
 
 
@@ -282,15 +284,15 @@ std::vector<LocationContext> ServerContext::GetLocationContexts() const {
 	return _LocationContext;
 }
 
-std::pair<std::string, std::string> ServerContext::GetListen() const {
+std::multimap<std::string, std::string> ServerContext::GetListen() const {
 	return _Listen;
 }
-std::string ServerContext::GetIpAddress() const {
-	return _Listen.first;
-}
-std::string ServerContext::GetPortNumber() const {
-	return _Listen.second;
-}
+// std::string ServerContext::GetIpAddress() const {
+	// return _Listen.first;
+// }
+// std::string ServerContext::GetPortNumber() const {
+	// return _Listen.second;
+// }
 std::vector<std::string> ServerContext::GetServerNames() const {
 	return _ServerNames;
 }
@@ -329,4 +331,16 @@ bool ServerContext::IsSet(std::string str) {
 	}
 	throw std::invalid_argument("Error: Invalid Server Directive");
 
+}
+
+
+void ServerContext::DeletePort(std::multimap<std::string,std::string>::iterator it) {
+	std::multimap<std::string,std::string>::iterator start = this->_Listen.begin();
+	std::multimap<std::string,std::string>::iterator end = this->_Listen.end();
+	for (; start != end; ++start) {
+		if (start->first == it->first && start->second == it->second){
+			this->_Listen.erase(start);
+			return;
+		}
+	}
 }
