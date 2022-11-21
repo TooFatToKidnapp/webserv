@@ -3,46 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/20 20:43:21 by aabdou           ###   ########.fr       */
+/*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
+/*   Updated: 2022/11/21 18:37:37 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./headers/ConfigFileParser.hpp"
-#include "./headers/utils.hpp"
-#include<vector>
-#include<map>
+// #include "Response.hpp"
+#include "Request.hpp"
+#include "Socket.hpp"
+#include "codes.hpp"
 
-int main(int ac, char *av[]) {
+int main(int ac , char *av[])
+{
 	try {
-		ConfigFileParser obj;
-		obj.ParseFile(ac, av);
-		std::cout << "Valid Config File" << std::endl;
-		std::cout << obj.GetNumberOfServers() << "\n";
-		std::multimap<std::string, std::string> var = obj.GetServers()[0].GetListen();
-		std::multimap<std::string , std::string>::iterator it =  var.begin();
-		std::multimap<std::string , std::string>::iterator it2 = var.end();
-		for(;it != it2; ++it)
-			std::cout << "[" << it->first << "]"<< " " <<"["<<it->second << "]"<< std::endl;
+		char* webserv = "webserv";
+		Socket Sct(80);
+		for(;;) {
+			int new_fd = Socket::acceptConnection(Sct, Sct.getAddress(), Sct.getAddrlen());
+			Socket::testConnection(new_fd, "could not accept the connection");
 
-		std::cout << "*********************\n";
-		std::multimap<std::string, std::string> var2 = obj.GetServers()[1].GetListen();
-		std::multimap<std::string , std::string>::iterator _it =  var2.begin();
-		std::multimap<std::string , std::string>::iterator _it2 = var2.end();
-		for(;_it != _it2; ++_it)
-			std::cout << "[" << _it->first << "]"<< " " <<"["<< _it->second << "]"<< std::endl;
-		std::cout << "*********************\n";
-		std::multimap<std::string, std::string> var3 = obj.GetServers()[2].GetListen();
-		std::multimap<std::string , std::string>::iterator __it =  var3.begin();
-		std::multimap<std::string , std::string>::iterator __it2 = var3.end();
-		for(;__it != __it2; ++__it)
-			std::cout << "[" << __it->first << "]"<< " " <<"["<< __it->second << "]"<< std::endl;
+			char buffer[30000] = {0};
+        	long valread = read( new_fd , buffer, 30000);
+        	if (valread == -1)
+				return 1;
+			std::string tmp(buffer);
+			printf("%s\n",buffer );
+			Request req(tmp);
+        	write(new_fd , webserv , strlen(webserv));
+			close (new_fd);
+		}
 	}
-	catch(const std::exception &e) {
-		cerr << e.what() << std::endl;
+	catch(const std::exception& e) {
+		std::cerr << e.what() << '\n';
+		return 1;
 	}
-
 	return 0;
 }

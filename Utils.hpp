@@ -1,29 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Root.hpp                                           :+:      :+:    :+:   */
+/*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/01 12:03:25 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 18:02:47 by aabdou           ###   ########.fr       */
+/*   Created: 2022/11/21 13:03:15 by ylabtaim          #+#    #+#             */
+/*   Updated: 2022/11/21 18:20:06 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ROOT_HPP
-#define ROOT_HPP
+#pragma once
 
-#include <string>
-#include <stdexcept>
-#include "./utils.hpp"
+#include "codes.hpp"
 
-class Root {
-	private:
-		Root(){}
-	public:
-		Root(std::string input);
-		~Root();
+const std::string WHITESPACE = " \n\r\t\f\v";
 
-};
-
-#endif
+std::string ft_trim(const std::string &s);
+std::string ReasonPhrase(int code);
+std::vector<std::string> ft_split(const std::string &str, const std::string &del);
