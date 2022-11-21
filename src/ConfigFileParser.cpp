@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/21 19:07:25 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/21 22:00:14 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,13 +139,12 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		throw std::invalid_argument("Error: Empty Config File");
 	CheckBrackets();
 	CheckServerBlock();
-	std::multimap<std::string, std::string> var;
-	std::multimap<std::string, std::string> tmp;
 	for (int j = 0; j < this->_NumberOfServerContexts - 1; j++) {
-		var = this->_servers[j].GetListen();
+		std::multimap<std::string, std::string> var = this->_servers[j].GetListen();
 		std::multimap<std::string, std::string>::iterator it = var.begin();
 		int x = j;
 		for(size_t w = 0; w < var.size(); w++) {
+			std::multimap<std::string, std::string> tmp;
 			if (x < this->_NumberOfServerContexts - 1)
 				tmp = this->_servers[x + 1].GetListen();
 			else
@@ -154,19 +153,17 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 			if (tmp_it != tmp.end() && tmp_it->second == it->second) {
 				std::cerr << "Warning[Server Block Number "<< x + 2 <<"]: conflicting server IP " << tmp_it->second << " on Port " << tmp_it->first << "\n";
 				this->_servers[x + 1].DeletePort(tmp_it);
+				tmp.erase(tmp_it);
 			}
 			if (tmp.empty() == true) {
 				this->_NumberOfServerContexts--;
-				std::vector<ServerContext>::iterator it = this->_servers.begin() + x;
+				std::vector<ServerContext>::iterator it = this->_servers.begin() + x + 1;
 				this->_servers.erase(it);
 			}
 			++x;
-			tmp.clear();
 		}
-		var.clear();
 	}
 }
-
 
 
 std::string ConfigFileParser::GetConfigFile() const {
