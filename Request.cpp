@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/21 18:35:54 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/22 18:32:46 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,22 @@ Request::Request(std::string &buffer) :_Buffer(buffer), _Status(OK) { RequestPar
 
 Request::~Request() {}
 
+//TODO: the body is parsed as a header
+
 void Request::RequestParsing() {
-	std::vector<std::string> req = ft_split(_Buffer, "\n");
+	std::vector<std::string> req = ft_split(_Buffer, "\r\n");
 	if (req.size()) {
 		ParseStartLine(req[0]);
 		ParseHeaders(req);
-		ParseBody(); // TODO
+		if (_Headers["Transfer-Encoding"] == "chunked")
+			ParseChunckedBody(_Buffer);
+		else
+			ParseBody(_Buffer);
 	}
 }
 
 void Request::ParseStartLine(std::string & str) {
-	std::vector<std::string> StartLine = ft_split(str, WHITESPACE);
+	std::vector<std::string> StartLine = ft_split(str, " ");
 
 	if (StartLine.size() == 3) {
 		_Method = StartLine[0];
@@ -72,6 +77,21 @@ void Request::ParseHeaders(std::vector<std::string> & headers) {
 		_Status = BadRequest;
 }
 
-void Request::ParseBody() {
-	
+void Request::ParseChunckedBody(std::string &buffer) {
+	std::string body = buffer.substr(buffer.find("\r\n\r\n") + 4);
+	std::vector<std::string> tmpBody = ft_split(body, "\r\n");
+
+	for (std::size_t i = 1; i < tmpBody.size(); i += 2)
+		_Body.push_back(tmpBody[i]);
+}
+
+void Request::ParseBody(std::string &buffer) {
+	std::string body = buffer.substr(buffer.find("\r\n\r\n") + 4);
+	std::size_t bodySize = body.size();
+	std::stringstream ss;
+	if (_Headers["Content-Length"] != "") {
+		ss << _Headers["Content-Length"];
+		ss >> bodySize;
+	}
+	_Body.push_back(body.substr(0, bodySize));
 }

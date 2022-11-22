@@ -6,30 +6,51 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/21 18:29:20 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/22 17:12:37 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
 
-std::string ft_trim(const std::string &str) {
-    size_t start = str.find_first_not_of(WHITESPACE);
-    size_t end = str.find_last_not_of(WHITESPACE);
-    return	str.substr(start, end - start + 1);
+std::string ltrim(const std::string &s)
+{
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim(const std::string &s)
+{
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string ft_trim(const std::string &s) {
+    return rtrim(ltrim(s));
 }
 
 std::vector<std::string> ft_split(const std::string &str, const std::string &del) {
 	std::vector<std::string> res;
-	
+
 	std::size_t pos = 0;
 	std::size_t prev = 0;
-	while ((pos = str.find(del, prev) )!= std::string::npos) {
-		if (!str.empty())
-			res.push_back(str.substr(prev, pos - prev));
+	while ((pos = str.find(del, prev))!= std::string::npos) {
+		if (ft_trim(str.substr(prev, pos - prev)) != "")
+			res.push_back(ft_trim(str.substr(prev, pos - prev)));
 		prev = pos + 1;
 	}
-	res.push_back(str.substr(prev));
+	res.push_back(ft_trim(str.substr(prev)));
 	return res;
+}
+
+size_t  to_hex(std::string &str)
+{
+	std::stringstream ss;
+	size_t result;
+
+	ss << std::hex << str;
+	ss >> result;
+
+	return result;
 }
 
 std::string ReasonPhrase(int code) {
