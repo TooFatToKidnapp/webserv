@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/10/28 18:05:27 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/22 21:06:53 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class ConfigFileParser {
 		bool CheckServerValidity(std::string file, size_t *pos);
 		void MoveToServerContext(size_t *pos);
 		void SetServerContext(size_t *pos);
-		
+
 		std::string GetConfigFile() const;
 		std::vector<ServerContext> GetServers() const;
 		size_t GetNumberOfServers() const;

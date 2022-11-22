@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/21 21:42:57 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/22 21:06:17 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,12 @@ void ServerContext::SetServerListen(std::string val) {
 	if (this->_Listen.find(obj.GetPortNb()) != this->_Listen.end()) {
 		throw std::invalid_argument ("Error: Duplicate Listen Port");
 	}
+	std::multimap<std::string,std::string>::iterator it = this->_Listen.begin();
+	std::multimap<std::string,std::string>::iterator it2 = this->_Listen.end();
+	for (; it != it2; it++) {
+		if (obj.GetIpNb() != it->second)
+			throw std::invalid_argument ("Error: Multiple IP Addresses In A Singel Server Block");
+	}
 	std::pair<std::string, std::string> var;
 	var.first = obj.GetPortNb();
 	var.second = obj.GetIpNb();
@@ -287,12 +293,20 @@ std::vector<LocationContext> ServerContext::GetLocationContexts() const {
 std::multimap<std::string, std::string> ServerContext::GetListen() const {
 	return _Listen;
 }
-// std::string ServerContext::GetIpAddress() const {
-	// return _Listen.first;
-// }
-// std::string ServerContext::GetPortNumber() const {
-	// return _Listen.second;
-// }
+std::string ServerContext::GetIpAddress() const {
+	return _Listen.begin()->second;
+}
+
+std::vector<std::string> ServerContext::GetPortNumbers() const {
+	std::multimap<std::string, std::string>::const_iterator it = _Listen.begin();
+	std::multimap<std::string, std::string>::const_iterator it2 = _Listen.end();
+	std::vector<std::string> vec;
+	for (; it != it2; ++it){
+		vec.push_back(it->first);
+	}
+
+	return vec;
+}
 std::vector<std::string> ServerContext::GetServerNames() const {
 	return _ServerNames;
 }

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/21 21:43:00 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/22 20:49:17 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ class ServerContext : public ConfigValues {
 
 		std::vector<LocationContext> GetLocationContexts() const;
 		std::multimap<std::string, std::string> GetListen()const;
-		// std::string GetIpAddress() const;
-		// std::string GetPortNumber() const;
+		std::string GetIpAddress() const;
+		std::vector<std::string> GetPortNumbers() const;
 		std::vector<std::string> GetServerNames() const;
 
 		void DeletePort(std::multimap<std::string,std::string>::iterator it);
