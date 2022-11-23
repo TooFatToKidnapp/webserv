@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/22 21:06:51 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/11/23 20:11:18 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,25 +142,28 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 	for (int j = 0; j < this->_NumberOfServerContexts - 1; j++) {
 		std::multimap<std::string, std::string> var = this->_servers[j].GetListen();
 		std::multimap<std::string, std::string>::iterator it = var.begin();
-		int x = j;
 		for(size_t w = 0; w < var.size(); w++) {
-			std::multimap<std::string, std::string> tmp;
-			if (x < this->_NumberOfServerContexts - 1)
-				tmp = this->_servers[x + 1].GetListen();
-			else
-				break;
-			std::multimap<std::string, std::string>::iterator tmp_it = tmp.find(it->first);
-			if (tmp_it != tmp.end() && tmp_it->second == it->second) {
-				std::cerr << "Warning[Server Block Number "<< x + 2 <<"]: conflicting server IP " << tmp_it->second << " on Port " << tmp_it->first << "\n";
-				this->_servers[x + 1].DeletePort(tmp_it);
-				tmp.erase(tmp_it);
+			for (int i = j; i < this->_NumberOfServerContexts - 1 ; i++) {
+				int x = i;
+				std::multimap<std::string, std::string> tmp;
+				if (x < this->_NumberOfServerContexts -1 )
+					tmp = this->_servers[x + 1].GetListen();
+				else{
+					break;
+				}
+				std::multimap<std::string, std::string>::iterator tmp_it = tmp.find(it->first);
+				if (tmp_it != tmp.end() && tmp_it->second == it->second) {
+					std::cerr << "Warning [Server Block Number "<< x + 2 <<"]: conflicting server IP " << tmp_it->second << " on Port " << tmp_it->first << "\n";
+					this->_servers[x + 1].DeletePort(tmp_it);
+					tmp.erase(tmp_it);
+				}
+				if (tmp.empty() == true) {
+					this->_NumberOfServerContexts--;
+					std::vector<ServerContext>::iterator it = this->_servers.begin() + x + 1;
+					this->_servers.erase(it);
+				}
+				++x;
 			}
-			if (tmp.empty() == true) {
-				this->_NumberOfServerContexts--;
-				std::vector<ServerContext>::iterator it = this->_servers.begin() + x + 1;
-				this->_servers.erase(it);
-			}
-			++x;
 		}
 	}
 }
