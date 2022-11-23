@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/22 16:21:36 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/23 18:32:32 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,11 @@ public:
 	void RequestParsing();
 	void ParseStartLine(std::string & str);
 	void ParseHeaders(std::vector<std::string> & headers);
-	void ParseChunckedBody(std::string &buffer);
-	void ParseBody(std::string &buffer);
+	void ParseChunckedBody(std::string &body);
+	void ParseBody(std::string &body);
 	void ParseQuery(std::string & query);
+
+	const std::string &getHttpVersion() const;
+	const std::map<std::string, std::string> &getHeaders() const;
+	const int &getStatus() const;
 };

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/22 17:12:37 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/23 17:38:12 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,17 +40,6 @@ std::vector<std::string> ft_split(const std::string &str, const std::string &del
 	}
 	res.push_back(ft_trim(str.substr(prev)));
 	return res;
-}
-
-size_t  to_hex(std::string &str)
-{
-	std::stringstream ss;
-	size_t result;
-
-	ss << std::hex << str;
-	ss >> result;
-
-	return result;
 }
 
 std::string ReasonPhrase(int code) {

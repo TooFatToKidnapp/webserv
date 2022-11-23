@@ -1,21 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Utils.hpp                                          :+:      :+:    :+:   */
+/*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/21 13:03:15 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/23 17:38:28 by ylabtaim         ###   ########.fr       */
+/*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
+/*   Updated: 2022/11/23 18:03:37 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Request.hpp"
 #include "codes.hpp"
+#include "Utils.hpp"
 
-const std::string WHITESPACE = " \n\r\t\f\v";
+class Response {
+private:
+	std::map<std::string, std::string>	_Headers;
+	std::string							_HttpVersion;
+	int									_Status;
+	int									_Clientfd;
 
-std::string ft_trim(const std::string &s);
-std::string ReasonPhrase(int code);
-std::vector<std::string> ft_split(const std::string &str, const std::string &del);
+public:
+	Response(int clientfd, Request req);
+	~Response();
+
+
+};

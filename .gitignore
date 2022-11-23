@@ -1,4 +1,6 @@
 **/.vscode
 **/*.o
 **/a.out
+**/webserv
 **/.DS_Store
+**/test.cpp
