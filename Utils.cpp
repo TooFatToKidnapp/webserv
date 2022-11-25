@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/23 17:38:12 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/25 15:17:14 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,109 @@ std::vector<std::string> ft_split(const std::string &str, const std::string &del
 	}
 	res.push_back(ft_trim(str.substr(prev)));
 	return res;
+}
+
+std::string getDate() {
+	time_t		t_time;
+	struct tm*	s_time;
+	char		date[80];
+
+	time(&t_time);
+	if ((s_time = gmtime(&t_time)) == 0)
+		exit (1);
+
+	if (!strftime(date, 80, "%a, %d %b %Y %T GMT", s_time))
+		exit (1);
+	return date;
+}
+
+int	getFileLength(const std::string & filename) {
+	struct stat fileInfo;
+
+	if (stat(filename.c_str(), &fileInfo) == -1)
+		return 0;
+
+	return fileInfo.st_size;
+}
+
+std::string	getMediaType(const std::string &subtype) {
+	if (subtype == "aac") return "audio/aac";
+	else if (subtype == "abw") return "application/x-abiword";
+	else if (subtype == "arc") return "application/x-freearc";
+	else if (subtype == "avif") return "image/avif";
+	else if (subtype == "avi") return "video/x-msvideo";
+	else if (subtype == "azw") return "application/vnd.amazon.ebook";
+	else if (subtype == "bin") return "application/octet-stream";
+	else if (subtype == "bmp") return "image/bmp";
+	else if (subtype == "bz") return "application/x-bzip";
+	else if (subtype == "bz2") return "application/x-bzip2";
+	else if (subtype == "cda") return "application/x-cdf";
+	else if (subtype == "csh") return "application/x-csh";
+	else if (subtype == "css") return "text/css";
+	else if (subtype == "csv") return "text/csv";
+	else if (subtype == "doc") return "application/msword";
+	else if (subtype == "docx") return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	else if (subtype == "eot") return "application/vnd.ms-fontobject";
+	else if (subtype == "epub") return "application/epub+zip";
+	else if (subtype == "gz") return "application/gzip";
+	else if (subtype == "gif") return "image/gif";
+	else if (subtype == "html") return "text/html";
+	else if (subtype == "htm") return "text/html";
+	else if (subtype == "ico") return "image/vnd.microsoft.icon";
+	else if (subtype == "ics") return "text/calendar";
+	else if (subtype == "jar") return "application/java-archive";
+	else if (subtype == "jpeg") return "image/jpeg";
+	else if (subtype == "jpg") return "image/jpeg";
+	else if (subtype == "js") return "text/javascript";
+	else if (subtype == "mjs") return "text/javascript";
+	else if (subtype == "json") return "application/json";
+	else if (subtype == "jsonld") return "application/ld+json";
+	else if (subtype == "mid") return "audio/midi";
+	else if (subtype == "midi") return "audio/midi";
+	else if (subtype == "mp3") return "audio/mpeg";
+	else if (subtype == "mp4") return "video/mp4";
+	else if (subtype == "mpeg") return "video/mpeg";
+	else if (subtype == "mpkg") return "application/vnd.apple.installer+xml";
+	else if (subtype == "odp") return "application/vnd.oasis.opendocument.presentation";
+	else if (subtype == "ods") return "application/vnd.oasis.opendocument.spreadsheet";
+	else if (subtype == "odt") return "application/vnd.oasis.opendocument.text";
+	else if (subtype == "oga") return "audio/ogg";
+	else if (subtype == "ogv") return "video/ogg";
+	else if (subtype == "ogx") return "application/ogg";
+	else if (subtype == "opus") return "audio/opus";
+	else if (subtype == "otf") return "font/otf";
+	else if (subtype == "png") return "image/png";
+	else if (subtype == "pdf") return "application/pdf";
+	else if (subtype == "php") return "application/x-httpd-php";
+	else if (subtype == "ppt") return "application/vnd.ms-powerpoint";
+	else if (subtype == "pptx") return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+	else if (subtype == "rar") return "application/vnd.rar";
+	else if (subtype == "rtf") return "application/rtf";
+	else if (subtype == "sh") return "application/x-sh";
+	else if (subtype == "svg") return "image/svg+xml";
+	else if (subtype == "tar") return "application/x-tar";
+	else if (subtype == "tif") return "image/tiff";
+	else if (subtype == "tiff") return "image/tiff";
+	else if (subtype == "ts") return "video/mp2t";
+	else if (subtype == "ttf") return "font/ttf";
+	else if (subtype == "txt") return "text/plain";
+	else if (subtype == "vsd") return "application/vnd.visio";
+	else if (subtype == "wav") return "audio/wav";
+	else if (subtype == "weba") return "audio/webm";
+	else if (subtype == "webm") return "video/webm";
+	else if (subtype == "webp") return "image/webp";
+	else if (subtype == "woff") return "font/woff";
+	else if (subtype == "woff2") return "font/woff2";
+	else if (subtype == "xhtml") return "application/xhtml+xml";
+	else if (subtype == "xls") return "application/vnd.ms-excel";
+	else if (subtype == "xlsx") return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	else if (subtype == "xml") return "application/xml";
+	else if (subtype == "xul") return "application/vnd.mozilla.xul+xml";
+	else if (subtype == "zip") return "application/zip";
+	else if (subtype == "3gp") return "video/3gpp";
+	else if (subtype == "3g2") return "video/3gpp2";
+	else if (subtype == "7z") return "application/x-7z-compressed";
+	else return "";
 }
 
 std::string ReasonPhrase(int code) {

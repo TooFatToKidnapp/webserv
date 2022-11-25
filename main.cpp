@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/23 18:37:17 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/25 18:41:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,9 @@
 #include "Socket.hpp"
 #include "codes.hpp"
 
-int main(int ac , char *av[])
+int main(void)
 {
-	(void)ac;
-	(void)av;
 	try {
-		const char* webserv = "<!DOCTYPE html>\r\n<html>\r\n<body>\r\n<h1>Webserv</h1>\r\n</body>\r\n</html>";
 		Socket Sct(80);
 		for(;;) {
 			int new_fd = Socket::acceptConnection(Sct, Sct.getAddress(), Sct.getAddrlen());
@@ -30,12 +27,16 @@ int main(int ac , char *av[])
         	long valread = recv( new_fd , buffer, 30000, 0);
         	if (valread == -1)
 				return 1;
+
 			std::string tmp(buffer);
-			printf("%s\n",buffer );
 			Request req(tmp);
 			Response res(new_fd, req);
-			
-			send(new_fd, webserv, strlen(webserv), 0);
+
+			if (req._Path == "/")
+				res.sendFile("index.html");
+			else
+				res.sendFile(req._Path);
+
 			close (new_fd);
 		}
 	}
