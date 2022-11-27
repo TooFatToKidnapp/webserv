@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 19:26:59 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/27 19:35:14 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ void Response::sendHeaders(const std::string &filename) {
 	} else {
 		_Headers["Content-Type"] = "text/plain";
 	}
-	if (file.good() && !fileLength)
+	
+	if (file.good() && !getFileLength(filename))
 		_Status = NoContent;
 
 	std::ostringstream headers;
