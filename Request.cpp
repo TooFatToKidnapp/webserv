@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/23 16:43:16 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/27 12:15:43 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,9 @@ void Request::ParseStartLine(std::string & str) {
 		if (_Method != "GET" && _Method != "POST" && _Method != "DELETE")
 			_Status = NotImplemented;
 		std::vector<std::string> RequestTarget = ft_split(StartLine[1], "?");
-		//TODO : set _Status to 414 if URI is Too Long
 		_Path = RequestTarget[0];
+		if (_Path.size() > 2000)
+			_Status = URITooLong;
 		_Query = RequestTarget.size() == 2 ? RequestTarget[1] : "";
 		if (_Query != "")
 			ParseQuery(_Query);

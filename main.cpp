@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/25 18:41:52 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/27 17:53:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,22 @@
 #include "Request.hpp"
 #include "Socket.hpp"
 #include "codes.hpp"
+
+int		pathIsFile(const std::string& path)
+{
+	struct stat s;
+	if (stat(path.c_str(), &s) == 0 )
+	{
+		if (s.st_mode & S_IFDIR)
+			return 0;
+		else if (s.st_mode & S_IFREG)
+			return 1;
+		else
+			return 0;
+	}
+	else
+		return 0;
+}
 
 int main(void)
 {
@@ -33,7 +49,11 @@ int main(void)
 			Response res(new_fd, req);
 
 			if (req._Path == "/")
-				res.sendFile("index.html");
+				req._Path = "/Users/ylabtaim/Desktop";
+
+			if (!pathIsFile(req._Path) && req._Path != "/favicon.ico") {
+				res.sendDir(req._Path.c_str(), "localhost", 80);
+			}
 			else
 				res.sendFile(req._Path);
 

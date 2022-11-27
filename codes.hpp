@@ -6,12 +6,13 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:54 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/21 12:42:20 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/27 12:33:05 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <sys/socket.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sstream>

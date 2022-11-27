@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/25 15:17:14 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/27 12:24:32 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,22 +47,25 @@ std::string getDate() {
 	struct tm*	s_time;
 	char		date[80];
 
-	time(&t_time);
-	if ((s_time = gmtime(&t_time)) == 0)
+	std::time(&t_time);
+	if ((s_time = std::gmtime(&t_time)) == 0)
 		exit (1);
 
-	if (!strftime(date, 80, "%a, %d %b %Y %T GMT", s_time))
+	if (!std::strftime(date, 80, "%a, %d %b %Y %T GMT", s_time))
 		exit (1);
 	return date;
 }
 
 int	getFileLength(const std::string & filename) {
-	struct stat fileInfo;
-
-	if (stat(filename.c_str(), &fileInfo) == -1)
+	try {
+		std::ifstream	file(filename, std::ios::binary);
+		file.seekg(0, std::ios::end);
+		int len = file.tellg();
+		return len == -1 ? 0 : len;
+	}
+	catch(...) {
 		return 0;
-
-	return fileInfo.st_size;
+	}
 }
 
 std::string	getMediaType(const std::string &subtype) {
