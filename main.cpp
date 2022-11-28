@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 17:53:52 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/28 15:33:33 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@ int		pathIsFile(const std::string& path)
 		else if (s.st_mode & S_IFREG)
 			return 1;
 		else
-			return 0;
+			return -1;
 	}
 	else
-		return 0;
+		return -1;
 }
 
 int main(void)
@@ -51,7 +51,7 @@ int main(void)
 			if (req._Path == "/")
 				req._Path = "/Users/ylabtaim/Desktop";
 
-			if (!pathIsFile(req._Path) && req._Path != "/favicon.ico") {
+			if (!pathIsFile(req._Path)) {
 				res.sendDir(req._Path.c_str(), "localhost", 80);
 			}
 			else

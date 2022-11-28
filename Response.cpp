@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 19:35:14 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/28 18:54:44 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,32 +53,45 @@ void Response::sendHeaders(const std::string &filename) {
 		exit (1);
 }
 
-void Response::sendFile(const std::string &filename) {
-	std::ifstream file(filename);
-	std::string buffer;
-	std::stringstream ss;
-	std::string hex;
+void Response::sendFile(const std::string &filename) {	
+	std::string hex = "";
+	std::stringstream ss(hex);
+	char buffer[50] = {0};
+	int filelen = getFileLength(filename);
+	int fd = open(filename.c_str(), O_RDONLY);
+	int bytes_read;
 
 	sendHeaders(filename);
-	while (_Status == OK && !file.eof()) {
-		try {
-			getline(file, buffer);
+	if (_Status != OK || fd < 0)
+		return ;
 
-			ss.clear();
-			hex.clear();
-			ss << std::hex << buffer.size() + 2;
-			ss >> hex;
+	while (filelen > 0) {
+		if ((bytes_read = read(fd, buffer, 50)) <= 0)
+			break ;
+		ss.clear();
+		hex.clear();
+		ss << std::hex << bytes_read;
+		ss >> hex;
+		hex.append("\r\n");
 
-			hex.append("\r\n");
-			buffer.insert(0, hex);
-			buffer.append("\r\n");
-		}
-		catch(...) {
-			return ;
-		}
-		if (send(_Clientfd, buffer.c_str(), buffer.size() , 0) == -1)
+		buffer[bytes_read] = '\0';
+		//
+		// for some reason this does not work for transferring images
+			// std::string ret = hex + buffer + "\r\n";
+			// if (send(_Clientfd, ret.c_str(), ret.size(), 0) == -1)
+			// 	exit(1);
+		//
+
+		if (send(_Clientfd, hex.c_str(), hex.size(), 0) == -1)
 			exit(1);
+		if (send(_Clientfd, buffer, bytes_read, 0) == -1)
+			exit(1);
+		if (send(_Clientfd, "\r\n", 2, 0) == -1)
+			exit(1);
+
+		filelen -= bytes_read;
 	}
+	close(fd);
 }
 
 void Response::sendDir(const char *path, const std::string &host, int port) {
