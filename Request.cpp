@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 12:15:43 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/29 16:33:00 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void Request::RequestParsing() {
 			ParseChunckedBody(req[1]);
 		else
 			ParseBody(req[1]);
+		if (req[1].size() > 2000000)
+			_Status = PayloadTooLarge;
 	}
 }
 
@@ -92,7 +94,8 @@ void Request::ParseBody(std::string &body) {
 		ss << _Headers["Content-Length"];
 		ss >> bodySize;
 	}
-	_Body.push_back(body.substr(0, bodySize));
+	if (body.size())
+		_Body.push_back(body.substr(0, bodySize));
 }
 
 const std::string &Request::getHttpVersion() const {

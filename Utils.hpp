@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:15 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/25 15:16:31 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/29 11:11:57 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,4 @@ std::vector<std::string> ft_split(const std::string &str, const std::string &del
 std::string	getDate();
 int getFileLength(const std::string & filename);
 std::string	getMediaType(const std::string &subtype);
-
+int		pathIsFile(const std::string& path);

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/28 15:33:33 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/29 16:38:43 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,6 @@
 #include "Request.hpp"
 #include "Socket.hpp"
 #include "codes.hpp"
-
-int		pathIsFile(const std::string& path)
-{
-	struct stat s;
-	if (stat(path.c_str(), &s) == 0 )
-	{
-		if (s.st_mode & S_IFDIR)
-			return 0;
-		else if (s.st_mode & S_IFREG)
-			return 1;
-		else
-			return -1;
-	}
-	else
-		return -1;
-}
 
 int main(void)
 {
@@ -56,7 +40,6 @@ int main(void)
 			}
 			else
 				res.sendFile(req._Path);
-
 			close (new_fd);
 		}
 	}

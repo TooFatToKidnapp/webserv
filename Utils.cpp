@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 12:24:32 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/11/29 11:11:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,21 @@ int	getFileLength(const std::string & filename) {
 	catch(...) {
 		return 0;
 	}
+}
+
+int		pathIsFile(const std::string& path) {
+	struct stat s;
+	if (stat(path.c_str(), &s) == 0 )
+	{
+		if (s.st_mode & S_IFDIR)
+			return 0;
+		else if (s.st_mode & S_IFREG)
+			return 1;
+		else
+			return -1;
+	}
+	else
+		return -1;
 }
 
 std::string	getMediaType(const std::string &subtype) {
