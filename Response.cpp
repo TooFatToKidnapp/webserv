@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/29 12:33:39 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/01 18:41:50 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ Response::~Response() {}
 
 void Response::sendHeaders(const std::string &filename) {
 	std::ifstream file(filename);
-	if (!file.good())
-		_Status = NotFound;
 
 	std::size_t i = filename.find_last_of(".");
 	std::string ext = (i != std::string::npos) ? filename.substr(i + 1) : "";
@@ -36,9 +34,6 @@ void Response::sendHeaders(const std::string &filename) {
 	} else {
 		_Headers["Content-Type"] = "text/plain";
 	}
-	
-	if (file.good() && !getFileLength(filename))
-		_Status = NoContent;
 
 	std::ostringstream headers;
 
@@ -50,7 +45,37 @@ void Response::sendHeaders(const std::string &filename) {
 		<< "\r\n";
 
 	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		exit (1);
+		throw std::runtime_error("Could not send the headers");
+}
+
+void Response::sendErrorPage(int status) {
+	std::stringstream ss;
+	std::string strStatus;
+
+	ss << status;
+	ss >> strStatus;
+
+	if (pathIsFile(strStatus) == 1)
+		sendFile(strStatus);
+	else {
+		std::string error = "<html>\r\n<head><title>Error</title></head>\r\n<body>\r\n<center><h1>";
+		error.append(strStatus + "\t" + ReasonPhrase(status));
+		error.append("</h1></center>\r\n</body>\r\n</html>");
+
+		std::ostringstream headers;
+
+		headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+		<< "Date: " << _Headers["Date"] << "\r\n"
+		<< "Content-Type: " << "text/html\r\n"
+		<< "Content-Length: " << error.size() << "\r\n"
+		<< "Connection: " << "close\r\n\r\n";
+
+		if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
+			throw std::runtime_error("Could not send the headers");
+
+		if (send(_Clientfd, error.c_str(), error.size(), 0) == -1)
+			throw std::runtime_error("Could not send the body");
+	}
 }
 
 void Response::sendFile(const std::string &filename) {	
@@ -60,15 +85,13 @@ void Response::sendFile(const std::string &filename) {
 	int bytes_read;
 
 	sendHeaders(filename);
-	if (_Status != OK || fd < 0)
-		return ;
 
 	while (filelen > 0) {
 		if ((bytes_read = read(fd, buffer, 100000)) <= 0)
 			break ;
 		buffer[bytes_read] = '\0';
 		if (send(_Clientfd, buffer, bytes_read, 0) == -1)
-			exit(1);
+			throw std::runtime_error("Could not send the body");
 		filelen -= bytes_read;
 	}
 	close(fd);
@@ -80,27 +103,15 @@ void Response::sendDir(const char *path, const std::string &host, int port) {
 	struct dirent *dirEntry;
     DIR *dir = opendir(path);
 
-    if (dir == NULL)
-        _Status = Forbidden;
-
 	headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
 	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		exit (1);
+		throw std::runtime_error("Could not send the body");
 
     std::string page = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<title>" + dirName + "</title>\r\n\
 	</head>\r\n<body>\r\n<h1>Webserv</h1>\r\n<p>\r\n";
-
-	if (_Status == Forbidden) {
-		//TODO : send a proper error page
-		page = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<title>" + dirName + "</title>\r\n\
-		</head>\r\n<body>\r\n<h1>403 Forbidden</h1>\r\n<p>\r\n";
-		if (send(_Clientfd, page.c_str(), page.size(), 0) == -1)
-			exit (1);
-		return ;
-	}
 
     while ((dirEntry = readdir(dir)) != NULL)
 		page += getLink(std::string(dirEntry->d_name), dirName, host, port);
@@ -108,7 +119,7 @@ void Response::sendDir(const char *path, const std::string &host, int port) {
 
 	closedir(dir);
 	if (send(_Clientfd, page.c_str(), page.size(), 0) == -1)
-		exit (1);
+		throw std::runtime_error("Could not send the body");
 }
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port) {

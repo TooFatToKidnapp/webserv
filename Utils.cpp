@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/29 11:11:52 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/01 11:00:33 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ std::vector<std::string> ft_split(const std::string &str, const std::string &del
 	std::size_t pos = 0;
 	std::size_t prev = 0;
 	while ((pos = str.find(del, prev))!= std::string::npos) {
-		if (ft_trim(str.substr(prev, pos - prev)) != "")
-			res.push_back(ft_trim(str.substr(prev, pos - prev)));
-		prev = pos + 1;
+		if (str.substr(prev, pos - prev) != "")
+			res.push_back(str.substr(prev, pos - prev));
+		prev = pos + del.size();
 	}
-	res.push_back(ft_trim(str.substr(prev)));
+	if (str.substr(prev) != "")
+		res.push_back(str.substr(prev));
 	return res;
 }
 
