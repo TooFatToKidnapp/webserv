@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:41 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/01 18:25:31 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/02 11:44:24 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,13 @@ int main(void)
 			Request req(tmp);
 			Response res(new_fd, req);
 
-			if (req._Path == "/")
-				req._Path = "/Users/ylabtaim/Desktop";
-
-			if (res._Status != OK)
-				res.sendErrorPage(res._Status);
-			else if (!pathIsFile(req._Path)) {
-				res.sendDir(req._Path.c_str(), "localhost", 80);
+			if (res.getStatus() != OK)
+				res.sendErrorPage(res.getStatus());
+			else if (!pathIsFile(req.getPath())) {
+				res.sendDir(req.getPath().c_str(), "localhost", 80);
 			}
 			else
-				res.sendFile(req._Path);
+				res.sendFile(req.getPath());
 			close (new_fd);
 		}
 		catch(const std::exception& e) {

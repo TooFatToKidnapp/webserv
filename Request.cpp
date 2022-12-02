@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/01 18:36:08 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/02 12:58:48 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,31 @@ Request::~Request() {}
 void Request::RequestParsing() {
 	std::vector<std::string> req = ft_split(_Buffer, "\r\n\r\n");
 
-	if (req.size()) {
+	if (req.size() == 1 || req.size() == 2) {
 		std::vector<std::string> headers = ft_split(req[0], "\r\n");
 		for (std::size_t i = 0; i < headers.size(); ++i)
 			std::replace(headers[i].begin(), headers[i].end(), '\r', ' ');
 		ParseStartLine(headers[0]);
+		if (_Status != OK) return ;
 		ParseHeaders(headers);
+		if (_Status != OK) return ;
 		if (req.size() == 2) {
-			if (_Headers.find("Transfer-Encoding") != _Headers.end() && _Headers["Transfer-Encoding"] == "chunked")
-				ParseChunckedBody(req[1]);
-			else
-				ParseBody(req[1]);
 			if (req[1].size() > 2000000) {
 				_Status = PayloadTooLarge;
-				throw std::runtime_error("Payload is too large");
+				return ;
 			}
+			if (_Headers["Transfer-Encoding"] == "chunked") {
+				if (_Headers.find("Content-Length") != _Headers.end()) {
+					_Status = BadRequest;
+					return ;
+				}
+				ParseChunckedBody(req[1]);
+			}
+			else
+				ParseBody(req[1]);
 		}
+		else if (_Headers.find("Content-Length") != _Headers.end() && _Headers["Content-Length"] != "0")
+			_Status = BadRequest;
 	}
 }
 
@@ -46,16 +55,12 @@ void Request::ParseStartLine(std::string & str) {
 
 	if (StartLine.size() == 3) {
 		_Method = StartLine[0];
-		if (_Method != "GET" && _Method != "POST" && _Method != "DELETE") {
+		if (_Method != "GET" && _Method != "POST" && _Method != "DELETE")
 			_Status = NotImplemented;
-			throw std::runtime_error("Method not implemented");
-		}
+		if (StartLine[1].size() > 2000)
+			_Status = URITooLong;
 		std::vector<std::string> RequestTarget = ft_split(StartLine[1], "?");
 		_Path = RequestTarget[0];
-		if (_Path.size() > 2000) {
-			_Status = URITooLong;
-			throw std::runtime_error("URI is too long");
-		}
 		if (pathIsFile(_Path) == 1) {
 			std::fstream check(_Path);
 			if (!check.good())
@@ -72,14 +77,11 @@ void Request::ParseStartLine(std::string & str) {
 		if (_Query != "")
 			ParseQuery(_Query);
 		_HttpVersion = StartLine[2];
-		if (_HttpVersion != "HTTP/1.1") {
+		if (_HttpVersion != "HTTP/1.1")
 			_Status = HTTPVersionNotSupported;
-			throw std::runtime_error("HTTP version not supported");
-		}
-	} else {
-		_Status = BadRequest;
-		throw std::runtime_error("Problem in the start line");
 	}
+	else
+		_Status = BadRequest;
 }
 
 void Request::ParseQuery(std::string & query) {
@@ -101,23 +103,38 @@ void Request::ParseHeaders(std::vector<std::string> & headers) {
 		std::size_t pos = headers[i].find(":");
 		if (pos == std::string::npos || (headers[i][pos - 1] && std::isspace(headers[i][pos - 1]))) { 
 			_Status = BadRequest;
-			throw std::runtime_error("Problem with the headers");
+			return ;
 		}
 		_Headers[headers[i].substr(0, pos)] = ft_trim(headers[i].substr(pos + 1, headers[i].length()));
 	}
 	if (_Headers.find("Host") == _Headers.end()) {
 		_Status = BadRequest;
-		throw std::runtime_error("host header is missing");
+		return ;
 	}
-	if (_Headers.find("Transfer-Encoding") != _Headers.end() && _Headers.find("Content-Length") != _Headers.end())
-		throw std::runtime_error("Can't have both Transfer-Encoding and Content-Length");
+	if (_Headers["Transfer-Encoding"] == "chunked" && _Headers.find("Content-Length") != _Headers.end())
+		_Status = BadRequest;
 }
 
 void Request::ParseChunckedBody(std::string &body) {
 	std::vector<std::string> tmpBody = ft_split(body, "\r\n");
+	std::size_t size;
+	std::stringstream ss;
 
-	for (std::size_t i = 1; i < tmpBody.size(); i += 2)
-		_Body.push_back(tmpBody[i]);
+	for (std::size_t i = 0; i < tmpBody.size(); ++i) {
+		if ((i % 2) == 0) {
+			ss.clear();
+			ss << std::hex << tmpBody[i];
+			ss >> size;
+		}		
+		else {
+			if (size != tmpBody[i].size()) {
+				_Status = BadRequest;
+				return ;
+			}
+			else
+				_Body.push_back(tmpBody[i]);
+		}
+	}
 }
 
 void Request::ParseBody(std::string &body) {
@@ -128,7 +145,7 @@ void Request::ParseBody(std::string &body) {
 		ss >> bodySize;
 		if (bodySize != body.size()) {
 			_Status = BadRequest;
-			throw std::runtime_error("Content-Length is unconsistent with the body size");
+			return ;
 		}
 	}
 	if (body.size())
@@ -145,4 +162,8 @@ const std::map<std::string, std::string> &Request::getHeaders() const {
 
 const int &Request::getStatus() const {
 	return _Status;
+}
+
+const std::string &Request::getPath() const {
+	return _Path;
 }

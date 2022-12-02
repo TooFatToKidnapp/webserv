@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/01 15:25:26 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/02 11:39:36 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 class Request {
 private:
-public:
 	int									_Status;
 	std::string 						_Buffer;
 	std::string							_Method;
@@ -26,6 +25,7 @@ public:
 	std::map<std::string, std::string>	_QueryMap;
 	std::vector<std::string>			_Body;
 
+public:
 	Request(std::string & buffer);
 	~Request();
 
@@ -39,4 +39,5 @@ public:
 	const std::string &getHttpVersion() const;
 	const std::map<std::string, std::string> &getHeaders() const;
 	const int &getStatus() const;
+	const std::string &getPath() const;
 };

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/01 17:54:45 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/02 11:43:53 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@
 
 class Response {
 private:
-public:
 	std::map<std::string, std::string>	_Headers;
 	std::string							_HttpVersion;
 	int									_Status;
 	int									_Clientfd;
 
+public:
 	Response(int clientfd, Request req);
 	~Response();
 
@@ -33,4 +33,5 @@ public:
 	void sendErrorPage(int status);
 	std::string getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port);
 
+	const int &getStatus() const;
 };

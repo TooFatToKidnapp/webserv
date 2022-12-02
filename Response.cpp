@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/01 18:41:50 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/02 13:03:50 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Response::~Response() {}
 
 void Response::sendHeaders(const std::string &filename) {
 	std::ifstream file(filename);
+	std::ostringstream headers;
 
 	std::size_t i = filename.find_last_of(".");
 	std::string ext = (i != std::string::npos) ? filename.substr(i + 1) : "";
@@ -34,8 +35,6 @@ void Response::sendHeaders(const std::string &filename) {
 	} else {
 		_Headers["Content-Type"] = "text/plain";
 	}
-
-	std::ostringstream headers;
 
 	headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
@@ -131,4 +130,8 @@ std::string Response::getLink(std::string const &dirEntry, std::string const &di
 		ss << "<p> <a style=\"color:red;\"";
 	ss <<" href=\"http://" + host + ":" << port << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\r\n";
 	return ss.str();
+}
+
+const int &Response::getStatus() const {
+	return _Status;
 }
