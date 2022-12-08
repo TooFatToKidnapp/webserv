@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 14:36:45 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 17:18:01 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:04 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/ConfigValues.hpp"
+#include "./../../headers/parsing/ConfigValues.hpp"
 
 ConfigValues::ConfigValues(std::string str) :
 _Root(false),

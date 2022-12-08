@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 18:13:45 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/17 17:08:02 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:35 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/Uri.hpp"
+#include "./../../headers/parsing/Uri.hpp"
 
 
 Uri::Uri() {}

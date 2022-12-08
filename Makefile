@@ -1,47 +1,47 @@
 NAME = webserv
 
 SRC =	./main.cpp\
-		./src/ConfigFileParser.cpp\
-		./src/utils.cpp\
-		./src/LocationContext.cpp\
-		./src/ConfigValues.cpp\
-		./src/ServerContext.cpp\
-		./src/ClientMaxBodySize.cpp\
-		./src/Root.cpp\
-		./src/Index.cpp\
-		./src/ReturnDir.cpp\
-		./src/UriParser.cpp\
-		./src/Uri.cpp\
-		./src/TargetRequestParser.cpp\
-		./src/ServerName.cpp\
-		./src/ParseCGI.cpp\
-		./src/LocationUri.cpp\
-		./src/Listen.cpp\
-		./src/CheckMethods.cpp
+		./src/parsing/ConfigFileParser.cpp\
+		./src/parsing/utils.cpp\
+		./src/parsing/LocationContext.cpp\
+		./src/parsing/ConfigValues.cpp\
+		./src/parsing/ServerContext.cpp\
+		./src/parsing/ClientMaxBodySize.cpp\
+		./src/parsing/Root.cpp\
+		./src/parsing/Index.cpp\
+		./src/parsing/ReturnDir.cpp\
+		./src/parsing/UriParser.cpp\
+		./src/parsing/Uri.cpp\
+		./src/parsing/TargetRequestParser.cpp\
+		./src/parsing/ServerName.cpp\
+		./src/parsing/ParseCGI.cpp\
+		./src/parsing/LocationUri.cpp\
+		./src/parsing/Listen.cpp\
+		./src/parsing/CheckMethods.cpp
 
 
 FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address
 
 CC = c++
 
-INC =	./headers/ConfigFileParser.hpp\
-		./headers/utils.hpp\
-		./headers/LocationContext.hpp\
-		./headers/ConfigValues.hpp\
-		./headers/ServerContext.hpp\
-		./headers/ClientMaxBodySize.hpp\
-		./headers/Root.hpp\
-		./headers/Index.hpp\
-		./headers/ReturnDir.hpp\
-		./headers/UriParser.hpp\
-		./headers/Uri.hpp\
-		./headers/TargetRequestParser.hpp\
-		./headers/ServerName.hpp\
-		./headers/ParseCGI.hpp\
-		./headers/LocationUri.hpp\
-		./headers/Listen.hpp\
-		./headers/HostStateParser.hpp\
-		./headers/CheckMethods.hpp
+INC =	./headers/parsing/ConfigFileParser.hpp\
+		./headers/parsing/utils.hpp\
+		./headers/parsing/LocationContext.hpp\
+		./headers/parsing/ConfigValues.hpp\
+		./headers/parsing/ServerContext.hpp\
+		./headers/parsing/ClientMaxBodySize.hpp\
+		./headers/parsing/Root.hpp\
+		./headers/parsing/Index.hpp\
+		./headers/parsing/ReturnDir.hpp\
+		./headers/parsing/UriParser.hpp\
+		./headers/parsing/Uri.hpp\
+		./headers/parsing/TargetRequestParser.hpp\
+		./headers/parsing/ServerName.hpp\
+		./headers/parsing/ParseCGI.hpp\
+		./headers/parsing/LocationUri.hpp\
+		./headers/parsing/Listen.hpp\
+		./headers/parsing/HostStateParser.hpp\
+		./headers/parsing/CheckMethods.hpp
 
 
 OBJ = $(SRC:.cpp=.o)

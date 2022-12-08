@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 14:48:56 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 18:55:19 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:13 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/Index.hpp"
+#include "./../../headers/parsing/Index.hpp"
 
 Index::Index(std::string val) {
 	if (val.compare("") == 0)

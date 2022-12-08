@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 15:26:35 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 15:28:15 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:00 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/CheckMethods.hpp"
+#include "./../../headers/parsing/CheckMethods.hpp"
 
 CheckMethods::CheckMethods():
 	_Get(false),

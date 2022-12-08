@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:55:06 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:11:55 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:19 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/LocationUri.hpp"
+#include "./../../headers/parsing/LocationUri.hpp"
 
 LocationUri::LocationUri(): _Uri("/"), _IsDir(true) {}
 

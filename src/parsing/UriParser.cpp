@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 15:18:05 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/17 17:04:36 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:38 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/UriParser.hpp"
+#include "./../../headers/parsing/UriParser.hpp"
 
 UriParser::UriParser(): HostStateParser(h_start, h_done),
 _Uri(NULL),

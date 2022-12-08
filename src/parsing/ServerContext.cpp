@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 17:24:02 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:28 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/ServerContext.hpp"
+#include "./../../headers/parsing/ServerContext.hpp"
 
 ServerContext::ServerContext(size_t *start, std::string file, size_t ServerId) : ConfigValues(GetRoot()),
 _LocationPos(0),

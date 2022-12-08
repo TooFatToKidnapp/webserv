@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:48:55 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 17:20:09 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:07 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/LocationContext.hpp"
+#include "./../../headers/parsing/LocationContext.hpp"
 
 
 LocationContext::LocationContext(std::string root): ConfigValues(root),

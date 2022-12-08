@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 15:30:19 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 15:31:34 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:30:55 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/ClientMaxBodySize.hpp"
+#include "./../../headers/parsing/ClientMaxBodySize.hpp"
 
 
 ClientMaxBodySize::ClientMaxBodySize() : _val(1) {}
@@ -40,7 +40,7 @@ ClientMaxBodySize::ClientMaxBodySize(std::string val) {
 }
 
 ClientMaxBodySize::~ClientMaxBodySize() {};
- 
+
 size_t ClientMaxBodySize::GetVal() const {
 	return _val;
 }

@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/23 20:11:18 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:30:46 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/ConfigFileParser.hpp"
+#include "./../../headers/parsing/ConfigFileParser.hpp"
 
 ConfigFileParser::ConfigFileParser() : _FileName(""), _FileContent(""), _NumberOfServerContexts(0)
 {}

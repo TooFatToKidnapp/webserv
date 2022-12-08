@@ -6,11 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 18:03:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 18:04:51 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 18:31:30 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../headers/ServerName.hpp"
+#include "./../../headers/parsing/ServerName.hpp"
 
 
 ServerName::ServerName(std::string name) : _SN(name){
