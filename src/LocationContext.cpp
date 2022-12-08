@@ -6,14 +6,14 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:48:55 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/17 17:39:07 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 17:20:09 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../headers/LocationContext.hpp"
 
 
-LocationContext::LocationContext():
+LocationContext::LocationContext(std::string root): ConfigValues(root),
 _Uri(false),
 _Cgi(false),
 _AllowedMethods(false),
@@ -22,7 +22,7 @@ _LocationUri(LocationUri()),
 _CGI_PASS(ParseCGI()),
 _Methods(CheckMethods()) {}
 
-LocationContext::LocationContext(std::string str):
+LocationContext::LocationContext(std::string str, std::string root): ConfigValues(root),
 _Uri(false),
 _Cgi(false),
 _AllowedMethods(false),

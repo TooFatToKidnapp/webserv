@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 09:46:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 20:11:16 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 17:19:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ class LocationUri;
 class LocationContext : virtual public ConfigValues {
 
 	public:
-		LocationContext();
+		LocationContext(std::string root);
 
-		LocationContext(std::string str);
+		LocationContext(std::string str, std::string root);
 
 		LocationContext &operator=(const LocationContext &obj) ;
 		virtual ~LocationContext();
@@ -41,7 +41,9 @@ class LocationContext : virtual public ConfigValues {
 		CheckMethods GetMethods() const;
 
 		virtual bool IsSet(std::string const str) ;
-
+		// void passRoot(std::string str) { // fix function (dont call
+		// 	updateRoot(str);
+		// }
 
 	protected:
 		bool _Uri;

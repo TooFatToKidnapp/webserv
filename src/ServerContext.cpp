@@ -6,22 +6,22 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/23 16:55:24 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 17:24:02 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../headers/ServerContext.hpp"
 
-ServerContext::ServerContext(size_t *start, std::string file, size_t ServerId) :
+ServerContext::ServerContext(size_t *start, std::string file, size_t ServerId) : ConfigValues(GetRoot()),
 _LocationPos(0),
 _IsListening(false),
 _CustomServerName(false),
 _ServerID(ServerId) {
-		_LocationContext.push_back(LocationContext());
+		_LocationContext.push_back(LocationContext(GetRoot()));
 		_ServerNames.push_back("localhost");
 		GetDirectiveValuePair(start, file);
 		if (HasLocation("/") == false) {
-			LocationContext loc;
+			LocationContext loc(GetRoot());
 			_LocationPos++;
 			_LocationContext.push_back(loc);
 		}
@@ -51,12 +51,12 @@ void ServerContext::GetDirectiveValuePair(size_t *pos , std::string file) {
 	*pos = i;
 }
 
-ServerContext::ServerContext() :
+ServerContext::ServerContext() : ConfigValues(GetRoot()),
 _LocationPos(0),
 _IsListening(false),
 _CustomServerName(false),
 _ServerID(0) {
-		_LocationContext.push_back(LocationContext());
+		_LocationContext.push_back(LocationContext(GetRoot()));
 		_ServerNames.push_back("localhost");
 }
 
@@ -156,7 +156,7 @@ void ServerContext::SetServerLocation(std::string val) {
 	if (_LocationPos == 0)
 		_LocationContext.clear();
 	_LocationPos++;
-	LocationContext loca(val);
+	LocationContext loca(val,GetRoot());
 
 	for (size_t i = 0; i < _LocationContext.size(); i++){
 		if (_LocationContext[i].GetLocationUri().GetUri().compare(loca.GetLocationUri().GetUri()) == 0)

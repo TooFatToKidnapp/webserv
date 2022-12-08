@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 12:02:07 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/04 12:03:10 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 17:18:18 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,14 @@ class ConfigValues {
 		virtual void SetValue(int const directive, std::string val) = 0;
 		virtual int IsDirective(std::string const directive) = 0;
 
-		ConfigValues();
+		ConfigValues(std::string str);
 		virtual ~ConfigValues();
 		ConfigValues(const ConfigValues &obj);
 		ConfigValues &operator=(const ConfigValues& obj);
+
+		// void updateRoot(std::string str) { // fix function (dont call)
+		// 	this->_RootPath = str;
+		// }
 
 	public:
 

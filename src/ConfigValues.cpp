@@ -6,20 +6,20 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 14:36:45 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/19 19:39:15 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/08 17:18:01 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../headers/ConfigValues.hpp"
 
-ConfigValues::ConfigValues() :
+ConfigValues::ConfigValues(std::string str) :
 _Root(false),
 _Index(false),
 _ClientMaxBodySize(false),
 _ErrorPage(false),
 _AutoIndex(false),
 _ReturnValue(false),
-_RootPath("/www/html"),
+_RootPath(str),
 _ClientMaxSize(1),
 _ErrorPages(),
 _AutoIndexStatus(false),
