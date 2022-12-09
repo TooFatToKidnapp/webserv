@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:54 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/27 12:33:05 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/09 12:44:46 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 #include <fcntl.h>
 #include <ctime>
 #include <string>
+#include "../headers/parsing/ServerContext.hpp"
+#include "../headers/parsing/ConfigFileParser.hpp"
 
 enum Code
 {

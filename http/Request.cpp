@@ -6,14 +6,20 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/02 12:58:48 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/09 21:10:01 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "Utils.hpp"
 
-Request::Request(std::string &buffer) : _Status(OK), _Buffer(buffer) {
+Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
+	std::vector<ServerContext> servers = config.GetServers();
+	findServer(servers, _Buffer);
+
+	// (void) config;	
+	// _Host = "localhost";
+	// _Server = servers[0];
 	RequestParsing();
 }
 
@@ -31,7 +37,7 @@ void Request::RequestParsing() {
 		ParseHeaders(headers);
 		if (_Status != OK) return ;
 		if (req.size() == 2) {
-			if (req[1].size() > 2000000) {
+			if (req[1].size() > _Server.GetCmbs() * 1000000){
 				_Status = PayloadTooLarge;
 				return ;
 			}
@@ -50,17 +56,82 @@ void Request::RequestParsing() {
 	}
 }
 
+void	Request::findServer(std::vector<ServerContext> const & servers, std::string &buffer) {
+	int begin = buffer.find("Host");
+	int end = buffer.find("\r\n", begin);
+	_Host = ft_trim(buffer.substr(begin + 5 , end - begin - 5));
+
+	for (std::size_t i = 0; i < servers.size(); ++i) {
+		std::vector<std::string> serverNames = servers[i].GetServerNames();
+		for (std::size_t j = 0; j < serverNames.size(); ++j) {
+			std::vector<std::string> serverPorts = servers[i].GetPortNumbers();
+			for (std::size_t k = 0; k < serverPorts.size(); ++k) {
+				if ((serverNames[j] + ":" + serverPorts[k]) == _Host) {
+					_Server = servers[i];
+					return ;
+				}
+				else if (serverNames[j] == _Host && serverPorts[k] == "80") {
+					_Server = servers[i];
+					return ;
+				}
+			}
+		}
+	}
+	throw std::runtime_error("No server context matches the host");
+}
+
+void Request::updatePath(const std::string & path) {
+	std::vector<LocationContext> locations = _Server.GetLocationContexts();
+
+	_Path = path;
+	for (std::size_t i = 0; i < locations.size(); ++i){
+		if (locations[i].GetLocationUri().GetUri() == path) {
+			if (locations[i].GetRoot() != "")
+				_Path = locations[i].GetRoot() + path;
+			else if (locations[i].GetAlias() != "")
+				_Path = locations[i].GetAlias();
+		}
+	}
+}
+
+void Request::checkMethod(const std::string &path) {
+	if (_Method != "GET" && _Method != "POST" && _Method != "DELETE")
+		_Status = NotImplemented;
+
+	bool methodIsAllowed = false;
+	std::vector<LocationContext> locations = _Server.GetLocationContexts();
+	std::vector<std::string> methods;
+	
+	for (std::size_t i = 0; i < locations.size(); ++i) {
+		if (path == locations[i].GetLocationUri().GetUri()) {
+			methods = locations[i].GetMethods().GetMethods();
+			break ;
+		}
+	}
+	if (methods.size() == 0) {
+		methodIsAllowed = true;
+	} else {
+		for (std::size_t i = 0; i < methods.size(); ++i) {
+			if (_Method == methods[i]) {
+				methodIsAllowed = true;
+				break ;			
+			}
+		}
+	}
+	if (methodIsAllowed == false)
+	    _Status = MethodNotAllowed;
+}
+
 void Request::ParseStartLine(std::string & str) {
 	std::vector<std::string> StartLine = ft_split(str, " ");
 
 	if (StartLine.size() == 3) {
 		_Method = StartLine[0];
-		if (_Method != "GET" && _Method != "POST" && _Method != "DELETE")
-			_Status = NotImplemented;
+		checkMethod(StartLine[1]);
 		if (StartLine[1].size() > 2000)
 			_Status = URITooLong;
 		std::vector<std::string> RequestTarget = ft_split(StartLine[1], "?");
-		_Path = RequestTarget[0];
+		updatePath(RequestTarget[0]);
 		if (pathIsFile(_Path) == 1) {
 			std::fstream check(_Path);
 			if (!check.good())
@@ -166,4 +237,8 @@ const int &Request::getStatus() const {
 
 const std::string &Request::getPath() const {
 	return _Path;
+}
+
+const std::string &Request::getHost() const {
+	return _Host;
 }

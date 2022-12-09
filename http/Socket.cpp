@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:51 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/11/21 11:37:52 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/07 14:06:55 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,11 @@ void	Socket::init_address() {
 void	Socket::create_socket() {
     _socket_fd = socket(_domain, _type, _protocol);
     testConnection(!_socket_fd ? -1 : _socket_fd, "could not create a new socket");
-
-    int connection = bind(_socket_fd, (struct sockaddr *)&_address, addrlen);
+	
+	int timeout = 1;
+	setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&timeout, sizeof(timeout));
+    
+	int connection = bind(_socket_fd, (struct sockaddr *)&_address, addrlen);
     testConnection(connection, "could not bind the socket");
 
     connection = listen(_socket_fd, 10);

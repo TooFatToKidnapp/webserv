@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/02 11:39:36 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/09 20:14:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ private:
 	std::map<std::string, std::string>	_Headers;
 	std::map<std::string, std::string>	_QueryMap;
 	std::vector<std::string>			_Body;
+	std::string							_Host;
+	ServerContext						_Server;
 
 public:
-	Request(std::string & buffer);
+	Request(std::string & buffer, ConfigFileParser const &config);
 	~Request();
 
 	void RequestParsing();
@@ -40,4 +42,9 @@ public:
 	const std::map<std::string, std::string> &getHeaders() const;
 	const int &getStatus() const;
 	const std::string &getPath() const;
+	const std::string &getHost() const;
+
+	void updatePath(const std::string & path);
+	void checkMethod(const std::string & path);
+	void findServer(std::vector<ServerContext> const & servers, std::string &buffer);
 };

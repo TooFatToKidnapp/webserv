@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/02 13:03:50 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/09 16:35:43 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void Response::sendFile(const std::string &filename) {
 	close(fd);
 }
 
-void Response::sendDir(const char *path, const std::string &host, int port) {
+void Response::sendDir(const char *path, const std::string &host) {
 	std::ostringstream headers;
 	std::string dirName(path);
 	struct dirent *dirEntry;
@@ -113,7 +113,7 @@ void Response::sendDir(const char *path, const std::string &host, int port) {
 	</head>\r\n<body>\r\n<h1>Webserv</h1>\r\n<p>\r\n";
 
     while ((dirEntry = readdir(dir)) != NULL)
-		page += getLink(std::string(dirEntry->d_name), dirName, host, port);
+		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
 
 	closedir(dir);
@@ -121,14 +121,19 @@ void Response::sendDir(const char *path, const std::string &host, int port) {
 		throw std::runtime_error("Could not send the body");
 }
 
-std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port) {
+std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {
     std::stringstream	ss;
-
-	if (pathIsFile(dirName + "/" + dirEntry) == 1)
+	
+	std::string dir;
+	if (dirName[dirName.length() - 1] != '/')
+		dir = dirName + "/" + dirEntry;
+	else
+        dir = dirName + dirEntry;
+	if (pathIsFile(dir) == 1)
 		ss << "<p> <a style=\"color:black;text-decoration:none\"";
-	else if (!pathIsFile(dirName + "/" + dirEntry))
+	else if (!pathIsFile(dir))
 		ss << "<p> <a style=\"color:red;\"";
-	ss <<" href=\"http://" + host + ":" << port << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\r\n";
+	ss <<" href=\"http://" + host << dir + "\">" + dirEntry + "</a></p>\r\n";
 	return ss.str();
 }
 
