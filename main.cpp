@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/09 21:07:06 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 16:29:36 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,12 @@ int main(int ac, char *av[]) {
 			char buffer[30001] = {0};
 
 			ssize_t valread = recv( new_fd , buffer, 30000, 0);
-			if (valread == -1)
+			if (valread == -1) {
+				close (new_fd);
 				return 1;
+			}
+			else if (valread == 0)
+				continue ;
 			buffer[valread] = '\0';
 			std::string tmp(buffer);
 			Request req(tmp, conf);

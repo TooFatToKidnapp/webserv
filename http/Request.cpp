@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/09 21:10:01 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 17:37:41 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
 	std::vector<ServerContext> servers = config.GetServers();
-	findServer(servers, _Buffer);
-
-	// (void) config;	
-	// _Host = "localhost";
-	// _Server = servers[0];
+	if (findServer(servers, _Buffer) == false) {
+		_Status = BadRequest;
+		_Headers["http-version"] = "HTTP/1.1";
+		return ;
+	}
 	RequestParsing();
 }
 
@@ -37,7 +37,7 @@ void Request::RequestParsing() {
 		ParseHeaders(headers);
 		if (_Status != OK) return ;
 		if (req.size() == 2) {
-			if (req[1].size() > _Server.GetCmbs() * 1000000){
+			if (req[1].size() > _Server->GetCmbs() * 1000000){
 				_Status = PayloadTooLarge;
 				return ;
 			}
@@ -56,23 +56,29 @@ void Request::RequestParsing() {
 	}
 }
 
-void	Request::findServer(std::vector<ServerContext> const & servers, std::string &buffer) {
-	int begin = buffer.find("Host");
-	int end = buffer.find("\r\n", begin);
+bool	Request::findServer(std::vector<ServerContext> const & servers, std::string &buffer) {
+	std::size_t begin = buffer.find("Host");
+	if (begin == std::string::npos)
+		return false;
+	std::size_t end = buffer.find("\r\n", begin);
+	if (end == std::string::npos)
+        return false;
 	_Host = ft_trim(buffer.substr(begin + 5 , end - begin - 5));
-
+	if (_Host.empty())
+		return false;
+	
 	for (std::size_t i = 0; i < servers.size(); ++i) {
 		std::vector<std::string> serverNames = servers[i].GetServerNames();
 		for (std::size_t j = 0; j < serverNames.size(); ++j) {
 			std::vector<std::string> serverPorts = servers[i].GetPortNumbers();
 			for (std::size_t k = 0; k < serverPorts.size(); ++k) {
 				if ((serverNames[j] + ":" + serverPorts[k]) == _Host) {
-					_Server = servers[i];
-					return ;
+					_Server = &servers[i];
+					return true;
 				}
 				else if (serverNames[j] == _Host && serverPorts[k] == "80") {
-					_Server = servers[i];
-					return ;
+					_Server = &servers[i];
+					return true;
 				}
 			}
 		}
@@ -81,8 +87,10 @@ void	Request::findServer(std::vector<ServerContext> const & servers, std::string
 }
 
 void Request::updatePath(const std::string & path) {
-	std::vector<LocationContext> locations = _Server.GetLocationContexts();
+	std::vector<LocationContext> locations = _Server->GetLocationContexts();
 
+	//TODO : handle return directive here
+	// and check which one have the priority (root vs alias vs return)
 	_Path = path;
 	for (std::size_t i = 0; i < locations.size(); ++i){
 		if (locations[i].GetLocationUri().GetUri() == path) {
@@ -99,7 +107,7 @@ void Request::checkMethod(const std::string &path) {
 		_Status = NotImplemented;
 
 	bool methodIsAllowed = false;
-	std::vector<LocationContext> locations = _Server.GetLocationContexts();
+	std::vector<LocationContext> locations = _Server->GetLocationContexts();
 	std::vector<std::string> methods;
 	
 	for (std::size_t i = 0; i < locations.size(); ++i) {
