@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/09 18:00:55 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 19:43:13 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ private:
 	std::string							_HttpVersion;
 	int									_Status;
 	int									_Clientfd;
+	std::map<int, std::string>			_ErrorPage;
 
 public:
 	Response(int clientfd, Request req);

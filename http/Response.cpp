@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/09 16:35:43 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 20:56:20 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ Response::Response(int clientfd, Request req) {
 	_Headers["http-version"] = req.getHttpVersion();
 	_Status = req.getStatus();
 	_Clientfd = clientfd;
+	_ErrorPage = req.getErrorPage();
 }
 
 Response::~Response() {}
@@ -54,8 +55,8 @@ void Response::sendErrorPage(int status) {
 	ss << status;
 	ss >> strStatus;
 
-	if (pathIsFile(strStatus) == 1)
-		sendFile(strStatus);
+	if (_ErrorPage[_Status] != "" && pathIsFile(_ErrorPage[_Status]) == 1)
+		sendFile(_ErrorPage[_Status]);
 	else {
 		std::string error = "<html>\r\n<head><title>Error</title></head>\r\n<body>\r\n<center><h1>";
 		error.append(strStatus + "\t" + ReasonPhrase(status));
@@ -95,6 +96,8 @@ void Response::sendFile(const std::string &filename) {
 	}
 	close(fd);
 }
+
+// TODO : send _Index if it exists
 
 void Response::sendDir(const char *path, const std::string &host) {
 	std::ostringstream headers;

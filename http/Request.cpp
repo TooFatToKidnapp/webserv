@@ -6,12 +6,14 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/11 17:37:41 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 21:14:38 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "Utils.hpp"
+
+// TODO : check AutoIndex
 
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
 	std::vector<ServerContext> servers = config.GetServers();
@@ -86,18 +88,31 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 	throw std::runtime_error("No server context matches the host");
 }
 
+// TODO : still needs to know which one has the priority (index, root, alias, return)
+// and where to look for the index (the directory with or without the root, if it exists)
+
+// I may need to update the way I handle root and alias
+
 void Request::updatePath(const std::string & path) {
 	std::vector<LocationContext> locations = _Server->GetLocationContexts();
 
-	//TODO : handle return directive here
-	// and check which one have the priority (root vs alias vs return)
 	_Path = path;
 	for (std::size_t i = 0; i < locations.size(); ++i){
-		if (locations[i].GetLocationUri().GetUri() == path) {
-			if (locations[i].GetRoot() != "")
+		if (locations[i].GetLocationUri().GetUri() == path || (locations[i].GetLocationUri().GetUri() + '/') == path) {
+			if (!locations[i].GetIndex().empty()) {
+				for (std::size_t j = 0; j < locations[i].GetIndex().size(); ++j) {
+					if (pathIsFile(locations[i].GetIndex()[j]))
+					    _Index = locations[i].GetIndex()[j];
+				}
+			}
+			if (!locations[i].GetRoot().empty())
 				_Path = locations[i].GetRoot() + path;
-			else if (locations[i].GetAlias() != "")
+			else if (!locations[i].GetAlias().empty())
 				_Path = locations[i].GetAlias();
+			else if (!locations[i].GetReturn().GetUrl().empty())
+				_Path = locations[i].GetReturn().GetUrl();
+			if (locations[i].HasErrorPage())
+				_ErrorPage = locations[i].GetErrorPage();
 		}
 	}
 }
@@ -249,4 +264,8 @@ const std::string &Request::getPath() const {
 
 const std::string &Request::getHost() const {
 	return _Host;
+}
+
+const std::map<int, std::string> &Request::getErrorPage() const {
+	return _ErrorPage;
 }
