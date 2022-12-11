@@ -20,7 +20,7 @@ SRC =	./main.cpp\
 		./src/parsing/CheckMethods.cpp
 
 
-FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address
+FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address -pedantic
 
 CC = c++
 
