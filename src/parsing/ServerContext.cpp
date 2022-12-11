@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:31:28 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 16:19:26 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,14 +94,14 @@ ServerContext &ServerContext::operator=(const ServerContext& obj) {
 
 
 int ServerContext::GetDirective(std::string const directive) {
-	const std::string locations[] = {"location", "listen", "server_name", "root", "index", "client_max_body_size", "error_page", "autoindex", "return"};
-	int index = std::find(locations , locations + 9, directive) - locations;
+	const std::string locations[] = {"location", "listen", "server_name", "root", "index", "client_max_body_size", "error_page", "autoindex"};
+	int index = std::find(locations , locations + 8, directive) - locations;
 	return index;
 }
 
 int ServerContext::IsDirective(std::string const directive) {
 	int IsDerective = GetDirective(directive);
-	if (IsDerective < 0 || IsDerective > 8)
+	if (IsDerective < 0 || IsDerective > 7)
 		throw std::invalid_argument("Error: Invalid Derective");
 	else
 		return IsDerective;
@@ -123,7 +123,6 @@ size_t	ServerContext::FindLocationContextEnd(std::string ConfigFile, size_t Pos)
 	return i;
 }
 
-
 void ServerContext::SetServerRoot(std::string val) {
 	ConfigValues::SetRoot(val);
 }
@@ -143,7 +142,6 @@ void ServerContext::SetServerReturn(std::string val) {
 	ConfigValues::SetReturnDir(val);
 }
 
-
 void ServerContext::SetServerName(std::string val) {
 	_CustomServerName = true;
 	_ServerNames.clear();
@@ -157,6 +155,8 @@ void ServerContext::SetServerLocation(std::string val) {
 		_LocationContext.clear();
 	_LocationPos++;
 	LocationContext loca(val,GetRoot());
+	if (GetRoot().compare("") == 0 && loca.GetRoot().compare("") == 0)
+		throw std::invalid_argument("Error: Missing Root Directive befor Location Context.");
 
 	for (size_t i = 0; i < _LocationContext.size(); i++){
 		if (_LocationContext[i].GetLocationUri().GetUri().compare(loca.GetLocationUri().GetUri()) == 0)

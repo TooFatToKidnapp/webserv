@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:28:15 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 15:55:05 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int ac, char *av[]) {
 		vector<ServerContext> var = obj.GetServers();
 		cout << var[0].GetRoot() << "\n";
 		vector<LocationContext> var2 = var[0].GetLocationContexts();
-		cout << var2[1].GetRoot() << "\n";
+		cout << var2[0].GetRoot() << "\n";
 
 	}
 	catch(const std::exception &e) {

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 17:57:00 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:31:23 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 16:06:23 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 
 bool ReturnDir::ValidReturnCode(size_t code){
-		if (code > 999)
+		if (code < 300 || code > 399)
 			return false;
 		return true;
 	}
