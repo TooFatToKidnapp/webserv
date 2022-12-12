@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:30:46 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/12 00:58:54 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void ConfigFileParser::CheckArgs(int ac, char **av) {
 		this->_FileName = av[1];
 	else if (ac == 1){
 		this->_FileName = "./ConfigFiles/default.conf";
-		cout << "Warning: no config file given, the default configuration file is now used" << std::endl;
+		std::cerr << "Warning: no config file given, the default configuration file is now used" << std::endl;
 	}
 	else
 		throw std::invalid_argument("Error: File Extention Is Invalid");
