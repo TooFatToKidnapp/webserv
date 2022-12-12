@@ -6,11 +6,12 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 18:21:47 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:31:40 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/12 01:16:55 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/parsing/utils.hpp"
+#include "./../../headers/parsing/ConfigFileParser.hpp"
 
 size_t StringToSize_T (std::string str) {
 	size_t number = 0;
@@ -221,4 +222,27 @@ void CheckString(int (*func)(int), std::string &str, size_t pos) {
 	std::transform(str.begin() + pos, str.end(), str.begin() + pos, func);
 }
 
-
+void CheckDirectoryValidity(const ConfigFileParser &obj){
+	std::string str;
+	for (size_t i = 0 ; i < obj.GetNumberOfServers() ; i++) {
+		for(size_t j = 0; j < obj.GetServers()[i].GetLocationContexts().size(); j++) {
+			str = obj.GetServers()[i].GetLocationContexts()[j].GetRoot() + obj.GetServers()[i].GetLocationContexts()[j].GetLocationUri().GetInputURI();
+			if (str.back() == '/')
+				str.pop_back();
+			int fd = open(str.c_str(), O_RDONLY);
+			int fd2 = open(str.c_str(), O_WRONLY);
+			if (fd == -1 && fd2 == -1){
+				close(fd);
+				close(fd2);
+				throw std::invalid_argument("Error: Missing Directory [" + str + "]");
+			}
+			else if (fd != -1 && fd2 != -1){
+				close(fd);
+				close(fd2);
+				throw std::invalid_argument("Error: Location Uri Has To Be A Directory [" + str + "]");
+			}
+			close(fd);
+			close(fd2);
+		}
+	}
+}

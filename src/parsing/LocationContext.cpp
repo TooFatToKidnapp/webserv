@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LocationContext.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:48:55 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/09 21:05:33 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 23:16:39 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ LocationContext &LocationContext::operator=(const LocationContext &obj) {
 
 LocationContext::~LocationContext() {}
 
-LocationContext::LocationContext(const LocationContext &obj): ConfigValues(obj){
+LocationContext::LocationContext(const LocationContext &obj): ConfigValues(obj) {
 	*this = obj;
 }
 

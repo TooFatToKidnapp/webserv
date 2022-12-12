@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:33:20 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/16 18:37:15 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 20:22:21 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ enum HostState {
 	h_regnamepctdone,
 	h_port,
 	h_done,
-	h_invalid,
+	h_invalid
 };
 
 

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 15:30:19 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:30:55 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 20:22:32 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ ClientMaxBodySize::ClientMaxBodySize(std::string val) {
 	_val = tmp;
 }
 
-ClientMaxBodySize::~ClientMaxBodySize() {};
+ClientMaxBodySize::~ClientMaxBodySize() {}
 
 size_t ClientMaxBodySize::GetVal() const {
 	return _val;

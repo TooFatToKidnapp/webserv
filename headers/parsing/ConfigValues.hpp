@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigValues.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 12:02:07 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/09 21:05:06 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/08 17:18:18 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ class ConfigValues {
 
 		virtual void SetValue(int const directive, std::string val) = 0;
 		virtual int IsDirective(std::string const directive) = 0;
-		// ConfigValues() {}
+
 		ConfigValues(std::string str);
 		virtual ~ConfigValues();
 		ConfigValues(const ConfigValues &obj);

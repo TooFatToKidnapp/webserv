@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 09:46:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 17:19:10 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/11 20:21:43 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include "./utils.hpp"
 #include <iostream>
 #include <exception>
+#include <fcntl.h>
+#include <unistd.h>
 
 class LocationUri;
 

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/11 20:51:37 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/12 14:50:54 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ private:
 	const ServerContext*				_Server;
 	std::map<int, std::string>			_ErrorPage;
 	std::string							_Index;
+	bool								_AutoIndex;
 
 public:
 	Request(std::string & buffer, ConfigFileParser const &config);
@@ -45,7 +46,9 @@ public:
 	const int &getStatus() const;
 	const std::string &getPath() const;
 	const std::string &getHost() const;
+	const std::string &getIndex() const;
 	const std::map<int, std::string> &getErrorPage() const;
+	bool getAutoIndex() const;
 
 	void updatePath(const std::string & path);
 	void checkMethod(const std::string & path);

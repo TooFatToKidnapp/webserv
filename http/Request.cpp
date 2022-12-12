@@ -6,14 +6,12 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/11 21:14:38 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/12 14:51:04 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "Utils.hpp"
-
-// TODO : check AutoIndex
 
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
 	std::vector<ServerContext> servers = config.GetServers();
@@ -85,13 +83,12 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 			}
 		}
 	}
-	throw std::runtime_error("No server context matches the host");
+	if (servers.size() != 0) {
+		_Server = &servers[0];
+        return true;
+	}
+	return false;
 }
-
-// TODO : still needs to know which one has the priority (index, root, alias, return)
-// and where to look for the index (the directory with or without the root, if it exists)
-
-// I may need to update the way I handle root and alias
 
 void Request::updatePath(const std::string & path) {
 	std::vector<LocationContext> locations = _Server->GetLocationContexts();
@@ -99,20 +96,36 @@ void Request::updatePath(const std::string & path) {
 	_Path = path;
 	for (std::size_t i = 0; i < locations.size(); ++i){
 		if (locations[i].GetLocationUri().GetUri() == path || (locations[i].GetLocationUri().GetUri() + '/') == path) {
-			if (!locations[i].GetIndex().empty()) {
-				for (std::size_t j = 0; j < locations[i].GetIndex().size(); ++j) {
-					if (pathIsFile(locations[i].GetIndex()[j]))
-					    _Index = locations[i].GetIndex()[j];
-				}
+			if (!locations[i].GetReturn().GetUrl().empty()) {
+				_Status = locations[i].GetReturn().GetCode();
+				_Headers["Location"] = locations[i].GetReturn().GetUrl();
+				_HttpVersion = "HTTP/1.1";
 			}
-			if (!locations[i].GetRoot().empty())
+			else if (!locations[i].GetRoot().empty())
 				_Path = locations[i].GetRoot() + path;
 			else if (!locations[i].GetAlias().empty())
 				_Path = locations[i].GetAlias();
-			else if (!locations[i].GetReturn().GetUrl().empty())
-				_Path = locations[i].GetReturn().GetUrl();
+			if (!locations[i].GetIndex().empty()) {
+				for (std::size_t j = 0; j < locations[i].GetIndex().size(); ++j) {
+					std::string fullPath;
+					if (!locations[i].GetReturn().GetUrl().empty())
+						fullPath = locations[i].GetReturn().GetUrl() + path + '/' + locations[i].GetIndex()[j];
+					else if (!locations[i].GetRoot().empty())
+						fullPath = locations[i].GetRoot() + path + '/' + locations[i].GetIndex()[j];
+					else
+						fullPath = locations[i].GetAlias() + path + '/' + locations[i].GetIndex()[j];
+					if (pathIsFile(fullPath) == 1) {
+						_Index = fullPath;
+						break ;
+					}
+				}
+			}
 			if (locations[i].HasErrorPage())
 				_ErrorPage = locations[i].GetErrorPage();
+			if (locations[i].GetAutoIndexDir() && _Index == "")
+				_AutoIndex = true;
+			else
+				_AutoIndex = false;
 		}
 	}
 }
@@ -155,6 +168,7 @@ void Request::ParseStartLine(std::string & str) {
 			_Status = URITooLong;
 		std::vector<std::string> RequestTarget = ft_split(StartLine[1], "?");
 		updatePath(RequestTarget[0]);
+		if (_Status >= 300 && _Status < 400) return;
 		if (pathIsFile(_Path) == 1) {
 			std::fstream check(_Path);
 			if (!check.good())
@@ -268,4 +282,12 @@ const std::string &Request::getHost() const {
 
 const std::map<int, std::string> &Request::getErrorPage() const {
 	return _ErrorPage;
+}
+
+const std::string &Request::getIndex() const {
+	return _Index;
+}
+
+bool Request::getAutoIndex() const {
+	return _AutoIndex;
 }

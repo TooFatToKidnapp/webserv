@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerContext.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/09 21:05:57 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/11 16:19:26 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ _ServerID(0) {
 
 ServerContext::~ServerContext() {}
 
-ServerContext::ServerContext(const ServerContext &obj) : ConfigValues(obj){
+ServerContext::ServerContext(const ServerContext &obj): ConfigValues(obj) {
 	*this = obj;
 }
 
@@ -76,32 +76,32 @@ ServerContext &ServerContext::operator=(const ServerContext& obj) {
 		_ServerNames = obj._ServerNames;
 		_LocationContext = obj._LocationContext;
 		// config val data
-		this->_Root = obj._Root;
-		this->_Index = obj._Index;
-		this->_ClientMaxBodySize = obj._ClientMaxBodySize;
-		this->_ErrorPage = obj._ErrorPage;
-		this->_AutoIndex = obj._AutoIndex;
-		this->_ReturnValue = obj._ReturnValue;
-		this->_RootPath = obj._RootPath;
-		this->_IndexList = obj._IndexList;
-		this->_ClientMaxSize = obj._ClientMaxSize;
-		this->_ErrorPages = obj._ErrorPages;
-		this->_AutoIndexStatus = obj._AutoIndexStatus;
-		this->_ReturnDir = obj._ReturnDir;
+		_Root = obj._Root;
+		_Index = obj._Index;
+		_ClientMaxBodySize = obj._ClientMaxBodySize;
+		_ErrorPage = obj._ErrorPage;
+		_AutoIndex = obj._AutoIndex;
+		_ReturnValue = obj._ReturnValue;
+		_RootPath = obj._RootPath;
+		_IndexList = obj._IndexList;
+		_ClientMaxSize = obj._ClientMaxSize;
+		_ErrorPages = obj._ErrorPages;
+		_AutoIndexStatus = obj._AutoIndexStatus;
+		_ReturnDir = obj._ReturnDir;
 	}
 	return *this;
 }
 
 
 int ServerContext::GetDirective(std::string const directive) {
-	const std::string locations[] = {"location", "listen", "server_name", "root", "index", "client_max_body_size", "error_page", "autoindex", "return"};
-	int index = std::find(locations , locations + 9, directive) - locations;
+	const std::string locations[] = {"location", "listen", "server_name", "root", "index", "client_max_body_size", "error_page", "autoindex"};
+	int index = std::find(locations , locations + 8, directive) - locations;
 	return index;
 }
 
 int ServerContext::IsDirective(std::string const directive) {
 	int IsDerective = GetDirective(directive);
-	if (IsDerective < 0 || IsDerective > 8)
+	if (IsDerective < 0 || IsDerective > 7)
 		throw std::invalid_argument("Error: Invalid Derective");
 	else
 		return IsDerective;
@@ -123,7 +123,6 @@ size_t	ServerContext::FindLocationContextEnd(std::string ConfigFile, size_t Pos)
 	return i;
 }
 
-
 void ServerContext::SetServerRoot(std::string val) {
 	ConfigValues::SetRoot(val);
 }
@@ -143,7 +142,6 @@ void ServerContext::SetServerReturn(std::string val) {
 	ConfigValues::SetReturnDir(val);
 }
 
-
 void ServerContext::SetServerName(std::string val) {
 	_CustomServerName = true;
 	_ServerNames.clear();
@@ -157,6 +155,8 @@ void ServerContext::SetServerLocation(std::string val) {
 		_LocationContext.clear();
 	_LocationPos++;
 	LocationContext loca(val,GetRoot());
+	if (GetRoot().compare("") == 0 && loca.GetRoot().compare("") == 0)
+		throw std::invalid_argument("Error: Missing Root Directive befor Location Context.");
 
 	for (size_t i = 0; i < _LocationContext.size(); i++){
 		if (_LocationContext[i].GetLocationUri().GetUri().compare(loca.GetLocationUri().GetUri()) == 0)

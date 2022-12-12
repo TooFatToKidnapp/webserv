@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/11 19:42:31 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/12 15:18:53 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int main(int ac, char *av[]) {
 	try {
 		ConfigFileParser conf;
 		conf.ParseFile(ac, av);
+		// CheckDirectoryValidity(conf);
 		
 		Socket Sct(80);
 		for (;;) {
@@ -36,8 +37,10 @@ int main(int ac, char *av[]) {
 				close (new_fd);
 				return 1;
 			}
-			else if (valread == 0)
+			else if (valread == 0) {
+				close (new_fd);
 				continue ;
+			}
 			buffer[valread] = '\0';
 			std::string tmp(buffer);
 			Request req(tmp, conf);
@@ -53,7 +56,7 @@ int main(int ac, char *av[]) {
 		}
 	}
 	catch(const std::exception &e) {
-		cerr << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/11 20:56:20 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/12 15:08:19 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ Response::Response(int clientfd, Request req) {
 	_Status = req.getStatus();
 	_Clientfd = clientfd;
 	_ErrorPage = req.getErrorPage();
+	_Index = req.getIndex();
+	_AutoIndex = req.getAutoIndex();
 }
 
 Response::~Response() {}
@@ -68,7 +70,10 @@ void Response::sendErrorPage(int status) {
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Content-Type: " << "text/html\r\n"
 		<< "Content-Length: " << error.size() << "\r\n"
-		<< "Connection: " << "close\r\n\r\n";
+		<< "Connection: " << "close\r\n";
+		if (_Headers.find("Location") != _Headers.end())
+			headers << "Location: " << _Headers["Location"] << "\r\n";
+		headers << "\r\n";
 
 		if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
 			throw std::runtime_error("Could not send the headers");
@@ -97,28 +102,37 @@ void Response::sendFile(const std::string &filename) {
 	close(fd);
 }
 
-// TODO : send _Index if it exists
-
 void Response::sendDir(const char *path, const std::string &host) {
+	if (_Index != "") {
+		int fd = open(_Index.c_str(), O_RDWR);
+		if (fd == -1) {
+			sendErrorPage(Forbidden);
+		} else {
+			sendFile(_Index);
+			close (fd);
+		}
+		return ;
+	}
+	if (_AutoIndex == false) {
+		sendErrorPage(Forbidden);
+        return ;
+	}
+
 	std::ostringstream headers;
 	std::string dirName(path);
 	struct dirent *dirEntry;
     DIR *dir = opendir(path);
-
 	headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
 	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
 		throw std::runtime_error("Could not send the body");
-
     std::string page = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<title>" + dirName + "</title>\r\n\
 	</head>\r\n<body>\r\n<h1>Webserv</h1>\r\n<p>\r\n";
-
     while ((dirEntry = readdir(dir)) != NULL)
 		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
-
 	closedir(dir);
 	if (send(_Clientfd, page.c_str(), page.size(), 0) == -1)
 		throw std::runtime_error("Could not send the body");

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:39:49 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:30:12 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/12 01:00:21 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,6 @@
 #include <stdexcept>
 #include <cstddef> // size_t
 #include <stdlib.h> // exit()
-
-using std::cout;
-using std::cerr;
-using std::endl;
-
 
 class ConfigFileParser {
 
