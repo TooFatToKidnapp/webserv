@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/12 14:51:04 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/12 17:02:21 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,14 +95,16 @@ void Request::updatePath(const std::string & path) {
 
 	_Path = path;
 	for (std::size_t i = 0; i < locations.size(); ++i){
-		if (locations[i].GetLocationUri().GetUri() == path || (locations[i].GetLocationUri().GetUri() + '/') == path) {
+		if (!strncmp(locations[i].GetLocationUri().GetUri().c_str(), path.c_str(), locations[i].GetLocationUri().GetUri().size())) {
 			if (!locations[i].GetReturn().GetUrl().empty()) {
 				_Status = locations[i].GetReturn().GetCode();
 				_Headers["Location"] = locations[i].GetReturn().GetUrl();
 				_HttpVersion = "HTTP/1.1";
 			}
-			else if (!locations[i].GetRoot().empty())
-				_Path = locations[i].GetRoot() + path;
+			else if (!locations[i].GetRoot().empty()) {
+				if (strncmp(locations[i].GetRoot().c_str(), path.c_str(), locations[i].GetRoot().size()))
+					_Path = locations[i].GetRoot() + path;
+			}
 			else if (!locations[i].GetAlias().empty())
 				_Path = locations[i].GetAlias();
 			if (!locations[i].GetIndex().empty()) {
