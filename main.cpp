@@ -6,54 +6,27 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/12 15:18:53 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 15:53:56 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./headers/parsing/ConfigFileParser.hpp"
-#include "./headers/parsing/utils.hpp"
-
-#include "http/Request.hpp"
-#include "http/Response.hpp"
-#include "http/Socket.hpp"
-
-#include <vector>
-#include <map>
+#include "http/codes.hpp"
+#include "http/Server.hpp"
 
 int main(int ac, char *av[]) {
 	try {
 		ConfigFileParser conf;
 		conf.ParseFile(ac, av);
-		// CheckDirectoryValidity(conf);
-		
-		Socket Sct(80);
-		for (;;) {
-			int new_fd = Socket::acceptConnection(Sct, Sct.getAddress(), Sct.getAddrlen());
-			Socket::testConnection(new_fd, "could not accept the connection");
-			char buffer[30001] = {0};
+		std::multimap<std::string, std::string> nmap;
+        std::pair<std::string, std::string> firstip("8080", "127.0.0.1");
+        std::pair<std::string, std::string> isip("9090", "127.0.0.1");
+        std::pair<std::string, std::string> secondip("1234", "127.0.0.1");
+        nmap.insert(firstip);
+        nmap.insert(secondip);
+        nmap.insert(isip);
 
-			ssize_t valread = recv( new_fd , buffer, 30000, 0);
-			if (valread == -1) {
-				close (new_fd);
-				return 1;
-			}
-			else if (valread == 0) {
-				close (new_fd);
-				continue ;
-			}
-			buffer[valread] = '\0';
-			std::string tmp(buffer);
-			Request req(tmp, conf);
-			Response res(new_fd, req);
-			if (res.getStatus() != OK)
-				res.sendErrorPage(res.getStatus());
-			else if (!pathIsFile(req.getPath())) {
-				res.sendDir(req.getPath().c_str(), req.getHost());
-			}
-			else
-				res.sendFile(req.getPath());
-			close (new_fd);
-		}
+		Server server(nmap);
+		server.Run(conf);
 	}
 	catch(const std::exception &e) {
 		std::cerr << e.what() << std::endl;

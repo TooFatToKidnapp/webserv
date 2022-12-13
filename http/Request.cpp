@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/12 17:02:21 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 15:46:08 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,14 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 		return false;
 	
 	for (std::size_t i = 0; i < servers.size(); ++i) {
+		std::multimap<std::string, std::string> listeners = servers[i].GetListen();
+		std::multimap<std::string, std::string>::iterator it;
+		for (it = listeners.begin(); it!= listeners.end(); ++it) {
+			if ((it->second + ":" + it->first) == _Host) {
+				_Server = &servers[i];
+				return true;
+			}
+		}
 		std::vector<std::string> serverNames = servers[i].GetServerNames();
 		for (std::size_t j = 0; j < serverNames.size(); ++j) {
 			std::vector<std::string> serverPorts = servers[i].GetPortNumbers();
@@ -82,10 +90,6 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 				}
 			}
 		}
-	}
-	if (servers.size() != 0) {
-		_Server = &servers[0];
-        return true;
 	}
 	return false;
 }

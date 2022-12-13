@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 13:03:29 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/09 15:25:19 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 15:38:23 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,9 @@ std::string getDate() {
 
 	std::time(&t_time);
 	if ((s_time = std::gmtime(&t_time)) == 0)
-		exit (1);
-
+		throw std::runtime_error("getDate function failed");
 	if (!std::strftime(date, 80, "%a, %d %b %Y %T GMT", s_time))
-		exit (1);
+		throw std::runtime_error("getDate function failed");
 	return date;
 }
 

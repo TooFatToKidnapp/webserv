@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/12 17:20:00 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 15:35:48 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ void Response::sendDir(const char *path, const std::string &host) {
 		sendErrorPage(Forbidden);
         return ;
 	}
-
 	std::ostringstream headers;
 	std::string dirName(path);
 	struct dirent *dirEntry;
@@ -134,8 +133,8 @@ void Response::sendDir(const char *path, const std::string &host) {
 		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
 	closedir(dir);
-	if (send(_Clientfd, page.c_str(), page.size(), 0) == -1)
-		throw std::runtime_error("Could not send the body");
+	if (send(_Clientfd, page.c_str(), strlen(page.c_str()), 0) < 0)
+		throw std::invalid_argument("Could not send the body");
 }
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {

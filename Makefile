@@ -19,8 +19,8 @@ SRC =	./main.cpp\
 		./src/parsing/Listen.cpp\
 		./src/parsing/CheckMethods.cpp\
 		./http/Request.cpp\
+		./http/Server.cpp\
 		./http/Response.cpp\
-		./http/Socket.cpp\
 		./http/Utils.cpp
 
 
@@ -48,6 +48,7 @@ INC =	./headers/parsing/ConfigFileParser.hpp\
 		./headers/parsing/CheckMethods.hpp\
 		./http/Request.hpp\
 		./http/Response.hpp\
+		./http/Server.hpp\
 		./http/Utils.hpp\
 		./http/codes.hpp
 

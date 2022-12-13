@@ -6,11 +6,14 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:54 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/09 12:44:46 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 14:01:12 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+#define RUNNING 1
+#include <netdb.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <dirent.h>
 #include <unistd.h>
