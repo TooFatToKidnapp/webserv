@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/12 14:50:54 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 20:54:14 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,6 @@ public:
 	void updatePath(const std::string & path);
 	void checkMethod(const std::string & path);
 	bool findServer(std::vector<ServerContext> const & servers, std::string &buffer);
+	const ServerContext& GetServerBlock() const;
+	const std::vector<std::string>& GetBody() const;
 };

@@ -18,10 +18,11 @@ SRC =	./main.cpp\
 		./src/parsing/LocationUri.cpp\
 		./src/parsing/Listen.cpp\
 		./src/parsing/CheckMethods.cpp\
-		./http/Request.cpp\
-		./http/Server.cpp\
-		./http/Response.cpp\
-		./http/Utils.cpp
+		./src/http/Request.cpp\
+		./src/http/Server.cpp\
+		./src/http/Response.cpp\
+		./src/http/Utils.cpp\
+#		./src/cgi/CGI.cpp
 
 
 FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address -pedantic
@@ -46,11 +47,12 @@ INC =	./headers/parsing/ConfigFileParser.hpp\
 		./headers/parsing/Listen.hpp\
 		./headers/parsing/HostStateParser.hpp\
 		./headers/parsing/CheckMethods.hpp\
-		./http/Request.hpp\
-		./http/Response.hpp\
-		./http/Server.hpp\
-		./http/Utils.hpp\
-		./http/codes.hpp
+		./headers/http/Request.hpp\
+		./headers/http/Response.hpp\
+		./headers/http/Server.hpp\
+		./headers/http/Utils.hpp\
+		./headers/http/codes.hpp\
+#		./headers/cgi/CGI.hpp
 
 
 OBJ = $(SRC:.cpp=.o)

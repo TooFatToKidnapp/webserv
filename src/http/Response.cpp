@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 15:35:48 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 20:44:50 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Response.hpp"
+#include "./../../headers/http/Response.hpp"
 
 Response::Response(int clientfd, Request req) {
 	_Headers = req.getHeaders();
@@ -83,7 +83,7 @@ void Response::sendErrorPage(int status) {
 	}
 }
 
-void Response::sendFile(const std::string &filename) {	
+void Response::sendFile(const std::string &filename) {
 	char buffer[100001] = {0};
 	int filelen = getFileLength(filename);
 	int fd = open(filename.c_str(), O_RDONLY);
@@ -139,7 +139,7 @@ void Response::sendDir(const char *path, const std::string &host) {
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {
     std::stringstream	ss;
-	
+
 	std::string dir;
 	if (dirName[dirName.length() - 1] != '/')
 		dir = dirName + "/" + dirEntry;

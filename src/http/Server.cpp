@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 15:26:33 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 20:44:52 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "./../../headers/http/Server.hpp"
 #include <signal.h>
 Server::Server(std::multimap<std::string, std::string> &ipport)
 {
@@ -48,7 +48,7 @@ std::string	Server::receive_data(int sockfd, int& errnum)
 	ioctl(sockfd, FIONREAD, &nbytes);
 	std::vector<char> 	buffer(nbytes);
 	std::string			rcv;
-	
+
 
 	valread = recv(sockfd, &buffer[0], nbytes, 0);
 	if (valread < 0)
@@ -79,13 +79,13 @@ void	Server::Run(ConfigFileParser & conf)
 			FD_SET(i->first, &readfds);
 			max_sd = i->first;
 		}
-		for (int i = 0 ; i < max_clients ; i++)  
-        {  
-            int sd = client_socket[i];  
-            if(sd > 0)  
-                FD_SET(sd, &readfds);  
-            if(sd > max_sd)  
-                max_sd = sd;  
+		for (int i = 0 ; i < max_clients ; i++)
+        {
+            int sd = client_socket[i];
+            if(sd > 0)
+                FD_SET(sd, &readfds);
+            if(sd > max_sd)
+                max_sd = sd;
         }
         if (select(max_sd + 1, &readfds, NULL, NULL, NULL) < 0)
 			throw std::invalid_argument("select: error while selecting the fds");
@@ -100,7 +100,7 @@ void	Server::Run(ConfigFileParser & conf)
 				setsockopt(newsockfd, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(optval));
 				while (id < max_clients)
 				{
-					if(client_socket[id] == 0)  
+					if(client_socket[id] == 0)
 					{
 						client_socket[id] = newsockfd;
 						break;
@@ -109,12 +109,12 @@ void	Server::Run(ConfigFileParser & conf)
 				break;
 			}
 		}
-		for (int i = 0; i < max_clients; i++)  
-        {  
-            int temp = client_socket[i];  
+		for (int i = 0; i < max_clients; i++)
+        {
+            int temp = client_socket[i];
 			std::string request;
-            if (FD_ISSET(temp, &readfds))  
-            {  
+            if (FD_ISSET(temp, &readfds))
+            {
 				try
 				{
 					int errnum = 0;
@@ -134,12 +134,12 @@ void	Server::Run(ConfigFileParser & conf)
 						res.sendErrorPage(res.getStatus());
 					}
 					else if (!pathIsFile(req.getPath())) {
-					
+
 						res.sendDir(req.getPath().c_str(), req.getHost());
 					}
 					else
 					{
-						
+
 						res.sendFile(req.getPath());
 					}
 					close(temp);
@@ -151,7 +151,7 @@ void	Server::Run(ConfigFileParser & conf)
 					client_socket[i] = 0;
 					std::cerr << e.what() << '\n';
 				}
-            }  
+            }
 		}
 	}
 }

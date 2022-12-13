@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codes.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 11:37:54 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 14:01:12 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 20:47:03 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@
 #include <fcntl.h>
 #include <ctime>
 #include <string>
-#include "../headers/parsing/ServerContext.hpp"
-#include "../headers/parsing/ConfigFileParser.hpp"
+#include "./../parsing/ServerContext.hpp"
+#include "./../parsing/ConfigFileParser.hpp"
 
 enum Code
 {
@@ -104,5 +104,5 @@ enum Code
 	InsufficientStorage          	= 507,
 	LoopDetected                 	= 508,
 	NotExtended                  	= 510,
-	NetworkAuthenticationRequired	= 511,
+	NetworkAuthenticationRequired	= 511
 };

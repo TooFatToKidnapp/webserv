@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 15:46:08 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/13 20:54:42 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Request.hpp"
-#include "Utils.hpp"
+#include "./../../headers/http/Request.hpp"
+#include "./../../headers/http/Utils.hpp"
 
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
 	std::vector<ServerContext> servers = config.GetServers();
@@ -66,7 +66,7 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 	_Host = ft_trim(buffer.substr(begin + 5 , end - begin - 5));
 	if (_Host.empty())
 		return false;
-	
+
 	for (std::size_t i = 0; i < servers.size(); ++i) {
 		std::multimap<std::string, std::string> listeners = servers[i].GetListen();
 		std::multimap<std::string, std::string>::iterator it;
@@ -143,7 +143,7 @@ void Request::checkMethod(const std::string &path) {
 	bool methodIsAllowed = false;
 	std::vector<LocationContext> locations = _Server->GetLocationContexts();
 	std::vector<std::string> methods;
-	
+
 	for (std::size_t i = 0; i < locations.size(); ++i) {
 		if (path == locations[i].GetLocationUri().GetUri()) {
 			methods = locations[i].GetMethods().GetMethods();
@@ -156,7 +156,7 @@ void Request::checkMethod(const std::string &path) {
 		for (std::size_t i = 0; i < methods.size(); ++i) {
 			if (_Method == methods[i]) {
 				methodIsAllowed = true;
-				break ;			
+				break ;
 			}
 		}
 	}
@@ -215,7 +215,7 @@ void Request::ParseHeaders(std::vector<std::string> & headers) {
 		if (std::isspace(headers[i][0]) || std::isspace(headers[i][headers.size() - 1]))
 			continue ;
 		std::size_t pos = headers[i].find(":");
-		if (pos == std::string::npos || (headers[i][pos - 1] && std::isspace(headers[i][pos - 1]))) { 
+		if (pos == std::string::npos || (headers[i][pos - 1] && std::isspace(headers[i][pos - 1]))) {
 			_Status = BadRequest;
 			return ;
 		}
@@ -239,7 +239,7 @@ void Request::ParseChunckedBody(std::string &body) {
 			ss.clear();
 			ss << std::hex << tmpBody[i];
 			ss >> size;
-		}		
+		}
 		else {
 			if (size != tmpBody[i].size()) {
 				_Status = BadRequest;
@@ -297,3 +297,12 @@ const std::string &Request::getIndex() const {
 bool Request::getAutoIndex() const {
 	return _AutoIndex;
 }
+
+const ServerContext& Request::GetServerBlock() const {
+	return *_Server;
+}
+
+const std::vector<std::string>& Request::GetBody() const {
+	return _Body;
+}
+
