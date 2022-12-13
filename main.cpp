@@ -6,30 +6,30 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/24 15:35:54 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/12 01:19:58 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/13 18:59:52 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./headers/parsing/ConfigFileParser.hpp"
-#include "./headers/parsing/utils.hpp"
-#include <vector>
-#include <map>
-
-using namespace std;
+#include "http/codes.hpp"
+#include "http/Server.hpp"
 
 int main(int ac, char *av[]) {
 	try {
-		ConfigFileParser obj;
-		obj.ParseFile(ac, av);
-		CheckDirectoryValidity(obj); // check if the directorys in server context are valid
-		vector<ServerContext> var = obj.GetServers();
-		cout << var[0].GetRoot() << "\n";
-		vector<LocationContext> var2 = var[0].GetLocationContexts();
-		cout << var2[0].GetRoot() << "\n";
+		ConfigFileParser conf;
+		conf.ParseFile(ac, av);
+		std::multimap<std::string, std::string> nmap;
+        std::pair<std::string, std::string> firstip("8080", "127.0.0.1");
+        std::pair<std::string, std::string> isip("9090", "127.0.0.1");
+        std::pair<std::string, std::string> secondip("1234", "127.0.0.1");
+        nmap.insert(firstip);
+        nmap.insert(secondip);
+        nmap.insert(isip);
 
+		Server server(nmap);
+		server.Run(conf);
 	}
 	catch(const std::exception &e) {
-		cerr << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 	return 0;
 }

@@ -17,7 +17,11 @@ SRC =	./main.cpp\
 		./src/parsing/ParseCGI.cpp\
 		./src/parsing/LocationUri.cpp\
 		./src/parsing/Listen.cpp\
-		./src/parsing/CheckMethods.cpp
+		./src/parsing/CheckMethods.cpp\
+		./http/Request.cpp\
+		./http/Server.cpp\
+		./http/Response.cpp\
+		./http/Utils.cpp
 
 
 FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address -pedantic
@@ -41,14 +45,19 @@ INC =	./headers/parsing/ConfigFileParser.hpp\
 		./headers/parsing/LocationUri.hpp\
 		./headers/parsing/Listen.hpp\
 		./headers/parsing/HostStateParser.hpp\
-		./headers/parsing/CheckMethods.hpp
+		./headers/parsing/CheckMethods.hpp\
+		./http/Request.hpp\
+		./http/Response.hpp\
+		./http/Server.hpp\
+		./http/Utils.hpp\
+		./http/codes.hpp
 
 
 OBJ = $(SRC:.cpp=.o)
 
 all : $(NAME)
 
-$(NAME) : $(OBJ) $(INC)
+$(NAME) : $(OBJ)
 	$(CC) $(FLAGS) $(OBJ) -o $(NAME)
 
 %.o : %.cpp $(INC)
