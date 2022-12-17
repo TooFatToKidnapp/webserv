@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 18:33:36 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/13 20:52:16 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/16 21:01:07 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "./../http/Request.hpp"
 
-extern char **env;
+char **env;
 
 class CGI {
 

@@ -6,20 +6,21 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 20:44:52 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/17 03:34:46 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/http/Server.hpp"
 #include <signal.h>
-Server::Server(std::multimap<std::string, std::string> &ipport)
+
+Server::Server(const std::multimap<std::string, std::string> &ipport)
 {
 	addrinfo hints, *servinfo;
 	std::memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
-	std::multimap<std::string, std::string>::iterator it =  ipport.begin();
-	std::multimap<std::string, std::string>::iterator it2 =  ipport.end();
+	std::multimap<std::string, std::string>::const_iterator it =  ipport.begin();
+	std::multimap<std::string, std::string>::const_iterator it2 =  ipport.end();
 	for (int i = 0; it != it2; ++it, i++) {
 		int newsock;
 		std::cout << it->first << " " << it->second << "\n";
@@ -34,9 +35,9 @@ Server::Server(std::multimap<std::string, std::string> &ipport)
 		var.first = newsock;
 		var.second = servinfo;
 		this->servers.push_back(var);
-		if (bind(this->servers[i].first, this->servers[i].second->ai_addr, this->servers[i].second->ai_addrlen) == -1)
+		if (bind(this->servers[i].first, (const struct sockaddr*)(this->servers[i].second->ai_addr), this->servers[i].second->ai_addrlen) == -1)
 			throw std::invalid_argument(strerror(errno));
-		if (listen(this->servers[i].first, 2) == -1)
+		if (listen(this->servers[i].first, 50) == -1)
 			throw std::invalid_argument(strerror(errno));
 	}
 }

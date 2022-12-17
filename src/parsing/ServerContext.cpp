@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/11 16:19:26 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/17 03:09:29 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,7 @@ std::vector<LocationContext> ServerContext::GetLocationContexts() const {
 	return _LocationContext;
 }
 
-std::multimap<std::string, std::string> ServerContext::GetListen() const {
+const std::multimap<std::string, std::string> &ServerContext::GetListen() const {
 	return _Listen;
 }
 std::string ServerContext::GetIpAddress() const {

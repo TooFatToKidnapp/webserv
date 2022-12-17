@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 14:21:59 by obouadel          #+#    #+#             */
-/*   Updated: 2022/12/13 20:47:09 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/17 03:03:08 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ private:
 	int estatus;
 	std::vector<std::pair<int, addrinfo*> > servers;
 public:
-	Server(std::multimap<std::string, std::string> &ipport);
-	void	Run(ConfigFileParser & conf);
+	Server(const std::multimap<std::string, std::string> &ipport);
+	void Run(ConfigFileParser & conf);
 	static std::string receive_data(int sockfd, int &errnum);
 	~Server();
 };

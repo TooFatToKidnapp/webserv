@@ -22,7 +22,7 @@ SRC =	./main.cpp\
 		./src/http/Server.cpp\
 		./src/http/Response.cpp\
 		./src/http/Utils.cpp\
-#		./src/cgi/CGI.cpp
+		./src/cgi/CGI.cpp
 
 
 FLAGS = -Wall -Werror -Wextra -std=c++98 -g -fsanitize=address -pedantic
@@ -52,7 +52,7 @@ INC =	./headers/parsing/ConfigFileParser.hpp\
 		./headers/http/Server.hpp\
 		./headers/http/Utils.hpp\
 		./headers/http/codes.hpp\
-#		./headers/cgi/CGI.hpp
+		./headers/cgi/CGI.hpp
 
 
 OBJ = $(SRC:.cpp=.o)
