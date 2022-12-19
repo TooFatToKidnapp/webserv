@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: obouadel <obouadel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 14:21:59 by obouadel          #+#    #+#             */
-/*   Updated: 2022/12/13 15:27:18 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/18 14:04:30 by obouadel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@
 class Server
 {
 private:
-	int estatus;
-	std::vector<std::pair<int, addrinfo*> > servers;
+	std::vector<std::pair<int, sockaddr_in> > servers;
 public:
 	Server(std::multimap<std::string, std::string> &ipport);
 	void	Run(ConfigFileParser & conf);

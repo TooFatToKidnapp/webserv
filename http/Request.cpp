@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: obouadel <obouadel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 15:46:08 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:30:07 by obouadel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 		std::multimap<std::string, std::string> listeners = servers[i].GetListen();
 		std::multimap<std::string, std::string>::iterator it;
 		for (it = listeners.begin(); it!= listeners.end(); ++it) {
-			if ((it->second + ":" + it->first) == _Host) {
+			if (((it->second + ":" + it->first) == _Host) || (it->second == _Host && it->first == "80")) {
+				std::cout << it->second << ":" << it->first << '\n';
 				_Server = &servers[i];
 				return true;
 			}
