@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/12 14:50:54 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:52:45 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ private:
 	std::string							_Method;
 	std::string							_Path;
 	std::string							_Query;
-	std::string							_HttpVersion;
 	std::map<std::string, std::string>	_Headers;
 	std::map<std::string, std::string>	_QueryMap;
 	std::vector<std::string>			_Body;
@@ -41,7 +40,6 @@ public:
 	void ParseBody(std::string &body);
 	void ParseQuery(std::string & query);
 
-	const std::string &getHttpVersion() const;
 	const std::map<std::string, std::string> &getHeaders() const;
 	const int &getStatus() const;
 	const std::string &getPath() const;

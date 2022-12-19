@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: obouadel <obouadel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/19 14:34:29 by obouadel         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:49:24 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include <limits.h>
-#include <signal.h>
+
 Server::Server(std::multimap<std::string, std::string> &ipport)
 {
 	// addrinfo hints, *servinfo;
@@ -135,18 +135,11 @@ void	Server::Run(ConfigFileParser & conf)
 					Request req(request, conf);
 					Response res(temp, req);
 					if (res.getStatus() != OK)
-					{
 						res.sendErrorPage(res.getStatus());
-					}
-					else if (!pathIsFile(req.getPath())) {
-					
+					else if (!pathIsFile(req.getPath()))
 						res.sendDir(req.getPath().c_str(), req.getHost());
-					}
 					else
-					{
-						
 						res.sendFile(req.getPath());
-					}
 					close(temp);
 					client_socket[i] = 0;
 				}

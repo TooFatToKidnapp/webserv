@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: obouadel <obouadel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/19 14:17:53 by obouadel         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:57:44 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 Response::Response(int clientfd, Request req) {
 	_Headers = req.getHeaders();
 	_Headers["Date"] = getDate();
-	_Headers["http-version"] = req.getHttpVersion();
 	_Status = req.getStatus();
 	_Clientfd = clientfd;
 	_ErrorPage = req.getErrorPage();
@@ -39,7 +38,7 @@ void Response::sendHeaders(const std::string &filename) {
 		_Headers["Content-Type"] = "text/plain";
 	}
 
-	headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+	headers << "HTTP/1.1 " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Content-Type: " << _Headers["Content-Type"] << "\r\n"
 		<< "Content-Length: " << getFileLength(filename) << "\r\n"
@@ -66,7 +65,7 @@ void Response::sendErrorPage(int status) {
 
 		std::ostringstream headers;
 
-		headers << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+		headers << "HTTP/1.1 " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Content-Type: " << "text/html\r\n"
 		<< "Content-Length: " << error.size() << "\r\n"
@@ -121,7 +120,7 @@ void Response::sendDir(const char *path, const std::string &host) {
 	std::string dirName(path);
 	struct dirent *dirEntry;
     DIR *dir = opendir(path);
-	headers << _Headers["http-version"] << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+	headers << "HTTP/1.1 " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
@@ -133,8 +132,8 @@ void Response::sendDir(const char *path, const std::string &host) {
 		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
 	closedir(dir);
-	if (send(_Clientfd, page.c_str(), strlen(page.c_str()), 0) < 0)
-		throw std::invalid_argument("Could not send the body");
+	if (send(_Clientfd, page.c_str(), page.size(), 0) < 0)
+		throw std::runtime_error("Could not send the body");
 }
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {
