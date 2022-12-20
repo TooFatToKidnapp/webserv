@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/20 14:04:21 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/20 22:05:56 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,8 @@ public:
 	}
 	const std::string &GetMethod() const {
 		return _Method;
+	}
+	const std::string &GetQuery() const {
+		return _Query;
 	}
 };
