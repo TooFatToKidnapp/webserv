@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 20:44:50 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:04:20 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,34 @@ Response::Response(int clientfd, Request req) {
 }
 
 Response::~Response() {}
+
+void Response::cgi(Request const &obj){
+	std::string tmp = obj.getHost();
+	size_t pos = tmp.find_first_of(":");
+	short port;
+	std::string para;
+	if (pos == std::string::npos)
+		port = 80;
+	else{
+		pos++;
+		port = stoi(tmp.substr(pos));
+	}
+	CGI _cgi(obj, port);
+	_cgi.GetOutput();
+
+	std::ostringstream headers;
+
+	headers << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+	<< "Date: " << _Headers["Date"] << "\r\n"
+	<< "Content-Type: " << "text/html" << "\r\n"
+	<< "Content-Length: " << _cgi.GetOutput().length() << "\r\n"
+	<< "Connection: " << _Headers["Connection"] << "\r\n"
+	<< "\r\n";
+	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
+		throw std::runtime_error("Could not send the headers");
+	if (send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0) == -1)
+		throw std::runtime_error("Could not send the headers");
+}
 
 void Response::sendHeaders(const std::string &filename) {
 	std::ifstream file(filename);

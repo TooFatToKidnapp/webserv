@@ -6,12 +6,11 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:57:41 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/08 18:31:21 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:08:04 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/parsing/ParseCGI.hpp"
-
 
 ParseCGI::ParseCGI() {}
 
@@ -49,7 +48,7 @@ std::string ParseCGI::GetFileExtention() const {
 	return _File;
 }
 
-std::string ParseCGI::GetFilePath() const {
+const std::string &ParseCGI::GetFilePath() const {
 	return _Path;
 }
 

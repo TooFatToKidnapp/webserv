@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 20:54:42 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:03:51 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 #include "./../../headers/http/Utils.hpp"
 
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
-	std::vector<ServerContext> servers = config.GetServers();
-	if (findServer(servers, _Buffer) == false) {
+	if (findServer(config.GetServers(), _Buffer) == false) {
 		_Status = BadRequest;
 		_Headers["http-version"] = "HTTP/1.1";
 		return ;
@@ -98,7 +97,10 @@ void Request::updatePath(const std::string & path) {
 	std::vector<LocationContext> locations = _Server->GetLocationContexts();
 
 	_Path = path;
-	for (std::size_t i = 0; i < locations.size(); ++i){
+	std::size_t i;
+	bool enter = false;
+	for (i = 0; i < locations.size(); ++i){
+		enter = true;
 		if (!strncmp(locations[i].GetLocationUri().GetUri().c_str(), path.c_str(), locations[i].GetLocationUri().GetUri().size())) {
 			if (!locations[i].GetReturn().GetUrl().empty()) {
 				_Status = locations[i].GetReturn().GetCode();
@@ -132,8 +134,11 @@ void Request::updatePath(const std::string & path) {
 				_AutoIndex = true;
 			else
 				_AutoIndex = false;
+			_Location = &_Server->GetLocationContexts()[i];
 		}
 	}
+	if(enter == false)
+		_Location = NULL;
 }
 
 void Request::checkMethod(const std::string &path) {

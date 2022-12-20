@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:49:22 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/17 03:09:50 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:03:10 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ class ServerContext : public ConfigValues {
 		bool HasLocation(std::string target);
 		virtual bool IsSet(std::string directive);
 
-		std::vector<LocationContext> GetLocationContexts() const;
+		const std::vector<LocationContext>& GetLocationContexts() const;
 		const std::multimap<std::string, std::string> &GetListen()const;
 		std::string GetIpAddress() const;
 		std::vector<std::string> GetPortNumbers() const;

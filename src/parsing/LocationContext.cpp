@@ -6,11 +6,12 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 16:48:55 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/11 23:16:39 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:07:45 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/parsing/LocationContext.hpp"
+
 
 
 LocationContext::LocationContext(std::string root): ConfigValues(root),
@@ -74,7 +75,7 @@ std::string LocationContext::GetAlias() const {
 	return _AliasString;
 }
 
-ParseCGI LocationContext::GetCGI() const {
+const ParseCGI &LocationContext::GetCGI() const {
 	return _CGI_PASS;
 }
 

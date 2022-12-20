@@ -6,22 +6,32 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 19:24:30 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/16 20:27:22 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:03:29 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/cgi/CGI.hpp"
 
+char **env;
+
+const std::string names[] = {
+	"DOCUMENT_ROOT", "SERVER_SOFTWARE"
+	,"SERVER_PORT","GATEWAY_INTERFACE"
+	,"SERVER_NAME","SCRIPT_FILENAME"
+	,"REQUEST_METHOD", "SERVER_PROTOCOL"
+	, "CONTENT_TYPE", "CONTENT_LENGTH"
+	, "PATH_INFO", "QUERY_STRING"
+	, "HTTP_COOKIE", "SCRIPT_NAME"
+	, "REDIRECT_STATUS", };
+
+
 CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port) {
 
-	for (size_t i = 0; i < rec.GetServerBlock().GetLocationContexts().size(); i++) {
-		if (rec.GetServerBlock().GetLocationContexts()[i].GetCGI().GetFilePath().compare("") == 0)
-			continue;
-		this->_CgiPath = rec.GetServerBlock().GetLocationContexts()[i].GetCGI().GetFilePath();
-	}
-	if (_CgiPath.compare("") == 0)
-		throw std::invalid_argument("Error: No CGI File Found.");
-	_Root = rec.getPath();
+	size_t pos = _Request.GetLocation().GetCGI().GetFilePath().find_last_of('/');
+	pos++;
+	_ScriptName = _Request.GetLocation().GetCGI().GetFilePath().substr(pos);
+	_Root = rec.GetLocation().GetRoot();
+	this->_CgiPath = _Root + _Request.GetLocation().GetLocationUri().GetUri(); //+ '/' + _ScriptName;
 	if (access(this->_CgiPath.c_str(), F_OK) == -1)
 		throw std::runtime_error("Error: Missing File Or Directory \"" + _CgiPath + "\"");
 	if (access(this->_CgiPath.c_str(), X_OK) == -1)
@@ -46,21 +56,24 @@ std::string const &CGI::GetOutput() const {
 void CGI::setEnv() {
 
 	const std::string tab[] = {
-	"REQUEST_METHOD", "SERVER_PROTOCOL"
-	, "CONTENT_TYPE", "CONTENT_LENGTH"
-	, "PATH_INFO", "QUERY_STRING"
-	, "HTTP_COOKIE", "SCRIPT_NAME"
-	, "SCRIPT_FILENAME", "REDIRECT_STATUS"};
+	"Server_Software",
+	"Server_Protocol"
+	, "Content_Type", "Content_Length"
+	, "Path_Info", "Query_String"
+	, "Http_Cookie"
+	, "Redirect_Status"};
 
 	if (0 > setenv("DOCUMENT_ROOT", _Root.c_str(), 1) || 0 > setenv("SERVER_SOFTWARE", "WebServ", 1)
 		|| 0 > setenv("SERVER_PORT", std::to_string(_Port).c_str(), 1)
 		|| 0 > setenv("GATEWAY_INTERFACE", "CGI/1.1" , 1)
-		|| 0 > setenv("SERVER_NAME", _Request.GetServerBlock().GetServerNames()[0].c_str(), 1)) {
+		|| 0 > setenv("SERVER_NAME", _Request.GetServerBlock().GetServerNames()[0].c_str(), 1)
+		|| 0 > setenv("SCRIPT_FILENAME", _ScriptName.c_str(), 1)
+		|| 0 > setenv("REQUEST_METHOD", _Request.GetMethod().c_str(), 1)) {
 			throw std::runtime_error("Error: faild to set enviroment varialble");
 		}
 
 	std::map<std::string, std::string>::const_iterator it;
-	for(int i = 0 ; i < 10 ; i++) {
+	for(int i = 0 ; i < 8 ; i++) {
 		it = _Request.getHeaders().find(tab[i]);
 		if (it == _Request.getHeaders().end())
 			continue;
@@ -78,12 +91,31 @@ void CGI::Exec() {
 	int ReadCount = 0;
 
 	args[0] = _CgiPath.c_str();
+	std::cout << _CgiPath << "\n";
 	args[1] = getenv("SCRIPT_FILENAME");
 	if (args[1] == NULL)
 		throw std::invalid_argument("Error: Can't find \"Script Name\" enviroment varialble.");
 	args[2] = NULL;
 	if (0 > pipe(write_fd) || 0 > pipe(read_fd))
 		throw std::runtime_error("Error: Filed To Creat Discriptor Pair.");
+	env = new char *[15];
+	int k = 0;
+	for (size_t i = 0; i < 15; i++) {
+		std::cout << "[" << names[i] << "]\n";
+		char * str = getenv(names[i].c_str());
+		if (str == NULL)
+			continue;
+		std::string full = names[i] + '='+ str;
+		env[k] = new char[full.length()];
+		size_t j;
+		std::cout << full << "\n";
+		for (j = 0; j < full.length(); j++){
+			env[k][j] = full[j];
+		}
+		std::cout << env[k] << "here \n";
+		k++;
+	}
+	env[k] = NULL;
 	ChildId = fork();
 	if (ChildId < 0)
 		throw std::runtime_error("Error: Can't Creat Child Prosses");

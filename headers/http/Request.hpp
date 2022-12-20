@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 20:54:14 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:01:25 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ private:
 	std::map<int, std::string>			_ErrorPage;
 	std::string							_Index;
 	bool								_AutoIndex;
+	const LocationContext*				_Location;
 
 public:
 	Request(std::string & buffer, ConfigFileParser const &config);
@@ -55,4 +56,10 @@ public:
 	bool findServer(std::vector<ServerContext> const & servers, std::string &buffer);
 	const ServerContext& GetServerBlock() const;
 	const std::vector<std::string>& GetBody() const;
+	const LocationContext &GetLocation() const {
+		return *_Location;
+	}
+	const std::string &GetMethod() const {
+		return _Method;
+	}
 };

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 16:39:32 by aabdou            #+#    #+#             */
-/*   Updated: 2022/11/14 17:16:12 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:02:53 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include <string>
 #include "./utils.hpp"
+
 
 class ParseCGI {
 
@@ -27,7 +28,7 @@ class ParseCGI {
 
 		ParseCGI &operator=(const ParseCGI &obj);
 		std::string GetFileExtention() const ;
-		std::string GetFilePath() const ;
+		const std::string &GetFilePath() const ;
 		size_t GetLen() const ;
 
 
@@ -46,7 +47,5 @@ class ParseCGI {
 
 
 };
-
-
 
 #endif

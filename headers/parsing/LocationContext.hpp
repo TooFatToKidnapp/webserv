@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 09:46:40 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/11 20:21:43 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:02:37 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 
 class LocationUri;
 
-
 class LocationContext : virtual public ConfigValues {
 
 	public:
@@ -39,7 +38,7 @@ class LocationContext : virtual public ConfigValues {
 
 		LocationUri GetLocationUri() const;
 		std::string GetAlias() const ;
-		ParseCGI GetCGI() const ;
+		const ParseCGI &GetCGI() const ;
 		CheckMethods GetMethods() const;
 
 		virtual bool IsSet(std::string const str) ;

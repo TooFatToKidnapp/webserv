@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 18:33:36 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/16 21:01:07 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:01:01 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "./../http/Request.hpp"
 
-char **env;
+extern char **env;
 
 class CGI {
 
@@ -35,13 +35,13 @@ class CGI {
 	private:
 		CGI &operator=(const CGI &obj);
 		Request const & _Request;
+		std::string _ScriptName;
 		std::string _Root;
 		std::string _CgiPath;
 		std::string _CgiOutput;
 		short _Port;
 
 };
-
 
 
 #endif

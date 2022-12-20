@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:46:12 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/17 03:09:29 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:08:31 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,7 @@ size_t ServerContext::FindVal(int Directive, std::string ConfigFile, size_t End)
 }
 
 
-std::vector<LocationContext> ServerContext::GetLocationContexts() const {
+const std::vector<LocationContext> &ServerContext::GetLocationContexts() const {
 	return _LocationContext;
 }
 

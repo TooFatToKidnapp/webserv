@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/13 14:01:32 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/19 22:09:08 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Request.hpp"
 #include "codes.hpp"
 #include "Utils.hpp"
+#include "../cgi/CGI.hpp"
 
 class Response {
 private:
@@ -29,7 +30,7 @@ private:
 public:
 	Response(int clientfd, Request req);
 	~Response();
-
+	void cgi(Request const &obj);
 	void sendHeaders(const std::string &filename);
 	void sendFile(const std::string &filename);
 	void sendDir(const char *path, std::string const &host);

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 10:19:28 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/17 03:44:05 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:06:45 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,6 @@ void ConfigFileParser::ParseFile(int ac, char **av) {
 		std::multimap<std::string, std::string>::iterator it = var.begin();
 		for(size_t w = 0; w < var.size(); w++) {
 			for (int i = j; i < this->_NumberOfServerContexts - 1 ; i++) {
-				std::cout << "true\n";
 				int x = i;
 				std::multimap<std::string, std::string> tmp;
 				if (x < this->_NumberOfServerContexts -1 )
@@ -174,7 +173,7 @@ std::string ConfigFileParser::GetConfigFile() const {
 	return this->_FileContent;
 }
 
-std::vector<ServerContext> ConfigFileParser::GetServers() const {
+const std::vector<ServerContext> &ConfigFileParser::GetServers() const {
 	return this->_servers;
 }
 

@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/17 03:34:46 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/19 22:06:14 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,12 +135,13 @@ void	Server::Run(ConfigFileParser & conf)
 						res.sendErrorPage(res.getStatus());
 					}
 					else if (!pathIsFile(req.getPath())) {
-
-						res.sendDir(req.getPath().c_str(), req.getHost());
+						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
+							res.cgi(req);
+						else
+							res.sendDir(req.getPath().c_str(), req.getHost());
 					}
 					else
 					{
-
 						res.sendFile(req.getPath());
 					}
 					close(temp);
