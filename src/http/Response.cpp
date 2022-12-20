@@ -111,7 +111,7 @@ void Response::sendErrorPage(int status) {
 }
 
 void Response::sendFile(const std::string &filename) {
-	char buffer[100001] = {0};
+	char buffer[51] = {0};
 	int filelen = getFileLength(filename);
 	int fd = open(filename.c_str(), O_RDONLY);
 	int bytes_read;
@@ -119,7 +119,7 @@ void Response::sendFile(const std::string &filename) {
 	sendHeaders(filename);
 
 	while (filelen > 0) {
-		if ((bytes_read = read(fd, buffer, 100000)) <= 0)
+		if ((bytes_read = read(fd, buffer, 50)) <= 0)
 			break ;
 		buffer[bytes_read] = '\0';
 		if (send(_Clientfd, buffer, bytes_read, 0) == -1)
