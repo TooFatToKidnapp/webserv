@@ -136,8 +136,12 @@ void	Server::Run(ConfigFileParser & conf)
 					Response res(temp, req);
 					if (res.getStatus() != OK)
 						res.sendErrorPage(res.getStatus());
-					else if (!pathIsFile(req.getPath()))
-						res.sendDir(req.getPath().c_str(), req.getHost());
+					else if (!pathIsFile(req.getPath())) {
+						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
+							res.cgi(req);
+						else
+							res.sendDir(req.getPath().c_str(), req.getHost());
+					}
 					else
 						res.sendFile(req.getPath());
 					close(temp);
