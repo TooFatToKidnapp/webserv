@@ -6,36 +6,39 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/19 22:06:14 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/20 14:08:29 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/http/Server.hpp"
-#include <signal.h>
+#include <limits.h>
 
 Server::Server(const std::multimap<std::string, std::string> &ipport)
 {
-	addrinfo hints, *servinfo;
-	std::memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
+	// addrinfo hints, *servinfo;
+	// std::memset(&hints, 0, sizeof(hints));
 	std::multimap<std::string, std::string>::const_iterator it =  ipport.begin();
 	std::multimap<std::string, std::string>::const_iterator it2 =  ipport.end();
 	for (int i = 0; it != it2; ++it, i++) {
 		int newsock;
+		struct sockaddr_in servinfo;
+		std::memset(&servinfo, (unsigned char)0, sizeof(sockaddr_in));
 		std::cout << it->first << " " << it->second << "\n";
-		if ((this->estatus = getaddrinfo(it->second.c_str(), it->first.c_str(), &hints, &servinfo)) != 0)
-			throw std::invalid_argument(gai_strerror(this->estatus));
+		servinfo.sin_family = AF_INET;
+    	servinfo.sin_port = htons(atoi(it->first.c_str()));
+		servinfo.sin_addr.s_addr = htonl(INADDR_ANY);
+		// if (inet_pton(AF_INET, it->second.c_str(), &servinfo.sin_addr)<= 0)
+		// 	throw std::invalid_argument(strerror(errno));
 		if ((newsock = socket(AF_INET, SOCK_STREAM , 0)) == -1)
 			throw std::invalid_argument(strerror(errno));
 		int optval = 1;
 		setsockopt(newsock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 		fcntl(newsock, F_SETFL, O_NONBLOCK);
-		std::pair<int, addrinfo *> var;
+		std::pair<int, sockaddr_in> var;
 		var.first = newsock;
 		var.second = servinfo;
 		this->servers.push_back(var);
-		if (bind(this->servers[i].first, (const struct sockaddr*)(this->servers[i].second->ai_addr), this->servers[i].second->ai_addrlen) == -1)
+		if (bind(this->servers[i].first, (const sockaddr *)&this->servers[i].second, sizeof(this->servers[i].second)) < 0)
 			throw std::invalid_argument(strerror(errno));
 		if (listen(this->servers[i].first, 50) == -1)
 			throw std::invalid_argument(strerror(errno));
@@ -75,7 +78,7 @@ void	Server::Run(ConfigFileParser & conf)
 	while (RUNNING)
 	{
 		FD_ZERO(&readfds);
-		for (std::vector<std::pair<int, addrinfo*> >::iterator i = servers.begin(); i < servers.end(); i++)
+		for (std::vector<std::pair<int, sockaddr_in> >::iterator i = servers.begin(); i < servers.end(); i++)
 		{
 			FD_SET(i->first, &readfds);
 			max_sd = i->first;
@@ -90,7 +93,7 @@ void	Server::Run(ConfigFileParser & conf)
         }
         if (select(max_sd + 1, &readfds, NULL, NULL, NULL) < 0)
 			throw std::invalid_argument("select: error while selecting the fds");
-		for (std::vector<std::pair<int, addrinfo*> >::iterator i = servers.begin(); i < servers.end(); i++)
+		for (std::vector<std::pair<int, sockaddr_in> >::iterator i = servers.begin(); i < servers.end(); i++)
 		{
 			if (FD_ISSET(i->first, &readfds))
 			{
@@ -106,6 +109,7 @@ void	Server::Run(ConfigFileParser & conf)
 						client_socket[id] = newsockfd;
 						break;
 					}
+					id++;
 				}
 				break;
 			}
@@ -131,19 +135,11 @@ void	Server::Run(ConfigFileParser & conf)
 					Request req(request, conf);
 					Response res(temp, req);
 					if (res.getStatus() != OK)
-					{
 						res.sendErrorPage(res.getStatus());
-					}
-					else if (!pathIsFile(req.getPath())) {
-						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
-							res.cgi(req);
-						else
-							res.sendDir(req.getPath().c_str(), req.getHost());
-					}
+					else if (!pathIsFile(req.getPath()))
+						res.sendDir(req.getPath().c_str(), req.getHost());
 					else
-					{
 						res.sendFile(req.getPath());
-					}
 					close(temp);
 					client_socket[i] = 0;
 				}
@@ -160,12 +156,10 @@ void	Server::Run(ConfigFileParser & conf)
 
 Server::~Server()
 {
-	std::vector<std::pair<int, addrinfo*> >::iterator it = this->servers.begin();
+	std::vector<std::pair<int, sockaddr_in> >::iterator it = this->servers.begin();
 	for (; it != this->servers.end(); it++)
 	{
 		if (it->first)
 			close(it->first);
-		if (it->second)
-			freeaddrinfo(it->second);
 	}
 }

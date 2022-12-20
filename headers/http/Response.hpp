@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/19 22:09:08 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/20 14:04:33 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 class Response {
 private:
 	std::map<std::string, std::string>	_Headers;
-	std::string							_HttpVersion;
 	int									_Status;
 	int									_Clientfd;
 	std::map<int, std::string>			_ErrorPage;

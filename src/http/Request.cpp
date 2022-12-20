@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/19 22:03:51 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/20 14:07:00 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 Request::Request(std::string &buffer, ConfigFileParser const &config) : _Status(OK), _Buffer(buffer) {
 	if (findServer(config.GetServers(), _Buffer) == false) {
 		_Status = BadRequest;
-		_Headers["http-version"] = "HTTP/1.1";
 		return ;
 	}
 	RequestParsing();
@@ -70,7 +69,8 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 		std::multimap<std::string, std::string> listeners = servers[i].GetListen();
 		std::multimap<std::string, std::string>::iterator it;
 		for (it = listeners.begin(); it!= listeners.end(); ++it) {
-			if ((it->second + ":" + it->first) == _Host) {
+			if (((it->second + ":" + it->first) == _Host) || (it->second == _Host && it->first == "80")) {
+				std::cout << it->second << ":" << it->first << '\n';
 				_Server = &servers[i];
 				return true;
 			}
@@ -102,10 +102,9 @@ void Request::updatePath(const std::string & path) {
 	for (i = 0; i < locations.size(); ++i){
 		enter = true;
 		if (!strncmp(locations[i].GetLocationUri().GetUri().c_str(), path.c_str(), locations[i].GetLocationUri().GetUri().size())) {
-			if (!locations[i].GetReturn().GetUrl().empty()) {
+			if (!locations[i].GetReturn().GetUrl().empty() && locations[i].GetLocationUri().GetUri() == path) {
 				_Status = locations[i].GetReturn().GetCode();
 				_Headers["Location"] = locations[i].GetReturn().GetUrl();
-				_HttpVersion = "HTTP/1.1";
 			}
 			else if (!locations[i].GetRoot().empty()) {
 				if (strncmp(locations[i].GetRoot().c_str(), path.c_str(), locations[i].GetRoot().size()))
@@ -195,8 +194,7 @@ void Request::ParseStartLine(std::string & str) {
 		_Query = RequestTarget.size() == 2 ? RequestTarget[1] : "";
 		if (_Query != "")
 			ParseQuery(_Query);
-		_HttpVersion = StartLine[2];
-		if (_HttpVersion != "HTTP/1.1")
+		if (StartLine[2] != "HTTP/1.1")
 			_Status = HTTPVersionNotSupported;
 	}
 	else
@@ -269,10 +267,6 @@ void Request::ParseBody(std::string &body) {
 	}
 	if (body.size())
 		_Body.push_back(body.substr(0, bodySize));
-}
-
-const std::string &Request::getHttpVersion() const {
-	return _HttpVersion;
 }
 
 const std::map<std::string, std::string> &Request::getHeaders() const {

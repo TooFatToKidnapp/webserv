@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 14:21:59 by obouadel          #+#    #+#             */
-/*   Updated: 2022/12/17 03:03:08 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/20 14:04:40 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@
 class Server
 {
 private:
-	int estatus;
-	std::vector<std::pair<int, addrinfo*> > servers;
+	std::vector<std::pair<int, sockaddr_in> > servers;
 public:
 	Server(const std::multimap<std::string, std::string> &ipport);
 	void Run(ConfigFileParser & conf);
