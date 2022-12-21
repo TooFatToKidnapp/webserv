@@ -6,7 +6,7 @@
 /*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 19:24:30 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/20 22:09:09 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/21 16:06:57 by aabdou           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port), env
 	_ScriptExtension = _Request.GetLocation().GetCGI().GetFileExtention();
 	_ScriptName = "hello_script.py";
 	_Root = rec.GetLocation().GetRoot();
-	this->_CgiPath = _Root + _Request.GetLocation().GetLocationUri().GetUri() + "/" +  _ScriptName;
+	// this->_CgiPath = _Root + _Request.GetLocation().GetLocationUri().GetUri() + "/" +  _ScriptName;
+	this->_CgiPath = _Request.GetLocation().GetCGI().GetFilePath();
+	std::cout << _CgiPath << "\n";
 	if (access(this->_CgiPath.c_str(), F_OK) == -1)
 		throw std::runtime_error("Error: Missing File Or Directory \"" + _CgiPath + "\"");
 	if (access(this->_CgiPath.c_str(), X_OK) == -1)
@@ -90,12 +92,14 @@ void CGI::Exec() {
 	char buff[1025];
 	int ReadCount = 0;
 
-	args[0] = "/Users/aabdou/Desktop/webserv/cgi-bin/";
-	args[1] = getenv("SCRIPT_FILENAME");
+	args[0] = _CgiPath.c_str();
+	std::string tmp =  _Root;
+	tmp.append("/cgi-bin/");
+	tmp.append(getenv("SCRIPT_FILENAME"));
+	args[1] = tmp.c_str();
 	if (args[1] == NULL)
 		throw std::invalid_argument("Error: Can't find \"Script Name\" enviroment varialble.");
 	args[2] = NULL;
-	std::cout << args[0] << " " << args[1];
 	if (0 > pipe(write_fd) || 0 > pipe(read_fd))
 		throw std::runtime_error("Error: Filed To Creat Discriptor Pair.");
 	env = new char *[14];
@@ -123,12 +127,9 @@ void CGI::Exec() {
 		dup2(read_fd[1], 1); // stdout
 		close(read_fd[0]);
 		chdir(_Root.c_str());
-		std::string tmp;
-		tmp = "/Users/aabdou/Desktop/webserv/cgi-bin/hello_script.py";
-		// tmp.append("/" + _ScriptName);
-		// std::cout << tmp;
-		if (execve("/usr/bin/python", (char * const*)args, env) == -1)
+		if (execve(_CgiPath.c_str(), (char * const*)args, env) == -1)
 		{
+			std::cout << "somthing\n";
 			std::cout << strerror(errno);
 			exit(1);
 		}
