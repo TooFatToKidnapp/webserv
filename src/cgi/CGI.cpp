@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/cgi/CGI.hpp"
+#include "./../../headers/CGI/CGI.hpp"
 
 const std::string names[] = {
-	"DOCUMENT_ROOT", "SERVER_SOFTWARE"
+	"REDIRECT_STATUS","DOCUMENT_ROOT", "SERVER_SOFTWARE"
 	,"SERVER_PORT","GATEWAY_INTERFACE"
 	,"SERVER_NAME","SCRIPT_FILENAME"
 	,"REQUEST_METHOD", "SERVER_PROTOCOL"
@@ -21,21 +21,26 @@ const std::string names[] = {
 	, "PATH_INFO", "QUERY_STRING"
 	, "HTTP_COOKIE"};
 
-
 CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port), env(NULL) {
-	_ScriptExtension = _Request.GetLocation().GetCGI().GetFileExtention();
-	_ScriptName = "hello_script.py";
-	_Root = rec.GetLocation().GetRoot();
-	// this->_CgiPath = _Root + _Request.GetLocation().GetLocationUri().GetUri() + "/" +  _ScriptName;
+	this->_ScriptName = this->ParseScriptName(_Request.GetQuery());
 	this->_CgiPath = _Request.GetLocation().GetCGI().GetFilePath();
-	std::cout << _CgiPath << "\n";
+	this->_ScriptExtension = _Request.GetLocation().GetCGI().GetFileExtention();
+	if (_ScriptExtension.compare("") == 0)
+		_ScriptExtension = GetScriptExtention(this->_CgiPath);
+	_Root = rec.GetLocation().GetRoot();
+	_Root.append(_Request.GetLocation().GetLocationUri().GetUri());
+
 	if (access(this->_CgiPath.c_str(), F_OK) == -1)
 		throw std::runtime_error("Error: Missing File Or Directory \"" + _CgiPath + "\"");
 	if (access(this->_CgiPath.c_str(), X_OK) == -1)
 		throw std::runtime_error("Error: Invalid Permissions \"" + _CgiPath + "\"");
+
+	if (access((_Root + "/scripts/" + _ScriptName).c_str(), F_OK) == -1)
+		throw std::runtime_error("Error: Missing File Or Directory \"" + (_Root + "/scripts/" + _ScriptName) + "\"");
+	if (access((_Root + "/scripts/" + _ScriptName).c_str(), X_OK) == -1)
+		throw std::runtime_error("Error: Invalid Permissions \"" + (_Root + "/scripts/" + _ScriptName) + "\"");
 	this->setEnv();
 	this->Exec();
-
 }
 
 CGI::CGI(const CGI & obj):
@@ -57,16 +62,19 @@ void CGI::DeleteEnv(char **ptr, int l) {
 }
 
 void CGI::setEnv() {
+	std::string str = _Root;
+	str.append("/scripts/" + _ScriptName);
 	if (0 > setenv("DOCUMENT_ROOT", _Root.c_str(), 1)
 		|| 0 > setenv("SERVER_PORT", std::to_string(_Port).c_str(), 1)
 		|| 0 > setenv("GATEWAY_INTERFACE", "CGI/1.1" , 1)
 		|| 0 > setenv("SERVER_NAME", _Request.GetServerBlock().GetServerNames()[0].c_str(), 1)
-		|| 0 > setenv("SCRIPT_FILENAME", _ScriptName.c_str(), 1)
+		|| 0 > setenv("SCRIPT_FILENAME", str.c_str(), 1)
 		|| 0 > setenv("REQUEST_METHOD", _Request.GetMethod().c_str(), 1)
 		|| 0 > setenv("QUERY_STRING", _Request.GetQuery().c_str(), 1)
 		|| 0 > setenv("SERVER_PROTOCOL", "HTTP/1.1", 1)
 		|| 0 > setenv("SERVER_SOFTWARE", "prj dial 13", 1)
-		|| 0 > setenv("PATH_INFO", _CgiPath.c_str(), 1)) {
+		|| 0 > setenv("PATH_INFO", _CgiPath.c_str(), 1)
+		|| 0 > setenv("REDIRECT_STATUS", "200", 1)) {
 			throw std::runtime_error("Error: faild to set enviroment varialble");
 		}
 		std::map<std::string, std::string>::const_iterator tmp = _Request.getHeaders().find("Cookie");
@@ -91,12 +99,10 @@ void CGI::Exec() {
 	pid_t ChildId;
 	char buff[1025];
 	int ReadCount = 0;
-
+	_Root.append("/scripts");
+	_CgiPath = ParsePath(_CgiPath);
 	args[0] = _CgiPath.c_str();
-	std::string tmp =  _Root;
-	tmp.append("/cgi-bin/");
-	tmp.append(getenv("SCRIPT_FILENAME"));
-	args[1] = tmp.c_str();
+	args[1] = getenv("SCRIPT_FILENAME");
 	if (args[1] == NULL)
 		throw std::invalid_argument("Error: Can't find \"Script Name\" enviroment varialble.");
 	args[2] = NULL;
@@ -108,7 +114,7 @@ void CGI::Exec() {
 		char * str = getenv(names[i].c_str());
 		if (str == NULL)
 			continue;
-		std::string full = names[i] + '='+ str;
+		std::string full = names[i] + '=' + str;
 		env[k] = new char[full.length() + 1];
 		size_t j;
 		for (j = 0; j < full.length(); j++){
@@ -129,7 +135,6 @@ void CGI::Exec() {
 		chdir(_Root.c_str());
 		if (execve(_CgiPath.c_str(), (char * const*)args, env) == -1)
 		{
-			std::cout << "somthing\n";
 			std::cout << strerror(errno);
 			exit(1);
 		}
@@ -151,5 +156,6 @@ void CGI::Exec() {
 		close(read_fd[0]);
 		wait(0);
 	}
+	// std::cout << "["<< _CgiOutput << "]";
 	this->DeleteEnv(env, k);
 }
