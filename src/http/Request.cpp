@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/20 14:07:00 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/22 18:09:14 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Request::~Request() {}
 void Request::RequestParsing() {
 	std::vector<std::string> req = ft_split(_Buffer, "\r\n\r\n");
 
-	if (req.size() == 1 || req.size() == 2) {
+	if (req.size() >= 1) {
 		std::vector<std::string> headers = ft_split(req[0], "\r\n");
 		for (std::size_t i = 0; i < headers.size(); ++i)
 			std::replace(headers[i].begin(), headers[i].end(), '\r', ' ');
@@ -34,8 +34,14 @@ void Request::RequestParsing() {
 		if (_Status != OK) return ;
 		ParseHeaders(headers);
 		if (_Status != OK) return ;
-		if (req.size() == 2) {
-			if (req[1].size() > _Server->GetCmbs() * 1000000){
+		if (req.size() >= 2) {
+			std::string body;
+			for (size_t i = 1; i < req.size(); ++i) {
+				body.append(req[i]);
+				if (i != req.size() - 1)
+					body.append("\r\n\r\n");
+			}
+			if (body.size() > _Server->GetCmbs() * 1000000){
 				_Status = PayloadTooLarge;
 				return ;
 			}
@@ -44,13 +50,11 @@ void Request::RequestParsing() {
 					_Status = BadRequest;
 					return ;
 				}
-				ParseChunckedBody(req[1]);
+				ParseChunckedBody(body);
 			}
 			else
-				ParseBody(req[1]);
+				ParseBody(body);
 		}
-		else if (_Headers.find("Content-Length") != _Headers.end() && _Headers["Content-Length"] != "0")
-			_Status = BadRequest;
 	}
 }
 

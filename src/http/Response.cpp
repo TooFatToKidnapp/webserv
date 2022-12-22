@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/20 14:06:20 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/22 18:14:29 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,55 @@ Response::Response(int clientfd, Request req) {
 	_ErrorPage = req.getErrorPage();
 	_Index = req.getIndex();
 	_AutoIndex = req.getAutoIndex();
+	_Body = req.getBody();
 }
 
 Response::~Response() {}
+
+
+void Response::uploadFile() {
+	std::string 	body;
+	std::string		filename;
+	std::string		boundary;
+	std::string		content;
+	size_t			pos;
+	size_t			delpos;
+	size_t			endpos;
+	
+	pos = _Headers["Content-Type"].find("boundary");
+	if (pos == std::string::npos)
+		throw std::runtime_error("missing boundary in headers");	
+	boundary = _Headers["Content-Type"].substr(pos + 9, _Headers["Content-Type"].size() - pos - 9);
+	for (size_t i = 0; i < _Body.size(); ++i) {
+		body.append(_Body[i]);
+	}
+
+	delpos = body.find(boundary);
+	while (delpos != std::string::npos) {
+		std::ofstream	file;
+		pos = body.find("filename", delpos);
+		endpos = body.find("\"", pos + 10);
+		if (pos == std::string::npos || endpos == std::string::npos)
+			throw std::runtime_error("corrupt body");
+		filename = body.substr(pos + 10, endpos - pos - 10);
+		if (pathIsFile("./uploads/" + filename) == 1)
+			throw std::runtime_error("file already exists");
+
+		pos = body.find("\r\n\r\n", delpos);
+		endpos = body.find(boundary, pos);
+		if (pos == std::string::npos || endpos == std::string::npos)
+			throw std::runtime_error("corrupt body");
+		content = body.substr(pos + 4, endpos - pos - 6);
+
+		file.open("./uploads/" + filename);
+		if (!file.is_open())
+			throw std::runtime_error("cannot upload the files");
+		file << content;
+		delpos = body.find(boundary, delpos + 1);
+		if (body[delpos + boundary.size()] == '-' && body[delpos + boundary.size() + 1] == '-')
+			break;
+	}
+}
 
 void Response::cgi(Request const &obj){
 	std::string tmp = obj.getHost();

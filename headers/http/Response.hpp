@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/20 14:04:33 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/22 12:11:23 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ private:
 	std::map<int, std::string>			_ErrorPage;
 	std::string							_Index;
 	bool								_AutoIndex;
+	std::vector<std::string>			_Body;
 
 public:
 	Response(int clientfd, Request req);
@@ -35,6 +36,7 @@ public:
 	void sendDir(const char *path, std::string const &host);
 	void sendErrorPage(int status);
 	std::string getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host);
+	void uploadFile();
 
 	const int &getStatus() const;
 };

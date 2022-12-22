@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aabdou <aabdou@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/20 14:08:29 by aabdou           ###   ########.fr       */
+/*   Updated: 2022/12/22 17:59:32 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,9 @@ void	Server::Run(ConfigFileParser & conf)
 						continue;
 					Request req(request, conf);
 					Response res(temp, req);
+					if (req.GetMethod() == "POST") {
+						res.uploadFile();
+					}
 					if (res.getStatus() != OK)
 						res.sendErrorPage(res.getStatus());
 					else if (!pathIsFile(req.getPath())) {
