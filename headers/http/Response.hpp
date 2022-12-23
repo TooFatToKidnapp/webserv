@@ -37,6 +37,6 @@ public:
 	void sendErrorPage(int status);
 	std::string getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host);
 	void uploadFile();
-
+	void parseCgiOutput(std::string &input, std::ostringstream &header, const std::string &ex);
 	const int &getStatus() const;
 };

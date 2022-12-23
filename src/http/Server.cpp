@@ -141,7 +141,7 @@ void	Server::Run(ConfigFileParser & conf)
 						res.sendErrorPage(res.getStatus());
 					else if (!pathIsFile(req.getPath())) {
 						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
-							res.cgi(req);
+								res.cgi(req);
 						else
 							res.sendDir(req.getPath().c_str(), req.getHost());
 					}

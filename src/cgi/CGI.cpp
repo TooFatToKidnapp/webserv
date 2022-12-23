@@ -21,7 +21,7 @@ const std::string names[] = {
 	, "PATH_INFO", "QUERY_STRING"
 	, "HTTP_COOKIE"};
 
-CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port), env(NULL) {
+CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port) {
 	this->_ScriptName = this->ParseScriptName(_Request.GetQuery());
 	this->_CgiPath = _Request.GetLocation().GetCGI().GetFilePath();
 	this->_ScriptExtension = _Request.GetLocation().GetCGI().GetFileExtention();
@@ -40,6 +40,7 @@ CGI::CGI(Request const &rec, short const &port): _Request(rec), _Port(port), env
 	if (access((_Root + "/scripts/" + _ScriptName).c_str(), X_OK) == -1)
 		throw std::runtime_error("Error: Invalid Permissions \"" + (_Root + "/scripts/" + _ScriptName) + "\"");
 	this->setEnv();
+
 	this->Exec();
 }
 
@@ -49,17 +50,13 @@ _Root(obj._Root),
 _CgiPath(obj._CgiPath),
 _CgiOutput(obj._CgiOutput) {}
 
-CGI::~CGI() {}
+CGI::~CGI() {
+}
 
-std::string const &CGI::GetOutput() const {
+std::string &CGI::GetOutput() {
 	return this->_CgiOutput;
 }
 
-void CGI::DeleteEnv(char **ptr, int l) {
-	while (l-- > 0)
-		delete [] ptr[l];
-	delete [] ptr;
-}
 
 void CGI::setEnv() {
 	std::string str = _Root;
@@ -108,19 +105,21 @@ void CGI::Exec() {
 	args[2] = NULL;
 	if (0 > pipe(write_fd) || 0 > pipe(read_fd))
 		throw std::runtime_error("Error: Filed To Creat Discriptor Pair.");
-	env = new char *[14];
 	int k = 0;
-	for (size_t i = 0; i < 13; i++) {
+	for (size_t i = 0; i < 14; i++) {
+		std::string full = names[i];
 		char * str = getenv(names[i].c_str());
-		if (str == NULL)
+		if (str == NULL) {
 			continue;
-		std::string full = names[i] + '=' + str;
-		env[k] = new char[full.length() + 1];
-		size_t j;
-		for (j = 0; j < full.length(); j++){
-			env[k][j] = full[j];
 		}
-		env[k][j] = '\0';
+		full += "=";
+		full += str;
+		char tmp[10000];
+		size_t j;
+		for (j = 0 ; j < full.length() + 1 ; j++)
+			tmp[j] = full[j];
+		tmp[j] = '\0';
+		env[k] = tmp;
 		k++;
 	}
 	env[k] = NULL;
@@ -156,6 +155,7 @@ void CGI::Exec() {
 		close(read_fd[0]);
 		wait(0);
 	}
-	// std::cout << "["<< _CgiOutput << "]";
-	this->DeleteEnv(env, k);
 }
+
+
+

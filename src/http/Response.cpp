@@ -34,10 +34,10 @@ void Response::uploadFile() {
 	size_t			pos;
 	size_t			delpos;
 	size_t			endpos;
-	
+
 	pos = _Headers["Content-Type"].find("boundary");
 	if (pos == std::string::npos)
-		throw std::runtime_error("missing boundary in headers");	
+		throw std::runtime_error("missing boundary in headers");
 	boundary = _Headers["Content-Type"].substr(pos + 9, _Headers["Content-Type"].size() - pos - 9);
 	for (size_t i = 0; i < _Body.size(); ++i) {
 		body.append(_Body[i]);
@@ -82,20 +82,18 @@ void Response::cgi(Request const &obj){
 		port = stoi(tmp.substr(pos));
 	}
 	CGI _cgi(obj, port);
-	_cgi.GetOutput();
-
 	std::ostringstream headers;
-
-	headers << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
-	<< "Date: " << _Headers["Date"] << "\r\n"
-	<< "Content-Type: " << "text/html" << "\r\n"
-	<< "Content-Length: " << _cgi.GetOutput().length() << "\r\n"
-	<< "Connection: " << _Headers["Connection"] << "\r\n"
-	<< "\r\n";
+	// headers << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+	// << "Date: " << _Headers["Date"] << "\r\n"
+	// << "Content-Type: " << "text/html" << "\r\n"
+	// << "Content-Length: " << _cgi.GetOutput().length() << "\r\n"
+	// << "Connection: " << _Headers["Connection"] << "\r\n"
+	// << "\r\n";
+	parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
 	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
 		throw std::runtime_error("Could not send the headers");
-	if (send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0) == -1)
-		throw std::runtime_error("Could not send the headers");
+	// if (send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0) == -1)
+	// 	throw std::runtime_error("Could not send the headers");
 }
 
 void Response::sendHeaders(const std::string &filename) {
@@ -228,4 +226,49 @@ std::string Response::getLink(std::string const &dirEntry, std::string const &di
 
 const int &Response::getStatus() const {
 	return _Status;
+}
+
+void Response::parseCgiOutput(std::string &input, std::ostringstream &header, std::string const &ex) {
+	std::istringstream s(input);
+	std::string buff;
+	time_t raw;
+	std::string tm;
+	time(&raw);
+	tm = ctime(&raw);
+	tm.pop_back();
+
+	header << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n" << "Server: WebServ\r\n" << "Date: " << tm << " GMT\r\n" << "Connection: " << _Headers["Connection"] << "\r\n";
+	if (ex.compare(".php") == 0) {
+		while (std::getline(s, buff)) {
+			if (buff.find("X-Powered-By:") != std::string::npos)
+				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2);
+			else if (buff.find("Set-Cookie:") != std::string::npos)
+				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2);
+			else if (buff.find("Expires:") != std::string::npos)
+				header << "Expires: " << buff.substr(buff.find(": ") + 2);
+			else if (buff.find("Cache-Control:") != std::string::npos)
+				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2);
+			else if (buff.find("Pragma:") != std::string::npos)
+				header << "Pragma: " << buff.substr(buff.find(": ") + 2);
+			else if (buff.find("Content-type:") != std::string::npos)
+				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2);
+			else if (buff.compare("\r\n\r\n") == 0)
+				break;
+		}
+		input = input.substr(input.find("\r\n\r\n") + 4);
+	}
+	else if (ex.compare(".py") == 0) {
+		while (std::getline(s, buff))
+		{
+			if (buff.find("Content-type:") != std::string::npos)
+				header << "Content-type: " << buff.substr(buff.find(": ") + 2);
+		}
+		// std::cout << input << " " << input.length() << "\n";
+		input = input.substr(input.find("\n\n") + 1);
+		// std::cout << input << " " << input.length() << "\n";
+	}
+	header << "\r\n";
+	header << "Content-Length: " + std::to_string(input.size());
+	header << "\r\n\r\n";
+	header << input;
 }

@@ -28,14 +28,21 @@ class CGI {
 
 		void setEnv();
 		void Exec();
-		std::string const &GetOutput()const;
-		void DeleteEnv(char **ptr, int l);
+		std::string &GetOutput();
+		std::string const &GetExtention() const{
+			return _ScriptExtension;
+		}
 
 	private:
 		std::string ParsePath(std::string input) {
 			size_t pos = input.find_last_of("/");
 			pos++;
-			return "../" + input.substr(pos);
+			std::string tmp = input.substr(pos);
+			if (tmp.compare("php-cgi") == 0)
+				return "../" + tmp;
+			else if (tmp.compare("python") == 0)
+				return "/usr/bin/python";
+			throw std::invalid_argument("Error: Bad CGI");
 		}
 		std::string ParseScriptName(std::string input) {
 			if(input.compare("") == 0)
@@ -55,7 +62,7 @@ class CGI {
 		CGI &operator=(const CGI &obj);
 		Request const & _Request;
 		short _Port;
-		char **env;
+		char *env[14];
 		std::string _ScriptName;
 		std::string _ScriptExtension;
 		std::string _Root;
