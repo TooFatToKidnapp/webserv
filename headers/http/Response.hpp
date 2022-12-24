@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/22 12:11:23 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 12:04:02 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,5 @@ public:
 	void uploadFile();
 	void parseCgiOutput(std::string &input, std::ostringstream &header, const std::string &ex);
 	const int &getStatus() const;
+	void deleteFile(std::string const & path);
 };

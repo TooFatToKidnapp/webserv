@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/22 18:14:29 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 14:27:13 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,27 @@ Response::Response(int clientfd, Request req) {
 
 Response::~Response() {}
 
+void Response::deleteFile(std::string const & path) {
+	std::ostringstream	headers;
+	std::fstream file(path);
+	
+	if (file.is_open())
+		file.close();
+	int status = std::remove(path.c_str());
+	if (status != 0)
+		_Status = Forbidden;
+	else
+		_Status	= NoContent;
+
+	headers << "HTTP/1.1 " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
+	<< "Date: " << _Headers["Date"] << "\r\n"
+	<< "Content-Type: text/plain\r\nContent-Length: 0\r\n"
+	<< "Connection: " << _Headers["Connection"] << "\r\n"
+	<< "\r\n";
+
+	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
+		throw std::runtime_error("Could not send the headers");
+}
 
 void Response::uploadFile() {
 	std::string 	body;
@@ -68,6 +89,23 @@ void Response::uploadFile() {
 		if (body[delpos + boundary.size()] == '-' && body[delpos + boundary.size() + 1] == '-')
 			break;
 	}
+
+	std::ostringstream	headers;
+	std::string success = "<html>\r\n<head><title>Success</title></head>\r\n<body>\r\n<center><h1>";
+	success.append("Files uploaded successfully");
+	success.append("</h1></center>\r\n</body>\r\n</html>");
+
+	headers << "HTTP/1.1 200 OK\r\n"
+	<< "Date: " << _Headers["Date"] << "\r\n"
+	<< "Content-Type: " << "text/html\r\n"
+	<< "Content-Length: " << success.size() << "\r\n"
+	<< "Connection: close\r\n\r\n";
+
+	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
+		throw std::runtime_error("Could not send the headers");
+
+	if (send(_Clientfd, success.c_str(), success.size(), 0) == -1)
+		throw std::runtime_error("Could not send the body");
 }
 
 void Response::cgi(Request const &obj){

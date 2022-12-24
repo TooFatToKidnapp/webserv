@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/22 18:09:14 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 14:44:47 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,3 +309,15 @@ const std::vector<std::string>& Request::GetBody() const {
 	return _Body;
 }
 
+const LocationContext &Request::GetLocation() const {
+	return *_Location;
+}
+const std::string &Request::GetMethod() const {
+	return _Method;
+}
+const std::string &Request::GetQuery() const {
+	return _Query;
+}
+const std::vector<std::string> &Request::getBody() const {
+	return _Body;
+}

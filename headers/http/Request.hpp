@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:03 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/22 12:12:16 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 14:43:33 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,8 @@ public:
 	bool findServer(std::vector<ServerContext> const & servers, std::string &buffer);
 	const ServerContext& GetServerBlock() const;
 	const std::vector<std::string>& GetBody() const;
-	const LocationContext &GetLocation() const {
-		return *_Location;
-	}
-	const std::string &GetMethod() const {
-		return _Method;
-	}
-	const std::string &GetQuery() const {
-		return _Query;
-	}
-	const std::vector<std::string> &getBody() const {
-		return _Body;
-	}
+	const LocationContext &GetLocation() const;
+	const std::string &GetMethod() const;
+	const std::string &GetQuery() const;
+	const std::vector<std::string> &getBody() const;
 };

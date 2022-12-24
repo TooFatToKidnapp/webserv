@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/22 17:59:32 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 14:37:55 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 
 Server::Server(const std::multimap<std::string, std::string> &ipport)
 {
-	// addrinfo hints, *servinfo;
-	// std::memset(&hints, 0, sizeof(hints));
 	std::multimap<std::string, std::string>::const_iterator it =  ipport.begin();
 	std::multimap<std::string, std::string>::const_iterator it2 =  ipport.end();
 	for (int i = 0; it != it2; ++it, i++) {
@@ -27,8 +25,6 @@ Server::Server(const std::multimap<std::string, std::string> &ipport)
 		servinfo.sin_family = AF_INET;
     	servinfo.sin_port = htons(atoi(it->first.c_str()));
 		servinfo.sin_addr.s_addr = htonl(INADDR_ANY);
-		// if (inet_pton(AF_INET, it->second.c_str(), &servinfo.sin_addr)<= 0)
-		// 	throw std::invalid_argument(strerror(errno));
 		if ((newsock = socket(AF_INET, SOCK_STREAM , 0)) == -1)
 			throw std::invalid_argument(strerror(errno));
 		int optval = 1;
@@ -45,32 +41,78 @@ Server::Server(const std::multimap<std::string, std::string> &ipport)
 	}
 }
 
-std::string	Server::receive_data(int sockfd, int& errnum)
+bool    in_stock(int sockfd, std::vector<std::pair<int,std::string> >& stock)
 {
-	size_t 				valread = 0;
-	size_t 				nbytes = 0;
-	ioctl(sockfd, FIONREAD, &nbytes);
-	std::vector<char> 	buffer(nbytes);
-	std::string			rcv;
+    for (std::vector<std::pair<int,std::string> >::iterator i = stock.begin(); i < stock.end(); i++)
+    {
+        if (i->first == sockfd)
+            return (true);
+    }
+    return (false);
+}
 
-
+std::string    Server::receive_data(int sockfd, int& errnum)
+{
+    static std::vector<std::pair<int,std::string> > stock_rcv;
+    int						valread = 0;
+    size_t					nbytes = 0;
+    ioctl(sockfd, FIONREAD, &nbytes);
+    std::vector<char>		buffer(nbytes);
+    std::string				rcv;
+	
 	valread = recv(sockfd, &buffer[0], nbytes, 0);
-	if (valread < 0)
-	{
-		throw std::invalid_argument("recv: cringe");
-	}
-	else if (valread == 0)
-		errnum = -1;
-	else
-		rcv.append(buffer.begin(), buffer.end());
-	return (rcv);
+    if (valread < 0)
+        throw std::invalid_argument("recv: cringe");
+    else if (valread == 0)
+        errnum = -1;
+    else
+    {
+        if (in_stock(sockfd, stock_rcv) == true)
+        {
+            for (std::vector<std::pair<int,std::string> >::iterator i = stock_rcv.begin(); i < stock_rcv.end(); i++)
+            {
+                if (i->first == sockfd)
+                {
+                    i->second.append(buffer.begin(), buffer.end());
+                    size_t pos = i->second.find("\r\n\r\n");
+                    size_t contLenPos = i->second.find("Content-Length: ");
+                    size_t bodyLen = i->second.substr(pos + 4).size();
+                    int contLen = atoi(i->second.substr(contLenPos + 16, i->second.find("\r\n", contLenPos)).c_str());
+                    if (contLen > (int)bodyLen)
+                        return ("\n");
+                    else
+                    {
+                        rcv = i->second;
+                        stock_rcv.erase(i);
+                        return (rcv);
+                    }
+                }
+            }
+        }
+        rcv.append(buffer.begin(), buffer.end());
+        size_t pos = rcv.find("\r\n\r\n");
+        size_t contLenPos = rcv.find("Content-Length: ");
+        if (pos == std::string::npos || contLenPos == std::string::npos)
+            return (rcv);
+        size_t bodyLen = rcv.substr(pos + 4).size();
+        int contLen = atoi(rcv.substr(contLenPos + 16, rcv.find("\r\n", contLenPos)).c_str());
+        if (contLen > (int)bodyLen)
+        {
+            std::pair<int, std::string> stock;
+            stock.first = sockfd;
+            stock.second = rcv;
+            stock_rcv.push_back(stock);
+            return ("\n");
+        }
+    }
+    return (rcv);
 }
 
 void	Server::Run(ConfigFileParser & conf)
 {
 	fd_set	readfds;
-	int 	client_socket[1024];
-	int 	max_clients = 1024;
+	int 	client_socket[FD_SETSIZE];
+	int 	max_clients = FD_SETSIZE;
 	int		newsockfd;
 	int		max_sd;
 
@@ -134,11 +176,12 @@ void	Server::Run(ConfigFileParser & conf)
 						continue;
 					Request req(request, conf);
 					Response res(temp, req);
-					if (req.GetMethod() == "POST") {
-						res.uploadFile();
-					}
 					if (res.getStatus() != OK)
 						res.sendErrorPage(res.getStatus());
+					else if (req.GetMethod() == "POST")
+						res.uploadFile();
+					else if (req.GetMethod() == "DELETE")
+						res.deleteFile(req.getPath());
 					else if (!pathIsFile(req.getPath())) {
 						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
 								res.cgi(req);
