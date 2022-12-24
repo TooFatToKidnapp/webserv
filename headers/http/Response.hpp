@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 12:04:02 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 17:54:49 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,10 @@ private:
 	std::string							_Index;
 	bool								_AutoIndex;
 	std::vector<std::string>			_Body;
+	fd_set								_Writefds;
 
 public:
-	Response(int clientfd, Request req);
+	Response(int clientfd, Request req, fd_set writefds);
 	~Response();
 	void cgi(Request const &obj);
 	void sendHeaders(const std::string &filename);

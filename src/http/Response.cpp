@@ -6,13 +6,14 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 15:22:52 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 18:15:53 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/http/Response.hpp"
 
-Response::Response(int clientfd, Request req) {
+Response::Response(int clientfd, Request req, fd_set writefds) {
+	_Writefds = writefds;
 	_Headers = req.getHeaders();
 	_Headers["Date"] = getDate();
 	_Status = req.getStatus();
@@ -43,8 +44,8 @@ void Response::deleteFile(std::string const & path) {
 	<< "Connection: " << _Headers["Connection"] << "\r\n"
 	<< "\r\n";
 
-	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		throw std::runtime_error("Could not send the headers");
+	if (FD_ISSET(_Clientfd, &_Writefds))
+		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
 }
 
 void Response::uploadFile() {
@@ -109,11 +110,10 @@ void Response::uploadFile() {
 	<< "Content-Length: " << success.size() << "\r\n"
 	<< "Connection: close\r\n\r\n";
 
-	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		throw std::runtime_error("Could not send the headers");
-
-	if (send(_Clientfd, success.c_str(), success.size(), 0) == -1)
-		throw std::runtime_error("Could not send the body");
+	if (FD_ISSET(_Clientfd, &_Writefds)) {
+		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
+		send(_Clientfd, success.c_str(), success.size(), 0);
+	}	
 }
 
 void Response::cgi(Request const &obj){
@@ -136,10 +136,10 @@ void Response::cgi(Request const &obj){
 	// << "Connection: " << _Headers["Connection"] << "\r\n"
 	// << "\r\n";
 	parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
-	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		throw std::runtime_error("Could not send the headers");
-	// if (send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0) == -1)
-	// 	throw std::runtime_error("Could not send the headers");
+	if (FD_ISSET(_Clientfd, &_Writefds))
+		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
+	// if (FD_ISSET(_Clientfd, &_Writefds))
+		// send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0);
 }
 
 void Response::sendHeaders(const std::string &filename) {
@@ -163,8 +163,8 @@ void Response::sendHeaders(const std::string &filename) {
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
 
-	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		throw std::runtime_error("Could not send the headers");
+	if (FD_ISSET(_Clientfd, &_Writefds))
+		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
 }
 
 void Response::sendErrorPage(int status) {
@@ -192,11 +192,10 @@ void Response::sendErrorPage(int status) {
 			headers << "Location: " << _Headers["Location"] << "\r\n";
 		headers << "\r\n";
 
-		if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-			throw std::runtime_error("Could not send the headers");
-
-		if (send(_Clientfd, error.c_str(), error.size(), 0) == -1)
-			throw std::runtime_error("Could not send the body");
+		if (FD_ISSET(_Clientfd, &_Writefds)) {	
+			send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
+			send(_Clientfd, error.c_str(), error.size(), 0);
+		}
 	}
 }
 
@@ -212,8 +211,10 @@ void Response::sendFile(const std::string &filename) {
 		if ((bytes_read = read(fd, buffer, 50)) <= 0)
 			break ;
 		buffer[bytes_read] = '\0';
-		if (send(_Clientfd, buffer, bytes_read, 0) == -1)
-			throw std::runtime_error("Could not send the body");
+		if (FD_ISSET(_Clientfd, &_Writefds)) {
+			usleep(1);
+			send(_Clientfd, buffer, bytes_read, 0);
+		}
 		filelen -= bytes_read;
 	}
 	close(fd);
@@ -242,16 +243,16 @@ void Response::sendDir(const char *path, const std::string &host) {
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
-	if (send(_Clientfd, headers.str().c_str(), headers.str().size(), 0) == -1)
-		throw std::runtime_error("Could not send the body");
+	if (FD_ISSET(_Clientfd, &_Writefds))
+		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
     std::string page = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<title>" + dirName + "</title>\r\n\
 	</head>\r\n<body>\r\n<h1>Webserv</h1>\r\n<p>\r\n";
     while ((dirEntry = readdir(dir)) != NULL)
 		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
 	closedir(dir);
-	if (send(_Clientfd, page.c_str(), page.size(), 0) < 0)
-		throw std::runtime_error("Could not send the body");
+	if (FD_ISSET(_Clientfd, &_Writefds))
+		send(_Clientfd, page.c_str(), page.size(), 0);
 }
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {

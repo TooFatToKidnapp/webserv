@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 15:31:00 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 17:58:10 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ std::string    Server::receive_data(int sockfd, int& errnum)
 void	Server::Run(ConfigFileParser & conf)
 {
 	fd_set	readfds;
+	fd_set	writefds;
 	int 	client_socket[FD_SETSIZE];
 	int 	max_clients = FD_SETSIZE;
 	int		newsockfd;
@@ -120,6 +121,8 @@ void	Server::Run(ConfigFileParser & conf)
 	while (RUNNING)
 	{
 		FD_ZERO(&readfds);
+		FD_ZERO(&writefds);
+		
 		for (std::vector<std::pair<int, sockaddr_in> >::iterator i = servers.begin(); i < servers.end(); i++)
 		{
 			FD_SET(i->first, &readfds);
@@ -129,11 +132,14 @@ void	Server::Run(ConfigFileParser & conf)
         {
             int sd = client_socket[i];
             if(sd > 0)
+			{
                 FD_SET(sd, &readfds);
+                FD_SET(sd, &writefds);
+			}
             if(sd > max_sd)
                 max_sd = sd;
         }
-        if (select(max_sd + 1, &readfds, NULL, NULL, NULL) < 0)
+        if (select(max_sd + 1, &readfds, &writefds, NULL, NULL) < 0)
 			throw std::invalid_argument("select: error while selecting the fds");
 		for (std::vector<std::pair<int, sockaddr_in> >::iterator i = servers.begin(); i < servers.end(); i++)
 		{
@@ -175,7 +181,7 @@ void	Server::Run(ConfigFileParser & conf)
 					if (request == "\n")
 						continue;
 					Request req(request, conf);
-					Response res(temp, req);
+					Response res(temp, req, writefds);
 					if (res.getStatus() != OK)
 						res.sendErrorPage(res.getStatus());
 					else if (req.GetMethod() == "POST" && request.find("Content-Disposition") != std::string::npos)
