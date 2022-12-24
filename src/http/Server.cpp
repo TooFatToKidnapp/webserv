@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 14:37:55 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 15:31:00 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void	Server::Run(ConfigFileParser & conf)
 					Response res(temp, req);
 					if (res.getStatus() != OK)
 						res.sendErrorPage(res.getStatus());
-					else if (req.GetMethod() == "POST")
+					else if (req.GetMethod() == "POST" && request.find("Content-Disposition") != std::string::npos)
 						res.uploadFile();
 					else if (req.GetMethod() == "DELETE")
 						res.deleteFile(req.getPath());

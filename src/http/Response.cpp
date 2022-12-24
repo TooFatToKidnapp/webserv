@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 14:27:13 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/24 15:22:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,21 +69,29 @@ void Response::uploadFile() {
 		std::ofstream	file;
 		pos = body.find("filename", delpos);
 		endpos = body.find("\"", pos + 10);
-		if (pos == std::string::npos || endpos == std::string::npos)
+		if (pos == std::string::npos || endpos == std::string::npos) {
+			sendErrorPage(BadRequest);
 			throw std::runtime_error("corrupt body");
+		}
 		filename = body.substr(pos + 10, endpos - pos - 10);
-		if (pathIsFile("./uploads/" + filename) == 1)
+		if (pathIsFile("./uploads/" + filename) == 1) {
+			sendErrorPage(BadRequest);
 			throw std::runtime_error("file already exists");
+		}
 
 		pos = body.find("\r\n\r\n", delpos);
 		endpos = body.find(boundary, pos);
-		if (pos == std::string::npos || endpos == std::string::npos)
+		if (pos == std::string::npos || endpos == std::string::npos) {
+			sendErrorPage(BadRequest);
 			throw std::runtime_error("corrupt body");
+		}
 		content = body.substr(pos + 4, endpos - pos - 6);
 
 		file.open("./uploads/" + filename);
-		if (!file.is_open())
+		if (!file.is_open()) {
+			sendErrorPage(BadRequest);
 			throw std::runtime_error("cannot upload the files");
+		}
 		file << content;
 		delpos = body.find(boundary, delpos + 1);
 		if (body[delpos + boundary.size()] == '-' && body[delpos + boundary.size() + 1] == '-')
