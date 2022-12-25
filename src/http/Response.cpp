@@ -6,18 +6,17 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 18:15:53 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/25 16:01:33 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/http/Response.hpp"
 
-Response::Response(int clientfd, Request req, fd_set writefds) {
+Response::Response(Request req, fd_set writefds) {
 	_Writefds = writefds;
 	_Headers = req.getHeaders();
 	_Headers["Date"] = getDate();
 	_Status = req.getStatus();
-	_Clientfd = clientfd;
 	_ErrorPage = req.getErrorPage();
 	_Index = req.getIndex();
 	_AutoIndex = req.getAutoIndex();
@@ -26,7 +25,7 @@ Response::Response(int clientfd, Request req, fd_set writefds) {
 
 Response::~Response() {}
 
-void Response::deleteFile(std::string const & path) {
+std::string Response::deleteFile(std::string const & path) {
 	std::ostringstream	headers;
 	std::fstream file(path);
 	
@@ -44,11 +43,10 @@ void Response::deleteFile(std::string const & path) {
 	<< "Connection: " << _Headers["Connection"] << "\r\n"
 	<< "\r\n";
 
-	if (FD_ISSET(_Clientfd, &_Writefds))
-		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
+	return headers.str();
 }
 
-void Response::uploadFile() {
+std::string Response::uploadFile() {
 	std::string 	body;
 	std::string		filename;
 	std::string		boundary;
@@ -110,13 +108,10 @@ void Response::uploadFile() {
 	<< "Content-Length: " << success.size() << "\r\n"
 	<< "Connection: close\r\n\r\n";
 
-	if (FD_ISSET(_Clientfd, &_Writefds)) {
-		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
-		send(_Clientfd, success.c_str(), success.size(), 0);
-	}	
+	return (headers.str() + success);
 }
 
-void Response::cgi(Request const &obj){
+std::string Response::cgi(Request const &obj){
 	std::string tmp = obj.getHost();
 	size_t pos = tmp.find_first_of(":");
 	short port;
@@ -136,13 +131,10 @@ void Response::cgi(Request const &obj){
 	// << "Connection: " << _Headers["Connection"] << "\r\n"
 	// << "\r\n";
 	parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
-	if (FD_ISSET(_Clientfd, &_Writefds))
-		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
-	// if (FD_ISSET(_Clientfd, &_Writefds))
-		// send(_Clientfd, _cgi.GetOutput().c_str(), _cgi.GetOutput().size(), 0);
+	return headers.str();// + _cgi.getOutput();
 }
 
-void Response::sendHeaders(const std::string &filename) {
+std::string Response::sendHeaders(const std::string &filename) {
 	std::ifstream file(filename);
 	std::ostringstream headers;
 
@@ -163,11 +155,10 @@ void Response::sendHeaders(const std::string &filename) {
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
 
-	if (FD_ISSET(_Clientfd, &_Writefds))
-		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
+	return headers.str();
 }
 
-void Response::sendErrorPage(int status) {
+std::string Response::sendErrorPage(int status) {
 	std::stringstream ss;
 	std::string strStatus;
 
@@ -175,7 +166,7 @@ void Response::sendErrorPage(int status) {
 	ss >> strStatus;
 
 	if (_ErrorPage[_Status] != "" && pathIsFile(_ErrorPage[_Status]) == 1)
-		sendFile(_ErrorPage[_Status]);
+		return sendFile(_ErrorPage[_Status]);
 	else {
 		std::string error = "<html>\r\n<head><title>Error</title></head>\r\n<body>\r\n<center><h1>";
 		error.append(strStatus + "\t" + ReasonPhrase(status));
@@ -192,49 +183,43 @@ void Response::sendErrorPage(int status) {
 			headers << "Location: " << _Headers["Location"] << "\r\n";
 		headers << "\r\n";
 
-		if (FD_ISSET(_Clientfd, &_Writefds)) {	
-			send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
-			send(_Clientfd, error.c_str(), error.size(), 0);
-		}
+		return (headers.str() + error);
 	}
 }
 
-void Response::sendFile(const std::string &filename) {
+std::string Response::sendFile(const std::string &filename) {
 	char buffer[51] = {0};
 	int filelen = getFileLength(filename);
 	int fd = open(filename.c_str(), O_RDONLY);
 	int bytes_read;
+	std::string response;
 
-	sendHeaders(filename);
+	response = sendHeaders(filename);
 
 	while (filelen > 0) {
 		if ((bytes_read = read(fd, buffer, 50)) <= 0)
 			break ;
 		buffer[bytes_read] = '\0';
-		if (FD_ISSET(_Clientfd, &_Writefds)) {
-			usleep(1);
-			send(_Clientfd, buffer, bytes_read, 0);
-		}
+		response += buffer;
 		filelen -= bytes_read;
 	}
 	close(fd);
+	return response;
 }
 
-void Response::sendDir(const char *path, const std::string &host) {
+
+std::string Response::sendDir(const char *path, const std::string &host) {
 	if (_Index != "") {
 		int fd = open(_Index.c_str(), O_RDWR);
 		if (fd == -1) {
-			sendErrorPage(Forbidden);
+			return sendErrorPage(Forbidden);
 		} else {
-			sendFile(_Index);
 			close (fd);
+			return sendFile(_Index);
 		}
-		return ;
 	}
-	if (_AutoIndex == false) {
-		sendErrorPage(Forbidden);
-        return ;
-	}
+	if (_AutoIndex == false)
+		return sendErrorPage(Forbidden);
 	std::ostringstream headers;
 	std::string dirName(path);
 	struct dirent *dirEntry;
@@ -243,16 +228,13 @@ void Response::sendDir(const char *path, const std::string &host) {
 		<< "Date: " << _Headers["Date"] << "\r\n"
 		<< "Connection: " << _Headers["Connection"] << "\r\n"
 		<< "\r\n";
-	if (FD_ISSET(_Clientfd, &_Writefds))
-		send(_Clientfd, headers.str().c_str(), headers.str().size(), 0);
     std::string page = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<title>" + dirName + "</title>\r\n\
 	</head>\r\n<body>\r\n<h1>Webserv</h1>\r\n<p>\r\n";
     while ((dirEntry = readdir(dir)) != NULL)
 		page += getLink(std::string(dirEntry->d_name), dirName, host);
     page += "</p>\r\n</body>\r\n</html>\r\n";
 	closedir(dir);
-	if (FD_ISSET(_Clientfd, &_Writefds))
-		send(_Clientfd, page.c_str(), page.size(), 0);
+	return (headers.str() + page);
 }
 
 std::string Response::getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host) {

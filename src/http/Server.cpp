@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 17:58:10 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/25 15:52:23 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,7 @@ void	Server::Run(ConfigFileParser & conf)
         {
             int temp = client_socket[i];
 			std::string request;
+			std::string response;
             if (FD_ISSET(temp, &readfds))
             {
 				try
@@ -181,21 +182,23 @@ void	Server::Run(ConfigFileParser & conf)
 					if (request == "\n")
 						continue;
 					Request req(request, conf);
-					Response res(temp, req, writefds);
+					Response res(req, writefds);
 					if (res.getStatus() != OK)
-						res.sendErrorPage(res.getStatus());
+						response = res.sendErrorPage(res.getStatus());
 					else if (req.GetMethod() == "POST" && request.find("Content-Disposition") != std::string::npos)
-						res.uploadFile();
+						response = res.uploadFile();
 					else if (req.GetMethod() == "DELETE")
-						res.deleteFile(req.getPath());
+						response = res.deleteFile(req.getPath());
 					else if (!pathIsFile(req.getPath())) {
 						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
-								res.cgi(req);
+								response = res.cgi(req);
 						else
-							res.sendDir(req.getPath().c_str(), req.getHost());
+							response = res.sendDir(req.getPath().c_str(), req.getHost());
 					}
 					else
-						res.sendFile(req.getPath());
+						response = res.sendFile(req.getPath());
+					if (FD_ISSET(temp, &writefds))
+						send(temp, response.c_str(), response.size(), 0);
 					close(temp);
 					client_socket[i] = 0;
 				}
