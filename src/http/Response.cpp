@@ -6,14 +6,13 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:16:38 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/25 16:29:33 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/26 15:52:19 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/http/Response.hpp"
 
-Response::Response(Request req, fd_set writefds) {
-	_Writefds = writefds;
+Response::Response(Request req) {
 	_Headers = req.getHeaders();
 	_Headers["Date"] = getDate();
 	_Status = req.getStatus();
@@ -180,22 +179,13 @@ std::string Response::sendErrorPage(int status) {
 }
 
 std::string Response::sendFile(const std::string &filename) {
-	char buffer[51] = {0};
-	int filelen = getFileLength(filename);
-	int fd = open(filename.c_str(), O_RDONLY);
-	int bytes_read;
+	std::ifstream file(filename);
+	std::stringstream ss;
 	std::string response;
 
 	response = sendHeaders(filename);
-
-	while (filelen > 0) {
-		if ((bytes_read = read(fd, buffer, 50)) <= 0)
-			break ;
-		buffer[bytes_read] = '\0';
-		response += buffer;
-		filelen -= bytes_read;
-	}
-	close(fd);
+	ss << file.rdbuf();
+	response += ss.str();
 	return response;
 }
 

@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/25 15:52:23 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/26 18:32:10 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,8 @@ void	Server::Run(ConfigFileParser & conf)
 	fd_set	writefds;
 	int 	client_socket[FD_SETSIZE];
 	int 	max_clients = FD_SETSIZE;
+	std::vector<std::string> response(max_clients);
+	std::vector<size_t>	chunksNbr(max_clients);
 	int		newsockfd;
 	int		max_sd;
 
@@ -122,7 +124,6 @@ void	Server::Run(ConfigFileParser & conf)
 	{
 		FD_ZERO(&readfds);
 		FD_ZERO(&writefds);
-		
 		for (std::vector<std::pair<int, sockaddr_in> >::iterator i = servers.begin(); i < servers.end(); i++)
 		{
 			FD_SET(i->first, &readfds);
@@ -166,15 +167,15 @@ void	Server::Run(ConfigFileParser & conf)
         {
             int temp = client_socket[i];
 			std::string request;
-			std::string response;
-            if (FD_ISSET(temp, &readfds))
-            {
-				try
-				{
+			try
+			{
+            	if (FD_ISSET(temp, &readfds))
+            	{
 					int errnum = 0;
 					request = Server::receive_data(temp, errnum);
 					if (errnum == -1)
 					{
+						response[i].clear();
 						close(temp);
 						client_socket[i] = 0;
 						continue;
@@ -182,33 +183,57 @@ void	Server::Run(ConfigFileParser & conf)
 					if (request == "\n")
 						continue;
 					Request req(request, conf);
-					Response res(req, writefds);
+					Response res(req);
 					if (res.getStatus() != OK)
-						response = res.sendErrorPage(res.getStatus());
+						response[i] = res.sendErrorPage(res.getStatus());
 					else if (req.GetMethod() == "POST" && request.find("Content-Disposition") != std::string::npos)
-						response = res.uploadFile();
+						response[i] = res.uploadFile();
 					else if (req.GetMethod() == "DELETE")
-						response = res.deleteFile(req.getPath());
+						response[i] = res.deleteFile(req.getPath());
 					else if (!pathIsFile(req.getPath())) {
 						if (req.GetLocation().GetCGI().GetFilePath().compare("") != 0)
-								response = res.cgi(req);
+								response[i] = res.cgi(req);
 						else
-							response = res.sendDir(req.getPath().c_str(), req.getHost());
+							response[i] = res.sendDir(req.getPath().c_str(), req.getHost());
 					}
 					else
-						response = res.sendFile(req.getPath());
-					if (FD_ISSET(temp, &writefds))
-						send(temp, response.c_str(), response.size(), 0);
-					close(temp);
-					client_socket[i] = 0;
+						response[i] = res.sendFile(req.getPath());
+					if (res.getStatus() == OK)
+						chunksNbr[i] = getFileLength(req.getPath()) / 10;
+					else
+						chunksNbr[i] = 100;
+					if (chunksNbr[i] > 150000)
+						chunksNbr[i] = 150000;
 				}
-				catch(const std::exception& e)
+				if (FD_ISSET(temp, &writefds))
 				{
-					close(temp);
-					client_socket[i] = 0;
-					std::cerr << e.what() << '\n';
+					if (response[i] != "")
+					{
+						int valsent = 0;
+						size_t c = chunksNbr[i];
+						if (response[i].size() < chunksNbr[i])
+							c = response[i].size();
+						valsent = send(temp, response[i].c_str(), c, 0);
+						if (valsent == 0)
+							continue;
+						else if (valsent < 0)
+							throw std::runtime_error("couldn't send the response");
+						response[i].assign(response[i].begin() + c, response[i].end());
+						if (response[i] == "")
+						{
+							close(temp);
+							client_socket[i] = 0;
+						}
+					}
 				}
             }
+			catch(const std::exception& e)
+			{
+				close(temp);
+				client_socket[i] = 0;
+				response[i].clear();
+				std::cerr << e.what() << std::endl;
+			}
 		}
 	}
 }
