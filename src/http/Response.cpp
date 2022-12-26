@@ -27,7 +27,7 @@ Response::~Response() {}
 std::string Response::deleteFile(std::string const & path) {
 	std::ostringstream	headers;
 	std::fstream file(path);
-	
+
 	if (file.is_open())
 		file.close();
 	int status = std::remove(path.c_str());
@@ -252,17 +252,17 @@ void Response::parseCgiOutput(std::string &input, std::ostringstream &header, st
 	if (ex.compare(".php") == 0) {
 		while (std::getline(s, buff)) {
 			if (buff.find("X-Powered-By:") != std::string::npos)
-				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2);
+				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.find("Set-Cookie:") != std::string::npos)
-				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2);
+				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.find("Expires:") != std::string::npos)
-				header << "Expires: " << buff.substr(buff.find(": ") + 2);
+				header << "Expires: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.find("Cache-Control:") != std::string::npos)
-				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2);
+				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.find("Pragma:") != std::string::npos)
-				header << "Pragma: " << buff.substr(buff.find(": ") + 2);
+				header << "Pragma: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.find("Content-type:") != std::string::npos)
-				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2);
+				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
 			else if (buff.compare("\r\n\r\n") == 0)
 				break;
 		}
@@ -272,13 +272,13 @@ void Response::parseCgiOutput(std::string &input, std::ostringstream &header, st
 		while (std::getline(s, buff))
 		{
 			if (buff.find("Content-type:") != std::string::npos)
-				header << "Content-type: " << buff.substr(buff.find(": ") + 2);
+				header << "Content-type: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 		}
 		// std::cout << input << " " << input.length() << "\n";
 		input = input.substr(input.find("\n\n") + 1);
 		// std::cout << input << " " << input.length() << "\n";
 	}
-	header << "\r\n";
+	// header << "\r\n";
 	header << "Content-Length: " + std::to_string(input.size());
 	header << "\r\n\r\n";
 	header << input;

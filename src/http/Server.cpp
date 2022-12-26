@@ -59,7 +59,7 @@ std::string    Server::receive_data(int sockfd, int& errnum)
     ioctl(sockfd, FIONREAD, &nbytes);
     std::vector<char>		buffer(nbytes);
     std::string				rcv;
-	
+
 	valread = recv(sockfd, &buffer[0], nbytes, 0);
     if (valread < 0)
         throw std::invalid_argument("recv: cringe");
@@ -164,13 +164,13 @@ void	Server::Run(ConfigFileParser & conf)
 			}
 		}
 		for (int i = 0; i < max_clients; i++)
-        {
-            int temp = client_socket[i];
+		{
+			int temp = client_socket[i];
 			std::string request;
 			try
 			{
-            	if (FD_ISSET(temp, &readfds))
-            	{
+				if (FD_ISSET(temp, &readfds))
+				{
 					int errnum = 0;
 					request = Server::receive_data(temp, errnum);
 					if (errnum == -1)
@@ -226,7 +226,7 @@ void	Server::Run(ConfigFileParser & conf)
 						}
 					}
 				}
-            }
+			}
 			catch(const std::exception& e)
 			{
 				close(temp);
