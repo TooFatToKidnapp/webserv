@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 13:15:10 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/26 17:25:05 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/27 17:47:56 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@ private:
 	std::string							_Index;
 	bool								_AutoIndex;
 	std::vector<std::string>			_Body;
+	std::string							_Cookie;
+	std::map<std::string, std::string>	_Headers;
 
 public:
-	std::map<std::string, std::string>	_Headers;////////////////
 	Response(Request req);
 	~Response();
 	std::string cgi(Request const &obj);

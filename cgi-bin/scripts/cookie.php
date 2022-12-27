@@ -1,5 +1,3 @@
-
-
 <?php
 $cookie_value = "ADMIN";
 $cookie_name = "USER";

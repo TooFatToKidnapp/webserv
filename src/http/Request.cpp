@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/24 14:44:47 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/27 16:59:29 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,8 +219,6 @@ void Request::ParseQuery(std::string & query) {
 
 void Request::ParseHeaders(std::vector<std::string> & headers) {
 	for (std::size_t i = 1; i < headers.size() && !headers[i].empty(); ++i) {
-		if (std::isspace(headers[i][0]) || std::isspace(headers[i][headers.size() - 1]))
-			continue ;
 		std::size_t pos = headers[i].find(":");
 		if (pos == std::string::npos || (headers[i][pos - 1] && std::isspace(headers[i][pos - 1]))) {
 			_Status = BadRequest;
