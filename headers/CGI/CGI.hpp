@@ -34,31 +34,9 @@ class CGI {
 		}
 
 	private:
-		std::string ParsePath(std::string input) {
-			size_t pos = input.find_last_of("/");
-			pos++;
-			std::string tmp = input.substr(pos);
-			if (tmp.compare("php-cgi") == 0)
-				return "../" + tmp;
-			else if (tmp.compare("python") == 0)
-				return "/usr/bin/python";
-			throw std::invalid_argument("Error: Bad CGI");
-		}
-		std::string ParseScriptName(std::string input) {
-			if(input.compare("") == 0)
-				throw std::invalid_argument("Error: Bad Querry");
-			size_t pos = input.find_last_of("/");
-			pos++;
-			return input.substr(pos);
-		}
-		std::string GetScriptExtention(std::string input) {
-			size_t pos = input.find_last_of("/");
-			pos++;
-			std::string tmp = input.substr(pos);
-			if (tmp != "python" || tmp != "php-cgi")
-				throw std::invalid_argument("Error: CGI Extention Not Supported");
-			return tmp;
-		}
+		std::string ParsePath(std::string input);
+		std::string ParseScriptName(std::string input);
+		std::string GetScriptExtention(std::string input);
 		CGI &operator=(const CGI &obj);
 		Request const & _Request;
 		short _Port;
@@ -68,7 +46,6 @@ class CGI {
 		std::string _Root;
 		std::string _CgiPath;
 		std::string _CgiOutput;
-
 };
 
 #endif

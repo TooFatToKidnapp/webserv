@@ -39,4 +39,5 @@ public:
 	void parseCgiOutput(std::string &input, std::ostringstream &header, const std::string &ex);
 	const int &getStatus() const;
 	std::string deleteFile(std::string const & path);
+	std::string const & GetCookie();
 };

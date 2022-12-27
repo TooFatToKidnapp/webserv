@@ -20,6 +20,7 @@ Response::Response(Request req) {
 	_Index = req.getIndex();
 	_AutoIndex = req.getAutoIndex();
 	_Body = req.getBody();
+
 }
 
 Response::~Response() {}
@@ -115,14 +116,8 @@ std::string Response::cgi(Request const &obj){
 	}
 	CGI _cgi(obj, port);
 	std::ostringstream headers;
-	// headers << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n"
-	// << "Date: " << _Headers["Date"] << "\r\n"
-	// << "Content-Type: " << "text/html" << "\r\n"
-	// << "Content-Length: " << _cgi.GetOutput().length() << "\r\n"
-	// << "Connection: " << _Headers["Connection"] << "\r\n"
-	// << "\r\n";
 	parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
-	return headers.str();// + _cgi.getOutput();
+	return headers.str();
 }
 
 std::string Response::sendHeaders(const std::string &filename) {
@@ -247,39 +242,38 @@ void Response::parseCgiOutput(std::string &input, std::ostringstream &header, st
 	time(&raw);
 	tm = ctime(&raw);
 	tm.pop_back();
-
+	std::string body;
 	header << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n" << "Server: WebServ\r\n" << "Date: " << tm << " GMT\r\n" << "Connection: " << _Headers["Connection"] << "\r\n";
 	if (ex.compare(".php") == 0) {
 		while (std::getline(s, buff)) {
 			if (buff.find("X-Powered-By:") != std::string::npos)
-				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.find("Set-Cookie:") != std::string::npos)
-				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.find("Expires:") != std::string::npos)
-				header << "Expires: " << buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Expires: " << buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.find("Cache-Control:") != std::string::npos)
-				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.find("Pragma:") != std::string::npos)
-				header << "Pragma: " << buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Pragma: " << buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.find("Content-type:") != std::string::npos)
-				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2) ; //<< "\r\n";
 			else if (buff.compare("\r\n\r\n") == 0)
 				break;
 		}
-		input = input.substr(input.find("\r\n\r\n") + 4);
+		body = input.substr(input.find("\r\n\r\n") + 4);
 	}
 	else if (ex.compare(".py") == 0) {
 		while (std::getline(s, buff))
 		{
 			if (buff.find("Content-type:") != std::string::npos)
-				header << "Content-type: " << buff.substr(buff.find(": ") + 2) << "\r\n";
+				header << "Content-type: " << buff.substr(buff.find(": ") + 2);// << "\r\n";
 		}
-		// std::cout << input << " " << input.length() << "\n";
-		input = input.substr(input.find("\n\n") + 1);
-		// std::cout << input << " " << input.length() << "\n";
+		body = input.substr(input.find("\n\n") + 1);
 	}
 	// header << "\r\n";
 	header << "Content-Length: " + std::to_string(input.size());
 	header << "\r\n\r\n";
-	header << input;
+	header << body;
+	// std::cout <<  "[" <<body << "]" ;
 }
