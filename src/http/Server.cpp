@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 14:40:06 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/27 16:54:06 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/28 15:50:02 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ void	Server::Run(ConfigFileParser & conf)
 	int 	client_socket[FD_SETSIZE];
 	int 	max_clients = FD_SETSIZE;
 	std::vector<std::string> response(max_clients);
-	std::vector<size_t>	chunksNbr(max_clients);
 	int		newsockfd;
 	int		max_sd;
 
@@ -198,20 +197,14 @@ void	Server::Run(ConfigFileParser & conf)
 					}
 					else
 						response[i] = res.sendFile(req.getPath());
-					if (res.getStatus() == OK)
-						chunksNbr[i] = getFileLength(req.getPath()) / 10;
-					else
-						chunksNbr[i] = 100;
-					if (chunksNbr[i] > 150000)
-						chunksNbr[i] = 150000;
 				}
 				if (FD_ISSET(temp, &writefds))
 				{
 					if (response[i] != "")
 					{
 						int valsent = 0;
-						size_t c = chunksNbr[i];
-						if (response[i].size() < chunksNbr[i])
+						size_t c = 65000;
+						if (response[i].size() < 65000)
 							c = response[i].size();
 						valsent = send(temp, response[i].c_str(), c, 0);
 						if (valsent == 0)
