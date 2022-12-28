@@ -25,7 +25,7 @@ SRC =	./main.cpp\
 		./src/cgi/CGI.cpp
 
 
-FLAGS = -Wall -Werror -Wextra -std=c++98 #-g -fsanitize=address -pedantic
+FLAGS = # -Wall -Werror -Wextra -std=c++98 #-g -fsanitize=address -pedantic
 
 CC = c++
 

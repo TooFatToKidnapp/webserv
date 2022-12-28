@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 19:24:30 by aabdou            #+#    #+#             */
-/*   Updated: 2022/12/27 20:32:01 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/28 18:30:13 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ std::string &CGI::GetOutput() {
 void CGI::setEnv() {
 	std::string str = _Root;
 	str.append("/scripts/" + _ScriptName);
+
+std::cout << str << "\n";
 	if (0 > setenv("DOCUMENT_ROOT", _Root.c_str(), 1)
 		|| 0 > setenv("SERVER_PORT", std::to_string(_Port).c_str(), 1)
 		|| 0 > setenv("GATEWAY_INTERFACE", "CGI/1.1" , 1)
@@ -74,10 +76,14 @@ void CGI::setEnv() {
 		|| 0 > setenv("REDIRECT_STATUS", "200", 1)) {
 			throw std::runtime_error("Error: faild to set enviroment varialble");
 		}
+
+
+		
 		std::map<std::string, std::string>::const_iterator tmp = _Request.getHeaders().find("Cookie");
 		if (tmp != _Request.getHeaders().end()) {
 			if (0 > setenv("HTTP_COOKIE", tmp->second.c_str(), 1))
 				throw std::runtime_error("Error: faild to set enviroment varialble");
+			std::cout << tmp->second.c_str() << std::endl;
 		}
 		if (_Request.getHeaders().find("Content_Type") != _Request.getHeaders().end()) {
 			if (0 > setenv("CONTENT_TYPE", _Request.getHeaders().find("Content_Type")->second.c_str(), 1))
@@ -90,6 +96,31 @@ void CGI::setEnv() {
 }
 
 void CGI::Exec() {
+	std::string str = _Root;
+	str.append("/scripts/" + _ScriptName);
+	
+	std::vector<std::string> tmpenv;
+	tmpenv.push_back("DOCUMENT_ROOT="+_Root);
+	tmpenv.push_back("SERVER_PORT=" + std::to_string(_Port) );
+	tmpenv.push_back(std::string("GATEWAY_INTERFACE=") + "CGI/1.1" );
+	tmpenv.push_back("SERVER_NAME=" + _Request.GetServerBlock().GetServerNames()[0]);
+	tmpenv.push_back("SCRIPT_FILENAME=" + str );
+	tmpenv.push_back("REQUEST_METHOD=" + _Request.GetMethod() );
+	tmpenv.push_back("QUERY_STRING=" + _Request.GetQuery() );
+	tmpenv.push_back(std::string("SERVER_PROTOCOL=") + "HTTP/1.1" );
+	tmpenv.push_back(std::string("SERVER_SOFTWARE=") + "prj dial 13");
+	tmpenv.push_back("PATH_INFO=" + _CgiPath);
+	tmpenv.push_back(std::string("REDIRECT_STATUS=") + "200");
+	std::map<std::string, std::string>::const_iterator tmp = _Request.getHeaders().find("Cookie");
+	tmpenv.push_back("HTTP_COOKIE" + tmp->second);
+	tmpenv.push_back("CONTENT_TYPE" + _Request.getHeaders().find("Content_Type")->second);
+	tmpenv.push_back("CONTENT_LENGTH" + _Request.getHeaders().find("Content_Length")->second);
+	
+	char *envtmp[tmpenv.size() + 1];
+	std::size_t i = 0;
+	for (; i < tmpenv.size(); i++)
+		envtmp[i] = const_cast<char *>(tmpenv[i].c_str());
+	envtmp[i] = NULL;
 	char const *args[3];
 	int write_fd[2];
 	int read_fd[2];
@@ -132,7 +163,7 @@ void CGI::Exec() {
 		dup2(read_fd[1], 1); // stdout
 		close(read_fd[0]);
 		chdir(_Root.c_str());
-		if (execve(_CgiPath.c_str(), (char * const*)args, env) == -1)
+		if (execve(_CgiPath.c_str(), (char * const*)args, envtmp) == -1)
 		{
 			std::cout << strerror(errno);
 			exit(1);
@@ -155,6 +186,7 @@ void CGI::Exec() {
 		close(read_fd[0]);
 		wait(0);
 	}
+	std::cout << _CgiOutput << "\n";
 }
 
 std::string CGI::ParsePath(std::string input) {
@@ -181,4 +213,5 @@ std::string CGI::GetScriptExtention(std::string input) {
 	if (tmp.compare("python") != 0 && tmp.compare("php-cgi") != 0)
 		throw std::invalid_argument("Error: CGI Extention Not Supported");
 	return tmp;
+	std::cout << _CgiOutput << "\n";
 }
