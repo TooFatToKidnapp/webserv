@@ -6,7 +6,7 @@
 /*   By: ylabtaim <ylabtaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:32:18 by ylabtaim          #+#    #+#             */
-/*   Updated: 2022/12/27 21:04:37 by ylabtaim         ###   ########.fr       */
+/*   Updated: 2022/12/28 15:02:52 by ylabtaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,6 +193,8 @@ void Request::ParseStartLine(std::string & str) {
 			DIR *dir = opendir(_Path.c_str());
 			if (dir == NULL)
                 _Status = Forbidden;
+			else
+				closedir(dir);
 		}
 		else
             _Status = NotFound;
