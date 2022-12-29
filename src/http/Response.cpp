@@ -21,6 +21,7 @@ Response::Response(Request req) {
 	_AutoIndex = req.getAutoIndex();
 	_Body = req.getBody();
 	_Cookie = _Headers["Cookie"];
+	_Method = req.GetMethod();
 }
 
 std::string const & Response::GetCookie() {
@@ -118,9 +119,16 @@ std::string Response::cgi(Request const &obj){
 		pos++;
 		port = stoi(tmp.substr(pos));
 	}
-	CGI _cgi(obj, port);
 	std::ostringstream headers;
-	parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
+	try {
+		CGI _cgi(obj, port, _Method);
+		parseCgiOutput(_cgi.GetOutput(), headers, _cgi.GetExtention());
+	}
+	catch (std::exception const &e) {
+		std::cerr << e.what() << "\n";
+		_Status = 500;
+		return sendErrorPage(500);
+	}
 	return headers.str();
 }
 
@@ -252,37 +260,22 @@ void Response::parseCgiOutput(std::string &input, std::ostringstream &header, st
 	header << "HTTP/1.1" << " " << _Status << " " << ReasonPhrase(_Status) << "\r\n" << "Server: WebServ\r\n" << "Date: " << tm << " GMT\r\n" << "Connection: " << _Headers["Connection"] << "\r\n";
 	if (ex.compare(".php") == 0) {
 		while (std::getline(s, buff)) {
-			// std::cout << buff << "\n";
 			if (buff.find("X-Powered-By:") != std::string::npos) {
-				// std::cout << "here1" << "\n";
-				// std::cout << "[" << buff<< "]\n";
 				header << "X-Powered-By: "  << buff.substr(buff.find(": ") + 2) << "\r\n";
 			}
 			else if (buff.find("Set-Cookie:") != std::string::npos){
-				// std::cout << "here2" << "\n";
-				// std::cout << "[" << buff<< "]\n";
 				header << "Set-Cookie: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
-				// std::cout << header.str();
 			}
 			else if (buff.find("Expires:") != std::string::npos){
-				// std::cout << "here3" << "\n";
-				// std::cout << "[" << buff<< "]\n";
 				header << "Expires: " << buff.substr(buff.find(": ") + 2) << "\r\n";
-				// std::cout << header.str() ;
 			}
 			else if (buff.find("Cache-Control:") != std::string::npos) {
-				// std::cout << "here4" << "\n";
-				// std::cout << "[" << buff<< "]\n";
 				header << "Cache-Control: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 			}
 			else if (buff.find("Pragma:") != std::string::npos) {
-				// std::cout << "here5" << "\n";
-				// std::cout << "[" << buff<< "]\n";				
 				header << "Pragma: " << buff.substr(buff.find(": ") + 2) << "\r\n";
 			}
 			else if (buff.find("Content-type:") != std::string::npos) {
-				// std::cout << "here6" << "\n";
-				// std::cout << "[" << buff<< "]\n";
 				header << "Content-type: " <<  buff.substr(buff.find(": ") + 2) << "\r\n";
 			}
 			else if (buff.compare("\r\n\r\n") == 0)
@@ -298,8 +291,8 @@ void Response::parseCgiOutput(std::string &input, std::ostringstream &header, st
 		}
 		body = input.substr(input.find("\n\n") + 1);
 	}
+	// header << "\r\n";
 	header << "Content-Length: " + std::to_string(input.size());
 	header << "\r\n\r\n";
 	header << body;
-	// std::cout <<  "[" <<body << "]" ;
 }

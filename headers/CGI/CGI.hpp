@@ -22,7 +22,7 @@
 class CGI {
 
 	public:
-		CGI(Request const &, short const &);
+		CGI(Request const &, short const &, std::string const &);
 		~CGI();
 		CGI(const CGI &obj);
 
@@ -46,6 +46,7 @@ class CGI {
 		std::string _Root;
 		std::string _CgiPath;
 		std::string _CgiOutput;
+		std::string	_Method;
 };
 
 #endif

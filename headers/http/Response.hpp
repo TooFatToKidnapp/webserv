@@ -26,6 +26,7 @@ private:
 	std::vector<std::string>			_Body;
 	std::string							_Cookie;
 	std::map<std::string, std::string>	_Headers;
+	std::string							_Method;
 
 public:
 	Response(Request req);

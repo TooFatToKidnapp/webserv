@@ -74,7 +74,6 @@ bool	Request::findServer(std::vector<ServerContext> const & servers, std::string
 		std::multimap<std::string, std::string>::iterator it;
 		for (it = listeners.begin(); it!= listeners.end(); ++it) {
 			if (((it->second + ":" + it->first) == _Host) || (it->second == _Host && it->first == "80")) {
-				std::cout << it->second << ":" << it->first << '\n';
 				_Server = &servers[i];
 				return true;
 			}
