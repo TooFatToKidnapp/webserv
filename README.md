@@ -1,0 +1,2 @@
+# webserv
+This GitHub repository hosts a project that showcases the development of a simple HTTP web server using the C socket API. The project offers an insightful implementation for handling HTTP requests and serving web content. The configuration file, which is inspired by Nginx, plays a crucial role in customizing the server's behavior and settings. By exploring the code, you can learn about the HTTP protocol, socket programming, and the influence of Nginx-inspired configuration files.
