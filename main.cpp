@@ -13,7 +13,12 @@
 #include "./headers/http/codes.hpp"
 #include "./headers/http/Server.hpp"
 
+void s() {
+	std::cout << "errno == " << strerror(errno) << "\n";
+}
+
 int main(int ac, char *av[]) {
+	atexit(s);
 	try {
 		ConfigFileParser conf;
 		conf.ParseFile(ac, av);

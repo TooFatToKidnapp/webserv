@@ -142,13 +142,34 @@ void CGI::Exec() {
 		}
 	}
 	else {
+		int status = 0;
+		int timeout = 3;
+		int result = 0;
+		while (result == 0 && timeout > 0) {
+			result = waitpid(ChildId, &status, WNOHANG);
+			if (result > 0) {
+				break;
+			}
+			if (result == 0) {
+				sleep(1);
+				timeout--;
+			}
+		}
+
 		close(read_fd[1]);
 		close(write_fd[0]);
+
+		if (result == 0) {
+			printf("Child process took too long, killing it\n");
+			kill(ChildId, SIGKILL);
+			throw std::runtime_error("Child process took too long");
+		}
 		std::string body;
 		for (size_t i = 0; i < this->_Request.GetBody().size(); i++) {
 			body += this->_Request.GetBody()[i];
 		}
-		write(write_fd[1], body.c_str(), body.size());
+		if (body.size() != 0)
+			write(write_fd[1], body.c_str(), body.size());
 		close(write_fd[1]);
 		bzero(buff, 1024);
 		while ((ReadCount = read(read_fd[0], buff, 1024)) > 0) {
@@ -156,7 +177,7 @@ void CGI::Exec() {
 			_CgiOutput.append(buff, ReadCount);
 		}
 		close(read_fd[0]);
-		wait(0);
+
 	}
 }
 
